@@ -11,12 +11,10 @@ trigger:
 
 steps:
 - task: PowerShell@2
-  env:
-     GH_TOKEN: $(ghtoken)
   inputs:
     targetType: 'inline'
     script: |
-      docker login docker.pkg.github.com -u bryht --password-stdin
+      echo $(ghtoken) | docker login docker.pkg.github.com -u bryht --password-stdin
       npm install
       npm run build
   displayName: 'Build file'
