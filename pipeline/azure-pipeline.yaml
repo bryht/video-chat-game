@@ -17,9 +17,11 @@ steps:
     secureFile: 'github-docker.txt'
 
 - task: Npm@1
+  displayName: Npm install
   inputs:
     command: 'install'
 - task: Npm@1
+  displayName: Npm build
   inputs:
     command: 'custom'
     customCommand: 'run build'
@@ -31,12 +33,12 @@ steps:
     script: |
       cat $(github_docker.secureFilePath)| docker login docker.pkg.github.com -u bryht --password-stdin
 
-- task: Docker@2
-  displayName: Docker build
+- task: PowerShell@2
+  displayName: Docker Push
   inputs:
-    repository: docker.pkg.github.com/bryht/video-chat-game/video-chat-game:latest
-    command: build
-    Dockerfile: ./Dockerfile
+    targetType: 'inline'
+    script: |
+      docker build -t docker.pkg.github.com/bryht/video-chat-game/video-chat-game:latest .
 
 - task: PowerShell@2
   displayName: Docker Push
