@@ -16,13 +16,13 @@ steps:
   inputs:
     secureFile: 'github-docker.txt'
 
-- task: PowerShell@2
-  displayName: 'Build file'
+- task: Npm@1
   inputs:
-    targetType: 'inline'
-    script: |
-      npm install
-      npm run build
+    command: 'install'
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    customCommand: 'run build'
 
 - task: PowerShell@2
   displayName: Docker login
