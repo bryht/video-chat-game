@@ -17,17 +17,30 @@ steps:
     secureFile: 'github-docker.txt'
 
 - task: PowerShell@2
+  displayName: 'Build file'
+  inputs:
+    targetType: 'inline'
+    script: |
+      npm install
+      npm run build
+
+- task: PowerShell@2
+  displayName: Docker login
   inputs:
     targetType: 'inline'
     script: |
       cat $(github_docker.secureFilePath)| docker login docker.pkg.github.com -u bryht --password-stdin
-      npm install
-      npm run build
-  displayName: 'Build file'
 
 - task: Docker@2
-  displayName: Build an image
+  displayName: Docker build
   inputs:
     repository: docker.pkg.github.com/bryht/video-chat-game/video-chat-game:latest
     command: build
     Dockerfile: ./Dockerfile
+
+- task: PowerShell@2
+  displayName: Docker Push
+  inputs:
+    targetType: 'inline'
+    script: |
+      docker push docker.pkg.github.com/bryht/video-chat-game/video-chat-game:latest
