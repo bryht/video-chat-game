@@ -1,6 +1,9 @@
 version: '3'
 
 services:
+  video:
+    image: docker.pkg.github.com/bryht/video-chat-game/video-chat-game:latest
+    restart: unless-stopped
   nginx:
     image: nginx:1.15-alpine
     restart: unless-stopped
