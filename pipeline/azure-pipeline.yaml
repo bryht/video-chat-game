@@ -34,7 +34,7 @@ steps:
       cat $(github_docker.secureFilePath)| docker login docker.pkg.github.com -u bryht --password-stdin
 
 - task: PowerShell@2
-  displayName: Docker Push
+  displayName: Docker Build
   inputs:
     targetType: 'inline'
     script: |
