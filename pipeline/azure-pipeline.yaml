@@ -5,7 +5,7 @@
 # https://aka.ms/yaml
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'linux-latest'
 trigger:
 - master
 
