@@ -10,11 +10,17 @@ trigger:
 - master
 
 steps:
+
+- task: DownloadSecureFile@1
+  name: github_docker
+  inputs:
+    secureFile: 'github-docker.txt'
+
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
     script: |
-      echo $(ghtoken) | docker login docker.pkg.github.com -u bryht --password-stdin
+      cat $(github_docker.secureFilePath)| docker login docker.pkg.github.com -u bryht --password-stdin
       npm install
       npm run build
   displayName: 'Build file'
