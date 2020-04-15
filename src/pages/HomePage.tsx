@@ -1,10 +1,10 @@
 import * as React from 'react';
-import Settings from 'components/Setting/Settings';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import Log from 'utils/Log';
 import { BasicProps } from 'core/RootComponent/BasicProps';
 import { connect } from 'react-redux';
 import { mapRootStateToProps } from 'core/RootComponent/RootComponent';
+import Room from 'components/Room/Room';
 
 export interface RouteInfo {
     id: string;
@@ -18,7 +18,7 @@ class HomePage extends React.Component<IHomePageProps> {
         let k = this.props.match.params.id;
         Log.Info(k);
         return (
-            <Settings />
+            <Room />
         );
     }
 }
