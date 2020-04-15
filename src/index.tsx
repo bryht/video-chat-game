@@ -2,17 +2,28 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
 import * as serviceWorker from './serviceWorker';
-import HomePage from 'pages/Home/HomePage';
 import store from './redux/Store';
 import { Provider } from 'react-redux';
 import 'bootstrap/js/dist/dropdown';
 import 'bootstrap/js/dist/collapse';
 import 'bootstrap/js/dist/modal';
+import EntrancePage from 'pages/EntrancePage/EntrancePage';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import HomePage from 'pages/HomePage';
 
 ReactDOM.render(
   <Provider store={store()}>
     <React.StrictMode>
-      <HomePage />
+      <Router>
+        <Switch>
+          <Route path="/home/:id">
+            <HomePage />
+          </Route>
+          <Route path="/">
+            <EntrancePage />
+          </Route>
+        </Switch>
+      </Router>
     </React.StrictMode>
   </Provider>,
   document.getElementById('root')

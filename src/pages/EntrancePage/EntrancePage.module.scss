@@ -1,0 +1,22 @@
+@import "bootstrap";
+
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+    background-color: lightblue;
+
+    h1 {
+        text-align: center;
+        margin-top: -10vh;
+    }
+
+    a {
+        margin-top: 5vh;
+        align-self: center;
+        @extend .btn;
+        @extend .btn-primary;
+
+    }
+}
