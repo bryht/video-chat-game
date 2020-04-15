@@ -46,3 +46,16 @@ steps:
     targetType: 'inline'
     script: |
       docker push docker.pkg.github.com/bryht/video-chat-game/video-chat-game:latest
+
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'linux-ming'
+    runOptions: 'inline'
+    inline: |
+      cd ./video-chat-game/
+      git stash
+      git pull
+      cd ./deploy
+      chmod 777 reload.sh
+      ./reload.sh
+    readyTimeout: '200000'
