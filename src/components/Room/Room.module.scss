@@ -1,6 +1,54 @@
+// div{
+//     outline: 1px dashed green;
+// }
 .main {
     display: flex;
+    width: 100vw;
     height: 100vh;
-    justify-content: center;
+}
+
+.left {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    .center {
+        flex: 1;
+    }
+
+    .bottom {
+        margin-top: auto;
+        display: flex;
+        align-self: center;
+        align-items: center;
+        height: 100px;
+        opacity: 0.8;
+
+        div {
+            width: 80px;
+            height: 80px;
+            margin: 0px 20px;
+            border: 1px dashed black;
+            border-radius: 40px;
+            text-align: center;
+        }
+    }
+}
+
+.right {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    width: 200px;
+
+    div {
+        align-self: stretch;
+        margin: 5px;
+        height: 180px;
+        border: dashed;
+        border-radius: 5px;
+        border-color: black;
+        border-width: 2px;
+        padding: 10px;
+    }
 }

@@ -9,7 +9,7 @@ import 'bootstrap/js/dist/collapse';
 import 'bootstrap/js/dist/modal';
 import EntrancePage from 'pages/EntrancePage/EntrancePage';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import HomePage from 'pages/HomePage';
+import HomePage from 'pages/HomePage/HomePage';
 
 ReactDOM.render(
   <Provider store={store()}>
