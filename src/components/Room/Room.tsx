@@ -4,6 +4,13 @@ export interface IRoomProps {
 }
 
 export default class Room extends React.Component<IRoomProps> {
+
+
+  sum(){
+    var a=1;
+    var b=2;
+    return a+b;
+  }
   public render() {
     return (
       <div className={styles.main}>
