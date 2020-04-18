@@ -10,10 +10,14 @@ import { IHttpRequest } from "utils/HttpRequest/IHttpRequest";
 
 
 export class RootComponent<Props extends BasicProps, States extends BasicState | any> extends React.Component<Props, States>{
-    
+    httpRequestHelper: HttpRequestHelper;
+    constructor(props: Readonly<Props>) {
+        super(props);
+        this.httpRequestHelper = new HttpRequestHelper();
+    }
     async invokeAsync<T>(request: IHttpRequest): Promise<T> {
 
-        return HttpRequestHelper.RequestAsync<T>(request);
+        return this.httpRequestHelper.RequestAsync<T>(request);
     }
 
     async invokeAsyncWithAuth(request: IHttpRequest): Promise<any> {
@@ -22,14 +26,13 @@ export class RootComponent<Props extends BasicProps, States extends BasicState |
 
         await Authentication.checkAuthenticationAsync(dispatch, currentUser as UserEntity);
 
-        return HttpRequestHelper.RequestAsync(request,currentUser?.accessToken);
+        return this.httpRequestHelper.RequestAsync(request, currentUser?.accessToken);
     }
 
     invokeDispatch(action: Action) {
         const { dispatch } = this.props;
         dispatch(action);
     }
-
 
 }
 

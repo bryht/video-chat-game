@@ -2,9 +2,9 @@ import Log from "../Log";
 import { IHttpRequest } from "./IHttpRequest";
 import Env from "config/env";
 
-export default class HttpRequestHelper<T> {
+export default class HttpRequestHelper {
 
-    public static CrateRequest(url: string, body: any | null = null, method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET'): IHttpRequest {
+    public CrateRequest(url: string, body: any | null = null, method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET'): IHttpRequest {
         return {
             url: url ?? '',
             body,
@@ -12,7 +12,7 @@ export default class HttpRequestHelper<T> {
         }
     }
 
-    public static RequestAsync<T>(requestObj: IHttpRequest, accessToken: string | null = null): Promise<T> {
+    public RequestAsync<T>(requestObj: IHttpRequest, accessToken: string | null = null): Promise<T> {
         return new Promise(resolve => {
             var request = new XMLHttpRequest();
             request.onreadystatechange = (e) => {
@@ -34,5 +34,5 @@ export default class HttpRequestHelper<T> {
         })
     }
 
- 
+
 }
