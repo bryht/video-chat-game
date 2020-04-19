@@ -17,7 +17,7 @@ export default class VideoClient {
     constructor(appId: string) {
         AgoraRTC.Logger.setLogLevel(2);
         this.appId = appId;
-        this.client = AgoraRTC.createClient({ mode: "rtc", codec: "h264" });
+        this.client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
         this.streamList = [];
         this.localStream = null;
         this.onStreamListChanged = {} as (streamList: Array<VideoStream>) => void;
