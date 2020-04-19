@@ -19,19 +19,26 @@ export default class VideoPlayer extends React.Component<IVideoPlayerProps> {
         if (this.stream.isPlaying() === false) {
             this.stream.play(`video-${this.streamId}`, { fit: "contain" }, async error => {
                 if (error) {
-                    Log.Error(error);
                     if (error?.status === "aborted") {
                         this.stream.resume();
+                    } else {
+                        Log.Error(error);
                     }
                 }
             });
         }
     }
 
+    componentWillUnmount() {
+        if (this.stream.isPlaying()) {
+            this.stream.stop();
+        }
+    }
+
     public render() {
         return (
-            <div id={`video-${this.streamId}`}>
-            </div>
+            <section id={`video-${this.streamId}`}>
+            </section>
         );
     }
 }

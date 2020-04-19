@@ -15,7 +15,7 @@
     .center {
         flex: 1;
         display: flex;
-        div {
+        section {
             flex: 1;
         }
     }
@@ -55,10 +55,10 @@
         border-radius: 5px;
         border-color: black;
         border-width: 2px;
-        padding: 10px;
-
-        // div {
-        //     flex: 1;
-        // }
+        padding: 2px;
+        section {
+            flex: 1;
+            margin: 0px;
+        }
     }
 }

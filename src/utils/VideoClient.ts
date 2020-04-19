@@ -2,8 +2,10 @@ import AgoraRTC from "agora-rtc-sdk";
 import Log from "./Log";
 
 export interface VideoStream {
+    id: string;
     stream: AgoraRTC.Stream;
     isLocal: boolean;
+    order: number;
 }
 export default class VideoClient {
 
@@ -28,7 +30,7 @@ export default class VideoClient {
         await this.joinChannel(channel, uid);
         let stream = await this.createStream(uid);
         this.localStream = stream;
-        this.addStreamToList({ stream: stream, isLocal: true });
+        this.addStreamToList({ id: stream.getId().toString(), stream: stream, order: 0, isLocal: true });
         await this.publishStream(stream);
     }
 
@@ -67,7 +69,8 @@ export default class VideoClient {
 
         this.client.on('stream-subscribed', evt => {
             let stream = evt.stream;
-            this.addStreamToList({ stream, isLocal: false });
+            let maxOrder = Math.max(...this.streamList.map(p => p.order));
+            this.addStreamToList({ id: stream.getId().toString(), stream, order: maxOrder + 1, isLocal: false });
         });
 
         this.client.on("stream-removed", evt => {
