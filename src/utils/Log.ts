@@ -6,4 +6,8 @@ export default class Log {
     public static Warning(obj: any): void {
         console.warn(JSON.stringify(obj, null, 2));
     }
+
+    public static Error(obj: any): void {
+        console.error(JSON.stringify(obj, null, 2));
+    }
 }

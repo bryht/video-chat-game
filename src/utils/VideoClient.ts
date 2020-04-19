@@ -1,21 +1,24 @@
 import AgoraRTC from "agora-rtc-sdk";
 import Log from "./Log";
 
+export interface VideoStream {
+    stream: AgoraRTC.Stream;
+    isLocal: boolean;
+}
 export default class VideoClient {
 
     appId: string;
     client: AgoraRTC.Client;
-    streamList: Array<AgoraRTC.Stream>;
-    localStream: AgoraRTC.Stream;
-    onStreamListChanged: (streamList: Array<AgoraRTC.Stream>) => void;
-    onLocalStreamChanged: (stream: AgoraRTC.Stream) => void;
+    streamList: Array<VideoStream>;
+    private localStream: AgoraRTC.Stream | null;
+    onStreamListChanged: (streamList: Array<VideoStream>) => void;
     constructor(appId: string) {
+        AgoraRTC.Logger.setLogLevel(2);
         this.appId = appId;
-        this.client = AgoraRTC.createClient({ mode: "rtc", codec: "h264" });
+        this.client = AgoraRTC.createClient({ mode: "live", codec: "vp8" });
         this.streamList = [];
-        this.localStream = {} as AgoraRTC.Stream;
-        this.onStreamListChanged = {} as (streamList: Array<AgoraRTC.Stream>) => void;
-        this.onLocalStreamChanged = {} as (stream: AgoraRTC.Stream) => void;
+        this.localStream = null;
+        this.onStreamListChanged = {} as (streamList: Array<VideoStream>) => void;
     }
 
 
@@ -25,11 +28,21 @@ export default class VideoClient {
         await this.joinChannel(channel, uid);
         let stream = await this.createStream(uid);
         this.localStream = stream;
-        this.streamList.push(stream);
-        this.onStreamListChanged(this.streamList);
-        // this.onLocalStreamChanged(this.localStream);
-        this.onLocalStreamChanged(this.localStream);
+        this.addStreamToList({ stream: stream, isLocal: true });
         await this.publishStream(stream);
+    }
+
+    public dispose() {
+        this.localStream && this.client.unpublish(this.localStream);
+        this.localStream && this.localStream.close();
+        this.streamList.forEach(item => {
+            item.stream.isPlaying() && item.stream.close();
+        })
+        this.client.leave(() => {
+            Log.Info('client left');
+        }, error => {
+            Log.Error(error);
+        })
     }
 
     private initial(): Promise<AgoraRTC.Client> {
@@ -38,35 +51,32 @@ export default class VideoClient {
                 Log.Info("AgoraRTC client initialized");
                 resolve(this.client);
             }, (error: any) => {
-                Log.Warning(error);
+                Log.Error(error);
             })
         })
     }
     private subscribeEvents() {
         this.client.on('stream-added', evt => {
             let stream = evt.stream;
-            if (stream.getId() !== this.localStream.getId()) {
+            if (stream.getId() !== this.localStream?.getId()) {
                 this.client.subscribe(stream, {}, error => {
-                    Log.Warning(error);
+                    Log.Error(error);
                 })
             }
         });
 
         this.client.on('stream-subscribed', evt => {
             let stream = evt.stream;
-            this.streamList.push(stream);
-            this.onStreamListChanged(this.streamList);
+            this.addStreamToList({ stream, isLocal: false });
         });
 
         this.client.on("stream-removed", evt => {
             let stream = evt.stream
-            this.streamList = this.streamList.filter(p => p.getId() !== stream.getId());
-            this.onStreamListChanged(this.streamList);
+            this.removeStreamFromList(stream.getId());
         })
 
         this.client.on('peer-leave', evt => {
-            this.streamList = this.streamList.filter(p => p.getId().toString() !== evt.uid);
-            this.onStreamListChanged(this.streamList);
+            this.removeStreamFromList(evt.uid);
         })
 
 
@@ -75,7 +85,7 @@ export default class VideoClient {
     private joinChannel(channel: string, uid: string): Promise<string> {
         return new Promise<string>(resolve => {
             this.client.join(this.appId, channel, uid, uid => resolve(uid.toString()), error => {
-                Log.Warning(error);
+                Log.Error(error);
             })
 
         })
@@ -90,11 +100,11 @@ export default class VideoClient {
                 screen: false
             }
             let stream = AgoraRTC.createStream(defaultConfig);
-            stream.setVideoProfile('720p');
+            stream.setVideoProfile('480p_4');
             stream.init(() => {
                 resolve(stream);
             }, error => {
-                Log.Warning(error);
+                Log.Error(error);
             })
         })
     }
@@ -102,10 +112,20 @@ export default class VideoClient {
     private publishStream(stream: AgoraRTC.Stream): Promise<void> {
         return new Promise<void>(resolve => {
             this.client.publish(stream, err => {
-                Log.Warning(err);
+                Log.Error(err);
             })
             resolve();
         });
 
+    }
+
+    private addStreamToList(stream: VideoStream) {
+        this.streamList.push(stream);
+        this.onStreamListChanged(this.streamList);
+    }
+
+    private removeStreamFromList(streamId: string) {
+        this.streamList = this.streamList.filter(p => p.stream.getId().toString() !== streamId);
+        this.onStreamListChanged(this.streamList);
     }
 }

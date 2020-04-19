@@ -13,7 +13,7 @@ import HomePage from 'pages/HomePage/HomePage';
 
 ReactDOM.render(
   <Provider store={store()}>
-    <React.StrictMode>
+    {/* <React.StrictMode> */}
       <Router>
         <Switch>
           <Route path="/home/:id">
@@ -24,7 +24,7 @@ ReactDOM.render(
           </Route>
         </Switch>
       </Router>
-    </React.StrictMode>
+    {/* </React.StrictMode> */}
   </Provider>,
   document.getElementById('root')
 );

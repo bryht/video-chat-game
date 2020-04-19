@@ -1,13 +1,13 @@
 import * as React from 'react';
 import styles from './Room.module.scss';
-import VideoClient from 'utils/VideoClient';
+import VideoClient, { VideoStream } from 'utils/VideoClient';
 import Log from 'utils/Log';
 import Guid from 'utils/Guid';
+import Video from 'components/Video/VideoPlayer';
 export interface IRoomProps {
 }
 export interface IRoomStates {
-  streamList: Array<AgoraRTC.Stream>;
-  localStream: AgoraRTC.Stream;
+  streamList: Array<VideoStream>;
 }
 export default class Room extends React.Component<IRoomProps, IRoomStates> {
 
@@ -18,8 +18,7 @@ export default class Room extends React.Component<IRoomProps, IRoomStates> {
     this.appId = process.env.REACT_APP_APP_ID ?? '';
     this.client = new VideoClient(this.appId);
     this.state = {
-      streamList: this.client.streamList,
-      localStream: this.client.localStream
+      streamList: [],
     }
   }
 
@@ -27,26 +26,30 @@ export default class Room extends React.Component<IRoomProps, IRoomStates> {
   async componentDidMount() {
     this.client.onStreamListChanged = list => {
       this.setState({ streamList: list });
-      list.forEach(item => {
-        item.play(`video-${item.getId()}`);
-      });
     };
-    this.client.onLocalStreamChanged = stream => {
-      this.setState({ localStream: stream });
-      stream.play(`video-${stream.getId()}`);
-    }
     await this.client.create('123', Guid.newGuid());
-
   }
 
+  switchToCenter = (streamId: string) => {
+
+  }
+  componentWillUnmount() {
+    this.client.dispose();
+  }
 
   public render() {
-    Log.Warning(this.state.streamList.length);
+    Log.Warning("room render " + this.state.streamList.length);
+    const centerStreams = this.state.streamList.filter(p => p.isLocal);
+    const rightStreams = this.state.streamList.filter(p => !p.isLocal);
     return (
       <div className={styles.main}>
         <div className={styles.left}>
           <div className={styles.center}>
-            center
+            {
+              centerStreams.map(item => {
+                return (<Video key={`center-${item.stream.getId()}`} videoStream={item}></Video>)
+              })
+            }
           </div>
           <div className={styles.bottom}>
             <div>Control</div>
@@ -57,10 +60,8 @@ export default class Room extends React.Component<IRoomProps, IRoomStates> {
         </div>
         <div className={styles.right}>
           {
-            this.state.streamList.map(item => {
-              return (<div>
-                <section id={`video-${item.getId()}`}></section>
-              </div>)
+            rightStreams.map(item => {
+              return (<Video key={`right-${item.stream.getId()}`} videoStream={item}></Video>)
             })
           }
         </div>
