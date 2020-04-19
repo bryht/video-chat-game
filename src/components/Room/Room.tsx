@@ -6,6 +6,7 @@ import Video from 'components/Video/VideoPlayer';
 import { FaVideo, FaVideoSlash, FaVolumeUp, FaVolumeMute,FaStop } from "react-icons/fa";
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { RouteInfo } from 'pages/HomePage/HomePage';
+import Log from 'utils/Log';
 
 export interface IRoomProps extends RouteComponentProps<RouteInfo> {
 }
@@ -22,12 +23,14 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
   client: VideoClient;
   streamList: Array<VideoStream>;
   localStream: VideoStream | null;
+  channel:string;
   constructor(props: Readonly<IRoomProps>) {
     super(props);
     this.appId = process.env.REACT_APP_APP_ID ?? '';
     this.client = new VideoClient(this.appId);
     this.streamList = [];
     this.localStream = null;
+    this.channel='';
     this.state = {
       centerStream: null,
       rightStreams: [],
@@ -43,7 +46,8 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
       this.localStream = list.find(p => p.isLocal) ?? null;
       this.refreshVideos();
     };
-    await this.client.create('123', Guid.newGuid());
+
+    await this.client.create(this.props.match.params.id, Guid.newGuid());
   }
 
   switchToCenter = (streamId: string) => {

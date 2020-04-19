@@ -30,6 +30,7 @@
     "react-scripts": "3.4.1",
     "redux": "^4.0.5",
     "redux-logger": "^3.0.6",
+    "sentencer": "^0.2.1",
     "typescript": "~3.7.2"
   },
   "scripts": {
@@ -39,7 +40,8 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "ignorePatterns": ["node_modules/"]
   },
   "browserslist": {
     "production": [

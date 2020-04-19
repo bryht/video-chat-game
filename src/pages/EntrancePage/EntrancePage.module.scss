@@ -12,6 +12,11 @@
         margin-top: -10vh;
     }
 
+    input {
+        @extend .form-control;
+        width: 300px;
+        align-self: center;
+    }
     a {
         margin-top: 5vh;
         align-self: center;
@@ -19,4 +24,5 @@
         @extend .btn-primary;
 
     }
+
 }
