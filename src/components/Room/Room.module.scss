@@ -1,20 +1,21 @@
-// div{
-//     outline: 1px dashed green;
-// }
+div{
+    outline: 1px dashed green;
+}
+
 .main {
-    display: flex;
     width: 100vw;
     height: 100vh;
+    display: flex;
+    * {
+        display: flex;
+    }
 }
 
 .left {
-    display: flex;
     flex-direction: column;
     flex: 1;
-
     .center {
         flex: 1;
-        display: flex;
         section {
             flex: 1;
         }
@@ -22,32 +23,40 @@
 
     .bottom {
         margin-top: auto;
-        display: flex;
         align-self: center;
         align-items: center;
         height: 100px;
         opacity: 0.8;
-
         div {
             width: 80px;
             height: 80px;
             margin: 0px 20px;
-            border: 1px dashed black;
+            color: green;
+            border: 2px solid green;
+            background-color: lightcyan;
             border-radius: 40px;
-            text-align: center;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+
+            &.mute {
+                color: red;
+                border-color: red;
+            }
+
+            &.stop {
+                color: red;
+            }
         }
     }
 }
 
 .right {
     margin-left: auto;
-    display: flex;
     flex-direction: column;
     align-items: center;
     width: 200px;
-
     div {
-        display: flex;
         align-self: stretch;
         margin: 5px;
         height: 180px;

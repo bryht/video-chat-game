@@ -3,7 +3,11 @@ import styles from './Room.module.scss';
 import VideoClient, { VideoStream } from 'utils/VideoClient';
 import Guid from 'utils/Guid';
 import Video from 'components/Video/VideoPlayer';
-export interface IRoomProps {
+import { FaVideo, FaVideoSlash, FaVolumeUp, FaVolumeMute,FaStop } from "react-icons/fa";
+import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteInfo } from 'pages/HomePage/HomePage';
+
+export interface IRoomProps extends RouteComponentProps<RouteInfo> {
 }
 export interface IRoomStates {
   centerStream: VideoStream | null;
@@ -12,7 +16,7 @@ export interface IRoomStates {
   isAudioOn: boolean;
 
 }
-export default class Room extends React.Component<IRoomProps, IRoomStates> {
+class Room extends React.Component<IRoomProps, IRoomStates> {
 
   appId: string;
   client: VideoClient;
@@ -78,6 +82,10 @@ export default class Room extends React.Component<IRoomProps, IRoomStates> {
     }
   }
 
+  stop=()=>{
+    this.props.history.push("/");
+  }
+
   switchAudio = () => {
     if (this.localStream) {
       const { isAudioOn } = this.state;
@@ -92,6 +100,7 @@ export default class Room extends React.Component<IRoomProps, IRoomStates> {
     }
   }
 
+
   public render() {
     const { centerStream, rightStreams } = this.state;
     return (
@@ -104,8 +113,15 @@ export default class Room extends React.Component<IRoomProps, IRoomStates> {
             }
           </div>
           <div className={styles.bottom}>
-            <div onClick={() => this.switchVideo()}>Video</div>
-            <div onClick={() => this.switchAudio()}>Audio</div>
+            <div className={this.state.isVideoOn ? "" : styles.mute} onClick={() => this.switchVideo()}>
+              {this.state.isVideoOn ? <FaVideo></FaVideo> : <FaVideoSlash></FaVideoSlash>}
+            </div>
+            <div className={this.state.isAudioOn ? "" : styles.mute} onClick={() => this.switchAudio()}>
+              {this.state.isAudioOn ? <FaVolumeUp></FaVolumeUp> : <FaVolumeMute></FaVolumeMute>}
+            </div>
+            <div className={styles.stop} onClick={() => this.stop()}>
+              <FaStop></FaStop>
+            </div>
           </div>
         </div>
         <div className={styles.right}>
@@ -119,3 +135,6 @@ export default class Room extends React.Component<IRoomProps, IRoomStates> {
     );
   }
 }
+
+
+export default withRouter(Room);

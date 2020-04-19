@@ -12,7 +12,7 @@ export default class EntrancePage extends React.Component<IEntrancePageProps> {
         return (
             <div className={styles.main}>
                 <h1>Welcome Video Chat Game</h1>
-                <a href={"/home/" + Guid.newGuid()}>Create1</a>
+                <a href={"/home/" + Guid.newGuid()}>Create</a>
             </div>
         );
     }
