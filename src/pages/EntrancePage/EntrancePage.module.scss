@@ -5,23 +5,35 @@
     flex-direction: column;
     justify-content: center;
     height: 100vh;
-    background-color: lightblue;
 
     h1 {
         text-align: center;
         margin-top: -10vh;
+        @extend .alert,
+        .alert-warning;
     }
 
-    input {
-        @extend .form-control;
-        width: 300px;
+    .roomName {
+        @extend .input-group,
+        .input-group-lg;
         align-self: center;
+        width: 300px;
+        div{
+            @extend .input-group-prepend;
+            span{
+                @extend .input-group-text;
+            }
+        }
+        input{
+            @extend .form-control;
+        }
     }
+
     a {
         margin-top: 5vh;
         align-self: center;
         @extend .btn;
-        @extend .btn-primary;
+        @extend .btn-secondary;
 
     }
 

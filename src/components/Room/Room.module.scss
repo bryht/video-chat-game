@@ -1,32 +1,52 @@
-div{
-    outline: 1px dashed green;
-}
+// div {
+//     outline: 1px dashed yellow;
+// }
 
 .main {
     width: 100vw;
     height: 100vh;
     display: flex;
+
     * {
         display: flex;
     }
+
+    position: relative;
+
 }
 
 .left {
     flex-direction: column;
     flex: 1;
+
     .center {
         flex: 1;
+
         section {
             flex: 1;
+        }
+
+        position: relative;
+
+        .toggleFullScreen {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            font-size: 38px;
+            margin: 6px;
+            color: lightcyan;
         }
     }
 
     .bottom {
+
         margin-top: auto;
         align-self: center;
         align-items: center;
         height: 100px;
         opacity: 0.8;
+        background-color: transparent;
+
         div {
             width: 80px;
             height: 80px;
@@ -48,6 +68,11 @@ div{
                 color: red;
             }
         }
+
+        &.fullScreen {
+            bottom: 0;
+            position: absolute;
+        }
     }
 }
 
@@ -56,6 +81,12 @@ div{
     flex-direction: column;
     align-items: center;
     width: 200px;
+
+    &.fullScreen {
+        position: absolute;
+        right: 0;
+    }
+
     div {
         align-self: stretch;
         margin: 5px;
@@ -65,6 +96,7 @@ div{
         border-color: black;
         border-width: 2px;
         padding: 2px;
+
         section {
             flex: 1;
             margin: 0px;

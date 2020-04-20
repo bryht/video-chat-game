@@ -27,9 +27,14 @@ export default class EntrancePage extends React.Component<IEntrancePageProps, IE
 
         return (
             <div className={styles.main}>
-                <h1>Hi {this.state.room} Welcome Video Chat Game</h1>
-                <input type="text" value={this.state.room} onChange={e => { this.roomChanged(e.target.value) }} />
-                <a href={`/home/${this.state.room}`}>Create</a>
+                <h1>Hi, Welcome Video Chat Game</h1>
+                <div className={styles.roomName}>
+                    <div>
+                        <span>Room:</span>
+                    </div>
+                    <input type="text" value={this.state.room} onChange={e => { this.roomChanged(e.target.value) }} />
+                </div>
+                <a href={`/home/${this.state.room}`}>Go Room</a>
             </div>
         );
     }

@@ -3,10 +3,11 @@ import styles from './Room.module.scss';
 import VideoClient, { VideoStream } from 'utils/VideoClient';
 import Guid from 'utils/Guid';
 import Video from 'components/Video/VideoPlayer';
-import { FaVideo, FaVideoSlash, FaVolumeUp, FaVolumeMute,FaStop } from "react-icons/fa";
+import { FaVideo, FaVideoSlash, FaVolumeUp, FaVolumeMute, FaStop } from "react-icons/fa";
+import { GoScreenFull, GoScreenNormal } from "react-icons/go";
+
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { RouteInfo } from 'pages/HomePage/HomePage';
-import Log from 'utils/Log';
 
 export interface IRoomProps extends RouteComponentProps<RouteInfo> {
 }
@@ -15,6 +16,7 @@ export interface IRoomStates {
   rightStreams: Array<VideoStream>;
   isVideoOn: boolean;
   isAudioOn: boolean;
+  isFullScreen: boolean;
 
 }
 class Room extends React.Component<IRoomProps, IRoomStates> {
@@ -23,19 +25,20 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
   client: VideoClient;
   streamList: Array<VideoStream>;
   localStream: VideoStream | null;
-  channel:string;
+  channel: string;
   constructor(props: Readonly<IRoomProps>) {
     super(props);
     this.appId = process.env.REACT_APP_APP_ID ?? '';
     this.client = new VideoClient(this.appId);
     this.streamList = [];
     this.localStream = null;
-    this.channel='';
+    this.channel = '';
     this.state = {
       centerStream: null,
       rightStreams: [],
       isAudioOn: true,
-      isVideoOn: true
+      isVideoOn: true,
+      isFullScreen: true
     }
   }
 
@@ -86,7 +89,7 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
     }
   }
 
-  stop=()=>{
+  stop = () => {
     this.props.history.push("/");
   }
 
@@ -104,9 +107,13 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
     }
   }
 
+  switchFullScreen = () => {
+    this.setState({ isFullScreen: !this.state.isFullScreen })
+  }
+
 
   public render() {
-    const { centerStream, rightStreams } = this.state;
+    const { centerStream, rightStreams, isVideoOn, isAudioOn, isFullScreen } = this.state;
     return (
       <div className={styles.main}>
         <div className={styles.left}>
@@ -115,20 +122,23 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
               centerStream &&
               (<Video key={`center-${centerStream.id}`} videoStream={centerStream}></Video>)
             }
-          </div>
-          <div className={styles.bottom}>
-            <div className={this.state.isVideoOn ? "" : styles.mute} onClick={() => this.switchVideo()}>
-              {this.state.isVideoOn ? <FaVideo></FaVideo> : <FaVideoSlash></FaVideoSlash>}
+            <div className={styles.toggleFullScreen}  onClick={() => this.switchFullScreen()}>
+              {isFullScreen ? <GoScreenNormal /> : <GoScreenFull />}
             </div>
-            <div className={this.state.isAudioOn ? "" : styles.mute} onClick={() => this.switchAudio()}>
-              {this.state.isAudioOn ? <FaVolumeUp></FaVolumeUp> : <FaVolumeMute></FaVolumeMute>}
+          </div>
+          <div className={`${styles.bottom} ${isFullScreen ? styles.fullScreen : ''}`}>
+            <div className={isVideoOn ? "" : styles.mute} onClick={() => this.switchVideo()}>
+              {isVideoOn ? <FaVideo></FaVideo> : <FaVideoSlash></FaVideoSlash>}
+            </div>
+            <div className={isAudioOn ? "" : styles.mute} onClick={() => this.switchAudio()}>
+              {isAudioOn ? <FaVolumeUp></FaVolumeUp> : <FaVolumeMute></FaVolumeMute>}
             </div>
             <div className={styles.stop} onClick={() => this.stop()}>
               <FaStop></FaStop>
             </div>
           </div>
         </div>
-        <div className={styles.right}>
+        <div className={`${styles.right} ${isFullScreen ? styles.fullScreen : ''}`}>
           {
             rightStreams.map(item => {
               return (<div key={`right-${item.id}`} onClick={() => this.switchToCenter(item.id)}><Video videoStream={item}></Video></div>)

@@ -41,7 +41,9 @@
   },
   "eslintConfig": {
     "extends": "react-app",
-    "ignorePatterns": ["node_modules/"]
+    "ignorePatterns": [
+      "node_modules/"
+    ]
   },
   "browserslist": {
     "production": [
