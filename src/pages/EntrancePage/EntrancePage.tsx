@@ -34,7 +34,7 @@ export default class EntrancePage extends React.Component<IEntrancePageProps, IE
                     </div>
                     <input type="text" value={this.state.room} onChange={e => { this.roomChanged(e.target.value) }} />
                 </div>
-                <a href={`/home/${this.state.room}`}>Go Room</a>
+                <a href={`/room/${this.state.room}`}>Go Room</a>
             </div>
         );
     }

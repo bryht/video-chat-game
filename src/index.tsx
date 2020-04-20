@@ -14,16 +14,16 @@ import HomePage from 'pages/HomePage/HomePage';
 ReactDOM.render(
   <Provider store={store()}>
     {/* <React.StrictMode> */}
-      <Router>
-        <Switch>
-          <Route path="/home/:id">
-            <HomePage />
-          </Route>
-          <Route path="/">
-            <EntrancePage />
-          </Route>
-        </Switch>
-      </Router>
+    <Router>
+      <Switch>
+        <Route path="/room/:id">
+          <HomePage />
+        </Route>
+        <Route path="/">
+          <EntrancePage />
+        </Route>
+      </Switch>
+    </Router>
     {/* </React.StrictMode> */}
   </Provider>,
   document.getElementById('root')
