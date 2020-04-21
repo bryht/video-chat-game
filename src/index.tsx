@@ -10,6 +10,22 @@ import 'bootstrap/js/dist/modal';
 import EntrancePage from 'pages/EntrancePage/EntrancePage';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import HomePage from 'pages/HomePage/HomePage';
+import firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/firestore";
+
+var firebaseConfig = {
+  apiKey: "api-key",
+  authDomain: "project-id.firebaseapp.com",
+  databaseURL: "https://project-id.firebaseio.com",
+  projectId: "project-id",
+  storageBucket: "project-id.appspot.com",
+  messagingSenderId: "sender-id",
+  appId: "app-id",
+  measurementId: "G-measurement-id",
+};
+firebase.initializeApp(firebaseConfig);
+//todo: https://firebase.google.com/docs/web/setup?authuser=0#non-default-hosting-site
 
 ReactDOM.render(
   <Provider store={store()}>
