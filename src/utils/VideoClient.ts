@@ -1,5 +1,6 @@
 import AgoraRTC from "agora-rtc-sdk";
 import Log from "./Log";
+import { isSafari } from "./BrowserCheck";
 
 export interface VideoStream {
     id: string;
@@ -61,7 +62,8 @@ export default class VideoClient {
         this.client.on('stream-added', evt => {
             let stream = evt.stream;
             if (stream.getId() !== this.localStream?.getId()) {
-                this.client.subscribe(stream, {}, error => {
+                let options = isSafari() ? undefined : {};
+                this.client.subscribe(stream, options, error => {
                     Log.Error(error);
                 })
             }
