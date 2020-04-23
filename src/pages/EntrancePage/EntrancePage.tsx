@@ -3,6 +3,7 @@ import styles from './EntrancePage.module.scss';
 import sentencer from 'sentencer';
 import { withAuth, IAuthProps } from 'common/Authencation/withAuth';
 import { withRouter } from 'react-router-dom';
+import AuthHelper from 'utils/AuthHelper';
 
 export interface IEntrancePageProps extends IAuthProps {
 }
@@ -22,7 +23,9 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
         this.setState({ room });
     }
 
- 
+    logout =()=>{
+        AuthHelper.signOut();
+    }
     public render() {
 
         const { name } = this.props.currentUser ?? {};
@@ -37,6 +40,7 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
                     <input type="text" value={this.state.room} onChange={e => { this.roomChanged(e.target.value) }} />
                 </div>
                 <a href={`/room/${this.state.room}`}>Go Room</a>
+                <button onClick={this.logout}>Leave</button>
             </div>
         );
     }
