@@ -14,6 +14,7 @@ interface IHomePageProps extends RouteComponentProps<RouteInfo>, BasicProps {
 }
 
 class HomePage extends React.Component<IHomePageProps> {
+    
     public render() {
         let k = this.props.match.params.id;
         Log.Info(k);

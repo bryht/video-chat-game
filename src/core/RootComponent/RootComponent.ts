@@ -4,7 +4,7 @@ import Authentication from "core/Authentication ";
 import React from "react";
 import { BasicState } from "./BasicState";
 import { BasicProps } from "./BasicProps";
-import { RootState } from "redux/Store";
+import { RootState } from "core/Redux/Store";
 import HttpRequestHelper from "utils/HttpRequest/HttpRequestHelper";
 import { IHttpRequest } from "utils/HttpRequest/IHttpRequest";
 

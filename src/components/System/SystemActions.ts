@@ -1,6 +1,6 @@
 import { UserEntity } from "core/Models/UserEntity";
-import { StatesAction } from "redux/Actions/StatesAction";
-import { StorageAction } from "redux/Actions/StorageAction";
+import { StatesAction } from "core/Redux/Actions/StatesAction";
+import { StorageAction } from "core/Redux/Actions/StorageAction";
 import { StorageType } from "core/Models/StorageType";
 import { SystemActionType } from "./SystemActionType";
 
