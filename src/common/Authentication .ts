@@ -1,6 +1,6 @@
 import { Dispatch } from "redux";
-import { UserState } from "core/Models/UserState";
-import { UserEntity } from "core/Models/UserEntity";
+import { UserState } from "common/Models/UserState";
+import { UserEntity } from "common/Models/UserEntity";
 import { SystemActions } from "components/System/SystemActions";
 
 export default class Authentication {

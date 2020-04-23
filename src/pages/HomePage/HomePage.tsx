@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import Log from 'utils/Log';
-import { BasicProps } from 'core/RootComponent/BasicProps';
+import { BasicProps } from 'common/RootComponent/BasicProps';
 import { connect } from 'react-redux';
-import { mapRootStateToProps } from 'core/RootComponent/RootComponent';
+import { mapRootStateToProps } from 'common/RootComponent/RootComponent';
 import Room from 'components/Room/Room';
 
 export interface RouteInfo {

@@ -1,5 +1,5 @@
 import { Dispatch } from "redux";
-import { UserEntity } from "core/Models/UserEntity";
+import { UserEntity } from "common/Models/UserEntity";
 export interface BasicProps {
     dispatch: Dispatch;
     currentUser: UserEntity | null;

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { BasicProps } from 'core/RootComponent/BasicProps';
-import { RootComponent, mapRootStateToProps } from 'core/RootComponent/RootComponent';
+import { BasicProps } from 'common/RootComponent/BasicProps';
+import { RootComponent, mapRootStateToProps } from 'common/RootComponent/RootComponent';
 import { connect } from 'react-redux';
 import styles from './Settings.module.scss';
 export interface ISettingsProps extends BasicProps {

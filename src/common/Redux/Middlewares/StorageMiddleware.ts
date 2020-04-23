@@ -1,6 +1,6 @@
 import { Middleware } from "redux";
-import { StorageType } from "core/Models/StorageType";
-import Consts from "core/Consts";
+import { StorageType } from "common/Models/StorageType";
+import Consts from "common/Consts";
 
 
 export const StorageMiddleware: Middleware = api => next => action => {

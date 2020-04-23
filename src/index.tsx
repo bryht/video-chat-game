@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
 import * as serviceWorker from './serviceWorker';
-import store from './core/Redux/Store';
+import store from './common/Redux/Store';
 import { Provider } from 'react-redux';
 import 'bootstrap/js/dist/dropdown';
 import 'bootstrap/js/dist/collapse';

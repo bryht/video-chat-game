@@ -1,10 +1,10 @@
 import { Action } from "redux";
-import { UserEntity } from "core/Models/UserEntity";
-import Authentication from "core/Authentication ";
+import { UserEntity } from "common/Models/UserEntity";
+import Authentication from "common/Authentication ";
 import React from "react";
 import { BasicState } from "./BasicState";
 import { BasicProps } from "./BasicProps";
-import { RootState } from "core/Redux/Store";
+import { RootState } from "common/Redux/Store";
 import HttpRequestHelper from "utils/HttpRequest/HttpRequestHelper";
 import { IHttpRequest } from "utils/HttpRequest/IHttpRequest";
 

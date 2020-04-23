@@ -1,7 +1,7 @@
 
-import { UserEntity } from "core/Models/UserEntity";
+import { UserEntity } from "common/Models/UserEntity";
 import { Reducer } from 'redux';
-import { StatesAction } from "core/Redux/Actions/StatesAction";
+import { StatesAction } from "common/Redux/Actions/StatesAction";
 import { SystemActionType } from "./SystemActionType";
 import { SystemStates } from "./SystemStates";
 

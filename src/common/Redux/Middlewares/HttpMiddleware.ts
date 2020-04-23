@@ -1,9 +1,9 @@
 import { Middleware } from "redux";
 import { RootState } from "../Store";
-import Consts from "core/Consts";
-import Authentication from "core/Authentication ";
+import Consts from "common/Consts";
+import Authentication from "common/Authentication ";
 import HttpRequestHelper from "utils/HttpRequest/HttpRequestHelper";
-import { UserEntity } from "core/Models/UserEntity";
+import { UserEntity } from "common/Models/UserEntity";
 
 export const HttpMiddleware: Middleware = api => next => async action => {
   if (action.type === Consts.api) {

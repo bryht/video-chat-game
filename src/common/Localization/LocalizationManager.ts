@@ -1,4 +1,4 @@
-import Consts from "core/Consts";
+import Consts from "common/Consts";
 
 export default class LocalizationManager {
     static Translate(key: string, culture: string | null = null, localizations: Record<string, string> | null = null): string {

@@ -1,6 +1,6 @@
 import { createStore, combineReducers, applyMiddleware} from 'redux';
 import { createLogger } from 'redux-logger';
-import { StorageMiddleware } from 'core/Redux/Middlewares/StorageMiddleware';
+import { StorageMiddleware } from 'common/Redux/Middlewares/StorageMiddleware';
 import { systemReducer } from 'components/System/SystemReducer';
 
 const rootReducer = combineReducers({
