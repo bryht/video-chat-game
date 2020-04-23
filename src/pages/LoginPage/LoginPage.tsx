@@ -23,13 +23,6 @@ export default class AuthPage extends React.Component<IAuthPageProps> {
         };
     }
 
-
-    componentDidMount() {
-        firebase.auth().onAuthStateChanged(user => {
-            Log.Warning(user);
-        });
-    }
-
     public render() {
         return (
             <StyledFirebaseAuth uiConfig={this.uiconfig} firebaseAuth={firebase.auth()} />

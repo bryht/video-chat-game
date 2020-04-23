@@ -1,5 +1,7 @@
 import { UserState } from "./UserState";
 export class UserEntity {
+    id: string = '';
+    name?: string = '';
     accessToken: string = '';
     expireDate: Date | null = null;
     culture: string | null = null;

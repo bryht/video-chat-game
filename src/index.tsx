@@ -10,8 +10,8 @@ import 'bootstrap/js/dist/modal';
 import EntrancePage from 'pages/EntrancePage/EntrancePage';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import HomePage from 'pages/HomePage/HomePage';
-import AuthPage from 'pages/AuthPage/AuthPage';
-import firebase from "firebase/app";
+import LoginPage from 'pages/LoginPage/LoginPage';
+import firebase from 'firebase/app';
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/analytics";
@@ -36,7 +36,7 @@ ReactDOM.render(
     <Router>
       <Switch>
         <Route path="/login">
-          <AuthPage />
+          <LoginPage />
         </Route>
         <Route path="/room/:id">
           <HomePage />
