@@ -2,8 +2,7 @@ import * as React from 'react';
 import styles from './EntrancePage.module.scss';
 import sentencer from 'sentencer';
 import { withAuth, IAuthProps } from 'common/Authencation/withAuth';
-import { withRouter } from 'react-router-dom';
-import AuthHelper from 'utils/AuthHelper';
+import firebaseHelper from 'utils/FirebaseHelper';
 
 export interface IEntrancePageProps extends IAuthProps {
 }
@@ -21,10 +20,11 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
     }
     roomChanged = (room: string) => {
         this.setState({ room });
+        firebaseHelper.dbAdd('room', { uid: this.props.currentUser?.id, name: room });
     }
 
-    logout =()=>{
-        AuthHelper.signOut();
+    logout = () => {
+        firebaseHelper.signOut();
     }
     public render() {
 

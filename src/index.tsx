@@ -11,24 +11,9 @@ import EntrancePage from 'pages/EntrancePage/EntrancePage';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import HomePage from 'pages/HomePage/HomePage';
 import LoginPage from 'pages/LoginPage/LoginPage';
-import firebase from 'firebase/app';
-import "firebase/auth";
-import "firebase/firestore";
-import "firebase/analytics";
+import FirebaseHelper from 'utils/FirebaseHelper';
 
-
-var firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_KEY,
-  authDomain: `${process.env.REACT_APP_FIREBASE_PROJECT_ID}.firebaseapp.com`,
-  databaseURL: `https://${process.env.REACT_APP_FIREBASE_PROJECT_ID}.firebaseio.com`,
-  projectId: `${process.env.REACT_APP_FIREBASE_PROJECT_ID}`,
-  storageBucket: `${process.env.REACT_APP_FIREBASE_PROJECT_ID}.appspot.com`,
-  messagingSenderId: `${process.env.REACT_APP_FIREBASE_SENDER_ID}`,
-  appId: `${process.env.REACT_APP_FIREBASE_APP_ID}`,
-  measurementId: `${process.env.REACT_APP_FIREBASE_MEASUREMENT_ID}`
-};
-firebase.initializeApp(firebaseConfig);
-firebase.analytics();
+FirebaseHelper.initial();
 
 ReactDOM.render(
   <Provider store={store()}>
