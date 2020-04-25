@@ -9,8 +9,10 @@ interface IAuthStates {
 }
 export function AuthenticationConnection<TRouterParas>(ChildComponent: React.ComponentType<IAuthProps<TRouterParas>>) {
 
-    class WithAuthentication extends React.Component<RouteComponentProps<TRouterParas>, IAuthStates> {
-        constructor(props: Readonly<RouteComponentProps<TRouterParas>>) {
+    interface IWithAuthProps extends RouteComponentProps<TRouterParas>{}
+
+    class WithAuthentication extends React.Component<IWithAuthProps, IAuthStates> {
+        constructor(props: Readonly<IWithAuthProps>) {
             super(props);
 
             this.state = {
@@ -26,6 +28,10 @@ export function AuthenticationConnection<TRouterParas>(ChildComponent: React.Com
             })
         }
 
+        componentWillUnmount(){
+            FirebaseHelper.unregisterAuth();
+        }
+
         componentDidUpdate() {
             if (!this.state.currentUser) {
                 this.props.history.push('/login');
@@ -39,7 +45,7 @@ export function AuthenticationConnection<TRouterParas>(ChildComponent: React.Com
         public render() {
             const { currentUser } = this.state;
             if (!currentUser) {
-                return <Loading/>;
+                return <Loading />;
             }
             return (
                 <ChildComponent

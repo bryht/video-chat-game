@@ -9,7 +9,7 @@ interface RouteInfo {
 
 class RoomPage extends React.Component<IAuthProps<RouteInfo>> {
     leaveRoom = () => {
-        this.props.history.push("/");
+        this.props.history.push("/enter");
     }
 
     public render() {

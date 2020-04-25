@@ -1,0 +1,17 @@
+@import "index.scss";
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+    .title {
+        text-align: center;
+        margin-top: -10vh;
+        width: 70vw;
+        @extend .alert,
+        .alert-warning;
+        @extend .blue-cross-background;
+    }
+}

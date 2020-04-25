@@ -9,6 +9,7 @@ import Guid from "./Guid";
 export default class FirebaseHelper {
 
     static database: firebase.firestore.Firestore;
+    static unregisterAuthObserver:firebase.Unsubscribe;
     public static initial() {
         var firebaseConfig = {
             apiKey: process.env.REACT_APP_FIREBASE_KEY,
@@ -31,7 +32,7 @@ export default class FirebaseHelper {
     }
 
     public static onAuthStateChanged(action: (userInput?: User) => void) {
-        firebase.auth().onAuthStateChanged(user => {
+        this.unregisterAuthObserver= firebase.auth().onAuthStateChanged(user => {
             if (user) {
                 var userObj = new User();
                 userObj.id = user.uid;
@@ -44,6 +45,10 @@ export default class FirebaseHelper {
             }
 
         });
+    }
+
+    public static unregisterAuth(){
+        this.unregisterAuthObserver();
     }
 
     public static async dbAdd(collection: string, value: object): Promise<string> {

@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import * as React from 'react';
 import styles from './EntrancePage.module.scss';
 import sentencer from 'sentencer';
@@ -31,16 +32,20 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
 
         return (
             <div className={styles.main}>
-                <h1>Hi,{`${name},`} Welcome Video Chat Game</h1>
-                <img src={""} alt=""/>
+                <h1>Hi,{name ? `${name},` : ''} Welcome! Please enter your room to start.</h1>
+                <img src={""} alt="" />
                 <div className={styles.roomName}>
                     <div>
                         <span>Room:</span>
                     </div>
                     <input type="text" value={this.state.room} onChange={e => { this.roomChanged(e.target.value) }} />
                 </div>
-                <a href={`/room/${this.state.room}`}>Go Room</a>
-                <button onClick={this.props.logout}>Leave</button>
+                <div className={styles.button}>
+                    <a href={`/room/${this.state.room}`}>Go Room</a>
+                </div>
+                <div className={styles.button}>
+                    <a href="#" onClick={this.props.logout}>Leave</a>
+                </div>
             </div>
         );
     }

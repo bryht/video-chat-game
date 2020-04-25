@@ -1,16 +1,19 @@
 @import "bootstrap";
-
+@import "index.scss";
 .main {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     height: 100vh;
 
     h1 {
         text-align: center;
         margin-top: -10vh;
+        width: 70vw;
         @extend .alert,
         .alert-warning;
+        @extend .blue-cross-background;
     }
 
     .roomName {
@@ -27,14 +30,6 @@
         input{
             @extend .form-control;
         }
-    }
-
-    a {
-        margin-top: 5vh;
-        align-self: center;
-        @extend .btn;
-        @extend .btn-secondary;
-
     }
 
 }

@@ -12,6 +12,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import RoomPage from 'pages/RoomPage/RoomPage';
 import LoginPage from 'pages/LoginPage/LoginPage';
 import FirebaseHelper from 'utils/FirebaseHelper';
+import WelcomePage from 'pages/Welcome/WelcomePage';
 
 FirebaseHelper.initial();
 
@@ -26,8 +27,11 @@ ReactDOM.render(
         <Route path="/room/:id">
           <RoomPage />
         </Route>
-        <Route path="/">
+        <Route path="/enter">
           <EntrancePage />
+        </Route>
+        <Route path="/">
+          <WelcomePage />
         </Route>
       </Switch>
     </Router>
