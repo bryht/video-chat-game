@@ -27,11 +27,12 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
 
     public render() {
 
-        const { name } = this.props.currentUser ?? {};
+        const { name } = this.props.currentUser;
 
         return (
             <div className={styles.main}>
-                <h1>Hi,{name} Welcome Video Chat Game</h1>
+                <h1>Hi,{`${name},`} Welcome Video Chat Game</h1>
+                <img src={""} alt=""/>
                 <div className={styles.roomName}>
                     <div>
                         <span>Room:</span>

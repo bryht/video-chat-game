@@ -36,9 +36,13 @@ export function AuthenticationConnection<TRouterParas>(ChildComponent: React.Com
         }
 
         public render() {
+            const { currentUser } = this.state;
+            if (!currentUser) {
+                return 'Loading';
+            }
             return (
                 <ChildComponent
-                    currentUser={this.state.currentUser}
+                    currentUser={currentUser}
                     logout={this.logout}
                     history={this.props.history}
                     location={this.props.location}

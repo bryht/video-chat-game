@@ -33,10 +33,12 @@ export default class FirebaseHelper {
     public static onAuthStateChanged(action: (userInput?: User) => void) {
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
-                var userEntity = new User();
-                userEntity.id = user.uid;
-                userEntity.name = user.displayName ?? '';
-                action(userEntity);
+                var userObj = new User();
+                userObj.id = user.uid;
+                userObj.name = user.displayName ?? '';
+                userObj.provider = user.providerId;
+                userObj.photoUrl = user.photoURL;
+                action(userObj);
             } else {
                 action(undefined);
             }
@@ -46,7 +48,7 @@ export default class FirebaseHelper {
 
     public static async dbAdd(collection: string, value: object): Promise<string> {
         try {
-            let guid=Guid.newGuid();
+            let guid = Guid.newGuid();
             let doc = this.database.collection(collection).doc(guid);
             doc.set(value);
             return guid;

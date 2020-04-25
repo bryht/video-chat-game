@@ -1,7 +1,6 @@
 import * as React from 'react';
 import styles from './Room.module.scss';
 import VideoClient, { VideoStream } from 'utils/VideoClient';
-import Guid from 'utils/Guid';
 import Video from 'components/Video/VideoPlayer';
 import { FaVideo, FaVideoSlash, FaVolumeUp, FaVolumeMute, FaStop } from "react-icons/fa";
 import { GoScreenFull, GoScreenNormal } from "react-icons/go";
@@ -9,6 +8,7 @@ import { GoScreenFull, GoScreenNormal } from "react-icons/go";
 
 export interface IRoomProps {
   roomName:string;
+  uid:string;
   leaveRoom:()=>void;
 }
 export interface IRoomStates {
@@ -50,7 +50,7 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
       this.refreshVideos();
     };
 
-    await this.client.create(this.props.roomName, Guid.newGuid());
+    await this.client.create(this.props.roomName, this.props.uid);
   }
 
   switchToCenter = (streamId: string) => {

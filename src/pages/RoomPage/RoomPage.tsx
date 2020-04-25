@@ -15,6 +15,7 @@ class RoomPage extends React.Component<IAuthProps<RouteInfo>> {
     public render() {
         return (
             <Room roomName={this.props.match.params.id}
+                uid={this.props.currentUser.id}
                 leaveRoom={this.leaveRoom} />
         );
     }
