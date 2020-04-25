@@ -9,7 +9,7 @@ import 'bootstrap/js/dist/collapse';
 import 'bootstrap/js/dist/modal';
 import EntrancePage from 'pages/EntrancePage/EntrancePage';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import HomePage from 'pages/HomePage/HomePage';
+import RoomPage from 'pages/RoomPage/RoomPage';
 import LoginPage from 'pages/LoginPage/LoginPage';
 import FirebaseHelper from 'utils/FirebaseHelper';
 
@@ -24,7 +24,7 @@ ReactDOM.render(
           <LoginPage />
         </Route>
         <Route path="/room/:id">
-          <HomePage />
+          <RoomPage />
         </Route>
         <Route path="/">
           <EntrancePage />

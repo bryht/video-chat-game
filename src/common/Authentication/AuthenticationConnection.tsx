@@ -1,7 +1,7 @@
 import React from "react";
 import { User } from "common/Models/User";
 import { RouteComponentProps } from "react-router-dom";
-import { RouteInfo } from "pages/HomePage/HomePage";
+import { RouteInfo } from "pages/RoomPage/RoomPage";
 import FirebaseHelper from "utils/FirebaseHelper";
 import { IAuthProps } from "./IAuthProps";
 interface IAuthStates {
@@ -32,9 +32,14 @@ export const AuthenticationConnection = (Component: React.ComponentType<IAuthPro
                 this.props.history.push('/login');
             }
         }
+
+        logout=()=>{
+            FirebaseHelper.signOut();
+        }
+
         public render() {
             return (
-                <Component currentUser={this.state.currentUser}></Component>
+                <Component currentUser={this.state.currentUser} logout={this.logout}></Component>
             );
         }
     }

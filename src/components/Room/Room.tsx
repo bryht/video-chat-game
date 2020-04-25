@@ -6,10 +6,10 @@ import Video from 'components/Video/VideoPlayer';
 import { FaVideo, FaVideoSlash, FaVolumeUp, FaVolumeMute, FaStop } from "react-icons/fa";
 import { GoScreenFull, GoScreenNormal } from "react-icons/go";
 
-import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { RouteInfo } from 'pages/HomePage/HomePage';
 
-export interface IRoomProps extends RouteComponentProps<RouteInfo> {
+export interface IRoomProps {
+  roomName:string;
+  leaveRoom:()=>void;
 }
 export interface IRoomStates {
   centerStream: VideoStream | null;
@@ -50,7 +50,7 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
       this.refreshVideos();
     };
 
-    await this.client.create(this.props.match.params.id, Guid.newGuid());
+    await this.client.create(this.props.roomName, Guid.newGuid());
   }
 
   switchToCenter = (streamId: string) => {
@@ -90,7 +90,8 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
   }
 
   stop = () => {
-    this.props.history.push("/");
+    // this.props.history.push("/");
+    this.props.leaveRoom();
   }
 
   switchAudio = () => {
@@ -151,4 +152,4 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
 }
 
 
-export default withRouter(Room);
+export default Room;

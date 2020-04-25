@@ -11,6 +11,7 @@ export interface IEntrancePageProps extends IAuthProps {
 interface IEntrancePageStates {
     room: string;
 }
+
 class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStates> {
     constructor(props: Readonly<IEntrancePageProps>) {
         super(props);
@@ -24,9 +25,6 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
         firebaseHelper.dbAdd('room', { uid: this.props.currentUser?.id, name: room });
     }
 
-    logout = () => {
-        firebaseHelper.signOut();
-    }
     public render() {
 
         const { name } = this.props.currentUser ?? {};
@@ -41,7 +39,7 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
                     <input type="text" value={this.state.room} onChange={e => { this.roomChanged(e.target.value) }} />
                 </div>
                 <a href={`/room/${this.state.room}`}>Go Room</a>
-                <button onClick={this.logout}>Leave</button>
+                <button onClick={this.props.logout}>Leave</button>
             </div>
         );
     }
