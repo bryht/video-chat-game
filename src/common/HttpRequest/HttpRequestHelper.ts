@@ -1,4 +1,4 @@
-import Log from "../Log";
+import Log from "../../utils/Log";
 import { IHttpRequest } from "./IHttpRequest";
 import Env from "config/env";
 
@@ -33,6 +33,5 @@ export default class HttpRequestHelper {
             console.log(request);
         })
     }
-
 
 }

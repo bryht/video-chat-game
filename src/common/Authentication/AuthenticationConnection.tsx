@@ -1,21 +1,15 @@
 import React from "react";
-import { UserEntity } from "common/Models/UserEntity";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import { User } from "common/Models/User";
+import { RouteComponentProps } from "react-router-dom";
 import { RouteInfo } from "pages/HomePage/HomePage";
 import FirebaseHelper from "utils/FirebaseHelper";
-export interface IProps {
+import { IAuthProps } from "./IAuthProps";
+interface IAuthStates {
+    currentUser?: User;
 }
+export const AuthenticationConnection = (Component: React.ComponentType<IAuthProps>) => {
 
-export interface IAuthProps {
-    currentUser?: UserEntity;
-
-}
-export interface IStates {
-    currentUser?: UserEntity;
-}
-export const withAuthInner = (Component: React.ComponentType<IAuthProps>) => {
-
-    class WithAuthentication extends React.Component<RouteComponentProps<RouteInfo>, IStates> {
+    class WithAuthentication extends React.Component<RouteComponentProps<RouteInfo>, IAuthStates> {
         constructor(props: Readonly<RouteComponentProps<RouteInfo>>) {
             super(props);
 
@@ -23,6 +17,7 @@ export const withAuthInner = (Component: React.ComponentType<IAuthProps>) => {
                 currentUser: undefined
             };
         }
+
         componentDidMount() {
             FirebaseHelper.onAuthStateChanged(user => {
                 this.setState({ currentUser: user });
@@ -30,7 +25,6 @@ export const withAuthInner = (Component: React.ComponentType<IAuthProps>) => {
                     this.props.history.push('/login');
                 }
             })
-
         }
 
         componentDidUpdate() {
@@ -44,9 +38,6 @@ export const withAuthInner = (Component: React.ComponentType<IAuthProps>) => {
             );
         }
     }
-
     return WithAuthentication;
-
 }
 
-export const withAuth = (Component: React.ComponentType<IAuthProps>) => withRouter(withAuthInner(Component));

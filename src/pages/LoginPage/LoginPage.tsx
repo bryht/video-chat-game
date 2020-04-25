@@ -1,7 +1,6 @@
 import * as React from 'react';
 import firebase from 'firebase';
 import { StyledFirebaseAuth } from 'react-firebaseui';
-import Log from 'utils/Log';
 
 export interface IAuthPageProps {
 }

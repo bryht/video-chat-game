@@ -2,7 +2,7 @@ import firebase from "firebase";
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/analytics";
-import { UserEntity } from "common/Models/UserEntity";
+import { User } from "common/Models/User";
 import Log from "./Log";
 import Guid from "./Guid";
 
@@ -30,10 +30,10 @@ export default class FirebaseHelper {
         return firebase.auth().signOut();
     }
 
-    public static onAuthStateChanged(action: (userInput?: UserEntity) => void) {
+    public static onAuthStateChanged(action: (userInput?: User) => void) {
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
-                var userEntity = new UserEntity();
+                var userEntity = new User();
                 userEntity.id = user.uid;
                 userEntity.name = user.displayName ?? '';
                 action(userEntity);

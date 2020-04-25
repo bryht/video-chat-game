@@ -1,10 +1,10 @@
 import { createStore, combineReducers, applyMiddleware} from 'redux';
 import { createLogger } from 'redux-logger';
 import { StorageMiddleware } from 'common/Redux/Middlewares/StorageMiddleware';
-import { systemReducer } from 'components/System/SystemReducer';
+import { sampleReducer } from 'common/Samples/SampleReducer';
 
 const rootReducer = combineReducers({
-  system: systemReducer,
+  sample: sampleReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>

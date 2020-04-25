@@ -1,5 +1,7 @@
-export enum SystemActionType {
+
+export enum SampleActionType {
     SaveUserSuccess = 'SaveUserSuccess',
     RemoveCurrentUserSuccess = 'RemoveCurrentUserSuccess',
-    RefreshCurrentUserSuccess = 'RefreshCurrentUserSuccess',
 }
+
+

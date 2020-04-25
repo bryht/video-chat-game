@@ -1,13 +1,14 @@
 import * as React from 'react';
 import styles from './EntrancePage.module.scss';
 import sentencer from 'sentencer';
-import { withAuth, IAuthProps } from 'common/Authencation/withAuth';
+import { IAuthProps } from "common/Authentication/IAuthProps";
 import firebaseHelper from 'utils/FirebaseHelper';
+import { withAuth } from 'common/Connect/Connections';
 
 export interface IEntrancePageProps extends IAuthProps {
 }
 
-export interface IEntrancePageStates {
+interface IEntrancePageStates {
     room: string;
 }
 class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStates> {
