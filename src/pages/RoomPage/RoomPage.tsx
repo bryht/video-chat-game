@@ -1,13 +1,14 @@
 import * as React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import Room from 'components/Room/Room';
+import { withAuth } from 'common/Connect/Connections';
+import { IAuthProps } from 'common/Authentication/IAuthProps';
 
-export interface RouteInfo {
+interface RouteInfo {
     id: string;
 
 }
 
-class RoomPage extends React.Component<RouteComponentProps<RouteInfo>> {
+class RoomPage extends React.Component<IAuthProps<RouteInfo>> {
     leaveRoom = () => {
         this.props.history.push("/");
     }
@@ -20,5 +21,5 @@ class RoomPage extends React.Component<RouteComponentProps<RouteInfo>> {
     }
 }
 
-export default withRouter(RoomPage);
+export default withAuth(RoomPage);
 

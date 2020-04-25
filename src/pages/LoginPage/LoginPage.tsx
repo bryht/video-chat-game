@@ -17,7 +17,7 @@ export default class AuthPage extends React.Component<IAuthPageProps> {
             signInOptions: [
                 firebase.auth.GoogleAuthProvider.PROVIDER_ID,
                 firebase.auth.EmailAuthProvider.PROVIDER_ID,
-                firebase.auth.PhoneAuthProvider.PROVIDER_ID
+                firebase.auth.PhoneAuthProvider.PROVIDER_ID,
             ]
         };
     }

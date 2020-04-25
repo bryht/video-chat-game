@@ -1,5 +1,6 @@
 import { User } from "common/Models/User";
-export interface IAuthProps {
+import { RouteComponentProps } from "react-router-dom";
+export interface IAuthProps<T> extends RouteComponentProps<T> {
     currentUser?: User;
     logout: () => void;
 }

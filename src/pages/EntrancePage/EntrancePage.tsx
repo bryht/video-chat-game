@@ -5,7 +5,7 @@ import { IAuthProps } from "common/Authentication/IAuthProps";
 import firebaseHelper from 'utils/FirebaseHelper';
 import { withAuth } from 'common/Connect/Connections';
 
-export interface IEntrancePageProps extends IAuthProps {
+export interface IEntrancePageProps extends IAuthProps<any> {
 }
 
 interface IEntrancePageStates {

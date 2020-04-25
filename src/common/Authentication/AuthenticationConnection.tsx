@@ -1,23 +1,21 @@
 import React from "react";
 import { User } from "common/Models/User";
 import { RouteComponentProps } from "react-router-dom";
-import { RouteInfo } from "pages/RoomPage/RoomPage";
 import FirebaseHelper from "utils/FirebaseHelper";
 import { IAuthProps } from "./IAuthProps";
 interface IAuthStates {
     currentUser?: User;
 }
-export const AuthenticationConnection = (Component: React.ComponentType<IAuthProps>) => {
+export function AuthenticationConnection<TRouterParas>(ChildComponent: React.ComponentType<IAuthProps<TRouterParas>>) {
 
-    class WithAuthentication extends React.Component<RouteComponentProps<RouteInfo>, IAuthStates> {
-        constructor(props: Readonly<RouteComponentProps<RouteInfo>>) {
+    class WithAuthentication extends React.Component<RouteComponentProps<TRouterParas>, IAuthStates> {
+        constructor(props: Readonly<RouteComponentProps<TRouterParas>>) {
             super(props);
 
             this.state = {
                 currentUser: undefined
             };
         }
-
         componentDidMount() {
             FirebaseHelper.onAuthStateChanged(user => {
                 this.setState({ currentUser: user });
@@ -33,13 +31,18 @@ export const AuthenticationConnection = (Component: React.ComponentType<IAuthPro
             }
         }
 
-        logout=()=>{
+        logout = () => {
             FirebaseHelper.signOut();
         }
 
         public render() {
             return (
-                <Component currentUser={this.state.currentUser} logout={this.logout}></Component>
+                <ChildComponent
+                    currentUser={this.state.currentUser}
+                    logout={this.logout}
+                    history={this.props.history}
+                    location={this.props.location}
+                    match={this.props.match}></ChildComponent>
             );
         }
     }
