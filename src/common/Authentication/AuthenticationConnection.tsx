@@ -3,6 +3,7 @@ import { User } from "common/Models/User";
 import { RouteComponentProps } from "react-router-dom";
 import FirebaseHelper from "utils/FirebaseHelper";
 import { IAuthProps } from "./IAuthProps";
+import Loading from "components/Loading/Loading";
 interface IAuthStates {
     currentUser?: User;
 }
@@ -38,7 +39,7 @@ export function AuthenticationConnection<TRouterParas>(ChildComponent: React.Com
         public render() {
             const { currentUser } = this.state;
             if (!currentUser) {
-                return 'Loading';
+                return <Loading/>;
             }
             return (
                 <ChildComponent
