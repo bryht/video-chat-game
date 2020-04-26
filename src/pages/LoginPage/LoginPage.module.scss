@@ -1,4 +1,6 @@
-@import "index.scss";
+@import 'common';
+@import '~bootstrap/scss/alert';
+
 .main {
     display: flex;
     flex-direction: column;
@@ -12,6 +14,7 @@
         width: 70vw;
         @extend .alert,
         .alert-warning;
-        @extend .blue-cross-background;
+        @include simulant-button;
+        @include cross-background;
     }
 }

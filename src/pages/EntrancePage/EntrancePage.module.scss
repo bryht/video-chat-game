@@ -1,5 +1,8 @@
-@import "bootstrap";
-@import "index.scss";
+@import 'common';
+@import '~bootstrap/scss/alert';
+@import '~bootstrap/scss/input-group';
+@import '~bootstrap/scss/forms';
+
 .main {
     display: flex;
     flex-direction: column;
@@ -13,7 +16,7 @@
         width: 70vw;
         @extend .alert,
         .alert-warning;
-        @extend .blue-cross-background;
+        @include cross-background;
     }
 
     .roomName {
@@ -30,6 +33,9 @@
         input{
             @extend .form-control;
         }
+    }
+    .button{
+        @include simulant-button;
     }
 
 }
