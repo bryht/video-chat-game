@@ -8,56 +8,60 @@ interface IGameSketchStates {
     isPenDown: boolean;
     prevX: number,
     prevY: number,
-    mouseX: number;
-    mouseY: number;
 }
 
 export default class GameSketch extends React.Component<IGameSketchProps, IGameSketchStates> {
-    canvas: React.RefObject<HTMLCanvasElement>;
+    canvasRef: React.RefObject<HTMLCanvasElement>;
+    canvasLeft: number;
+    canvasTop: number;
     constructor(props: Readonly<IGameSketchProps>) {
         super(props);
-        this.canvas = React.createRef<HTMLCanvasElement>();
+        this.canvasRef = React.createRef<HTMLCanvasElement>();
+        this.canvasLeft = 0;
+        this.canvasTop = 0;
         this.state = {
             isPenDown: false,
             prevX: 0,
-            prevY: 0,
-            mouseX: 0,
-            mouseY: 0
+            prevY: 0
         }
     }
 
     componentDidMount() {
-        let canvas = this.canvas.current;
+        let canvas = this.canvasRef.current;
         if (canvas) {
             const bounding = canvas.getBoundingClientRect();
             canvas.width = bounding.width;
             canvas.height = bounding.height;
+            this.canvasLeft = bounding.left;
+            this.canvasTop = bounding.top;
         }
     }
 
     handleDisplayMouseMove = (e: { clientX: any; clientY: any; }) => {
 
-        let canvas = this.canvas.current;
+        let canvas = this.canvasRef.current;
         let context2d = canvas?.getContext("2d");
 
+        if (Math.abs(this.state.prevX - e.clientX) < 10 && Math.abs(this.state.prevY - e.clientY) < 10) {
+            return;
+        }
         if (this.state.isPenDown && canvas && context2d) {
 
             context2d.lineCap = "round";
-            const { left, top } = canvas.getBoundingClientRect();
             context2d.lineWidth = 2;
             context2d.strokeStyle = "#FF0000";
             context2d.beginPath();
-            context2d.moveTo(this.state.prevX - left, this.state.prevY - top);
-            context2d.lineTo(e.clientX - left, e.clientY - top);
+            context2d.moveTo(this.state.prevX - this.canvasLeft, this.state.prevY - this.canvasTop);
+            context2d.lineTo(e.clientX - this.canvasLeft, e.clientY - this.canvasTop);
             context2d.stroke();
             context2d.closePath();
+            Log.Warning(this.state);
         }
         this.setState({
             prevX: e.clientX,
             prevY: e.clientY,
         });
 
-        Log.Info(this.state);
         // this.socket.emit("cursor", {
         //   room: this.props.value,
         //   x: this.state.mouseX,
@@ -75,7 +79,7 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
     public render() {
         return (
             <div className={styles.main}>
-                <canvas ref={this.canvas} width={913} height={713}
+                <canvas ref={this.canvasRef}
                     onMouseMove={this.handleDisplayMouseMove}
                     onMouseDown={this.handleDisplayMouseDown}
                     onMouseUp={this.handleDisplayMouseUp}>
