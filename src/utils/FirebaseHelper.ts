@@ -1,7 +1,7 @@
-import firebase from "firebase";
-import "firebase/auth";
-import "firebase/firestore";
-import "firebase/analytics";
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
+import 'firebase/analytics';
 import { User } from "common/Models/User";
 import Log from "./Log";
 import Guid from "./Guid";
@@ -24,7 +24,6 @@ export default class FirebaseHelper {
         firebase.initializeApp(firebaseConfig);
         firebase.analytics();
         this.database = firebase.firestore();
-
     }
 
     public static signOut() {

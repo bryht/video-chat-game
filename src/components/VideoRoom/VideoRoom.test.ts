@@ -1,4 +1,4 @@
-import Room from './Room';
+import VideoRoom from './VideoRoom';
 it("room test", () => {
     expect(1+2).toEqual(3);
 })
