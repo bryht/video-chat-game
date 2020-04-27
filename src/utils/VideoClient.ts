@@ -105,7 +105,7 @@ export default class VideoClient {
                 screen: false
             }
             let stream = AgoraRTC.createStream(defaultConfig);
-            stream.setVideoProfile('480p_4');
+            stream.setVideoProfile('720p_3');
             stream.init(() => {
                 resolve(stream);
             }, error => {
