@@ -16,7 +16,7 @@
         width: 70vw;
         @extend .alert,
         .alert-warning;
-        @include cross-background;
+        background-color: $background-light;
     }
 
     .roomName {
@@ -35,7 +35,7 @@
         }
     }
     .button{
-        @include simulant-button;
+        @include simulant-button-cross;
     }
 
 }

@@ -1,9 +1,8 @@
 // div {
 //   outline: 1px dashed yellow;
 // }
-
-
+@import 'common';
 body {
   margin: 0;
-  background: #2c2d30;
+  @include cross-background-blue;
 }

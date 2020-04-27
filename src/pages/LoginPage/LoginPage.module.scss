@@ -14,7 +14,6 @@
         width: 70vw;
         @extend .alert,
         .alert-warning;
-        @include simulant-button;
-        @include cross-background;
+        @include cross-background-red;
     }
 }

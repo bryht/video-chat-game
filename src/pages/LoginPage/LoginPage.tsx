@@ -36,8 +36,8 @@ export default class LoginPage extends React.Component<ILoginPageProps, { isPend
 
         return (
             <div className={styles.main}>
-                <h1 className={styles.title}>Please sign-in:</h1>
-                {this.state.isPending && <Loading></Loading>}
+                {this.state.isPending ? <Loading></Loading> :
+                    <h1 className={styles.title}>Please sign-in:</h1>}
                 <StyledFirebaseAuth uiCallback={this.uiCallback} uiConfig={this.uiconfig} firebaseAuth={firebase.auth()} />
             </div>
         );

@@ -11,6 +11,9 @@ export default class WelcomePage extends React.Component<IWelcomePageProps> {
                 <div className={styles.welcome}>
                     <img src={welcome} alt="" />
                 </div>
+                {/* <div className={styles.button}>
+                    <a href="/enter">Start video and game</a>
+                </div> */}
                 <div className={styles.button}>
                     <a href="/enter">Start</a>
                 </div>
