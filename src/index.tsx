@@ -13,6 +13,7 @@ import RoomPage from 'pages/RoomPage/RoomPage';
 import LoginPage from 'pages/LoginPage/LoginPage';
 import FirebaseHelper from 'utils/FirebaseHelper';
 import WelcomePage from 'pages/Welcome/WelcomePage';
+import GameSketch from 'components/GameSketch/GameSketch';
 
 FirebaseHelper.initial();
 
@@ -29,6 +30,9 @@ ReactDOM.render(
         </Route>
         <Route path="/enter">
           <EntrancePage />
+        </Route>
+        <Route path="/gametest">
+          <GameSketch />
         </Route>
         <Route path="/">
           <WelcomePage />

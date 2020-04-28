@@ -13,9 +13,9 @@ namespace.on('connection', (socket) => {
   socket.on('join',roomData=>{
    
     socket.join(roomData.room);
-    socket.on("line", data => {
+    socket.on("message", data => {
       console.log(data);
-      namespace.to(roomData.room).emit("line", data);
+      namespace.to(roomData.room).emit("message", data);
     });
   })
 

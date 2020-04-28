@@ -17,7 +17,7 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
     canvasRef: React.RefObject<HTMLCanvasElement>;
     canvasLeft: number;
     canvasTop: number;
-    socket: SocketIOClient.Socket | null;
+    socketClient: SocketIOClient.Socket | null;
     constructor(props: Readonly<IGameSketchProps>) {
         super(props);
         this.canvasRef = React.createRef<HTMLCanvasElement>();
@@ -28,7 +28,7 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
             prevX: 0,
             prevY: 0
         }
-        this.socket = null;
+        this.socketClient = null;
     }
 
     componentDidMount() {
@@ -42,14 +42,17 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
         }
 
         
-        this.socket = io('/socket');
-        this.socket.on("line", (data: any) => {
+        this.socketClient = io('/socket');
+        this.socketClient.on("message", (data: any) => {
             
             Log.Info(data);
         });
-        this.socket.emit('join',{'room':'a'});
+        this.socketClient.emit('join',{'room':'a'});
 
+    }
 
+    componentWillUnmount(){
+        this.socketClient?.close();
     }
 
     handleDisplayMouseMove = (e: { clientX: any; clientY: any; }) => {
@@ -77,8 +80,8 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
             prevY: e.clientY,
         });
 
-        if (this.socket) {
-            this.socket.emit("line", { 'room': 'a', 'clientX': e.clientX });
+        if (this.socketClient) {
+            this.socketClient.emit("message", { 'clientX': e.clientX ,'clientY': e.clientY});
         }
         // this.socket.emit("cursor", {
         //   room: this.props.value,
