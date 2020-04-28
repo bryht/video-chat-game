@@ -73,6 +73,4 @@ steps:
       cd ./deploy
       chmod 777 reload.sh
       ./reload.sh
-      cd ~
-      ./clean.sh
     readyTimeout: '200000'
