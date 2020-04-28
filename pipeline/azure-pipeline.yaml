@@ -47,6 +47,20 @@ steps:
     script: |
       docker push docker.pkg.github.com/bryht/video-chat-game/video-chat-game:latest
 
+- task: PowerShell@2
+  displayName: Docker Build Server
+  inputs:
+    targetType: 'inline'
+    script: |
+      docker build -t docker.pkg.github.com/bryht/video-chat-game/video-chat-game-server:latest -f server.Dockerfile .
+
+- task: PowerShell@2
+  displayName: Docker Push Server
+  inputs:
+    targetType: 'inline'
+    script: |
+      docker push docker.pkg.github.com/bryht/video-chat-game/video-chat-game-server:latest
+
 - task: SSH@0
   inputs:
     sshEndpoint: 'linux-ming'

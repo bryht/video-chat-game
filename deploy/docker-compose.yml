@@ -11,6 +11,9 @@ services:
       - REACT_APP_FIREBASE_APP_ID=${REACT_APP_FIREBASE_APP_ID}
       - REACT_APP_FIREBASE_SENDER_ID=${REACT_APP_FIREBASE_SENDER_ID}
       - REACT_APP_FIREBASE_MEASUREMENT_ID=${REACT_APP_FIREBASE_MEASUREMENT_ID}
+  server:
+    image: docker.pkg.github.com/bryht/video-chat-game/video-chat-game-server:latest
+    restart: unless-stopped
   nginx:
     image: nginx:1.15-alpine
     restart: unless-stopped
