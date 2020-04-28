@@ -1,8 +1,8 @@
 import * as React from 'react';
 import styles from './GameSketch.module.scss';
 import Log from 'utils/Log';
-import io from "socket.io-client";
 import Guid from 'utils/Guid';
+import { SocketHelper } from 'utils/SocketHelper';
 
 interface IGameSketchProps {
 }
@@ -17,7 +17,7 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
     canvasRef: React.RefObject<HTMLCanvasElement>;
     canvasLeft: number;
     canvasTop: number;
-    socketClient: SocketIOClient.Socket | null;
+    socketHelper: SocketHelper;
     constructor(props: Readonly<IGameSketchProps>) {
         super(props);
         this.canvasRef = React.createRef<HTMLCanvasElement>();
@@ -27,8 +27,8 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
             isPenDown: false,
             prevX: 0,
             prevY: 0
-        }
-        this.socketClient = null;
+        };
+        this.socketHelper = new SocketHelper(this.messageChanged);
     }
 
     componentDidMount() {
@@ -41,18 +41,17 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
             this.canvasTop = bounding.top;
         }
 
-        
-        this.socketClient = io('/socket');
-        this.socketClient.on("message", (data: any) => {
-            
-            Log.Info(data);
-        });
-        this.socketClient.emit('join',{'room':'a'});
+
+        this.socketHelper.joinRoom("a");
 
     }
 
-    componentWillUnmount(){
-        this.socketClient?.close();
+    messageChanged(data: any) {
+        Log.Info(data);
+    }
+
+    componentWillUnmount() {
+        this.socketHelper.dispose();
     }
 
     handleDisplayMouseMove = (e: { clientX: any; clientY: any; }) => {
@@ -73,16 +72,15 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
             context2d.lineTo(e.clientX - this.canvasLeft, e.clientY - this.canvasTop);
             context2d.stroke();
             context2d.closePath();
-            // Log.Warning(this.state);
         }
         this.setState({
             prevX: e.clientX,
             prevY: e.clientY,
         });
 
-        if (this.socketClient) {
-            this.socketClient.emit("message", { 'clientX': e.clientX ,'clientY': e.clientY});
-        }
+
+        this.socketHelper.emit({ 'clientX': e.clientX, 'clientY': e.clientY });
+
         // this.socket.emit("cursor", {
         //   room: this.props.value,
         //   x: this.state.mouseX,
