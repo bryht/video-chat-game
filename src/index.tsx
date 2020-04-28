@@ -32,7 +32,7 @@ ReactDOM.render(
           <EntrancePage />
         </Route>
         <Route path="/gametest">
-          <GameSketch />
+          <GameSketch room="test" />
         </Route>
         <Route path="/">
           <WelcomePage />
