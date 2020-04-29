@@ -1,16 +1,40 @@
 import * as React from 'react';
-import { User } from 'common/Models/User';
+import Guid from 'utils/Guid';
+import { GameUser } from './Models/GameUser';
 
-export interface IEntranceProps {
-  users:Array<User>;
+interface IEntranceProps {
+
 }
 
-export default class Entrance extends React.Component<IEntranceProps> {
-  
+interface IEntranceStates {
+  user: Array<GameUser>;
+  room: string;
+}
+
+export default class Entrance extends React.Component<IEntranceProps, IEntranceStates> {
+
+  constructor(props: Readonly<IEntranceProps>) {
+    super(props);
+    this.state = {
+      user: [],
+      room: Guid.newGuid()
+    }
+  }
+
   public render() {
     return (
       <div>
-        
+        <div>
+          10 round
+        </div>
+        <div>
+          120 seconde per round
+        </div>
+        <ul>
+          <li>user1</li>
+          <li>user2</li>
+        </ul>
+        <a href="/game-sketch/room">Start</a>
       </div>
     );
   }

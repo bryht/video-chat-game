@@ -17,7 +17,7 @@ interface ICanvasDrawStates {
     prevY: number,
 }
 
-export default class GameSketch extends React.Component<ICanvasDrawProps, ICanvasDrawStates> {
+export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanvasDrawStates> {
     canvasRef: React.RefObject<HTMLCanvasElement>;
     canvasLeft: number;
     canvasTop: number;

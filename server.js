@@ -11,10 +11,18 @@ io.on('connection', (socket) => {
   socket.on('join', roomData => {
 
     socket.join(roomData.room);
+
     socket.on("message", data => {
       console.log(data);
       io.to(roomData.room).emit("message", data);
     });
+
+    socket.on("room-created",data=>{
+
+
+    });
+    
+     
   })
 
 });
