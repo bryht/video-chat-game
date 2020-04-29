@@ -2,26 +2,27 @@ import * as React from 'react';
 import styles from './GameSketch.module.scss';
 import Log from 'utils/Log';
 import Guid from 'utils/Guid';
-import { SocketHelper } from 'utils/SocketHelper';
-import { Line } from './Line';
+import { SocketHelper, Message } from 'utils/SocketHelper';
+import { Line } from './Models/Line';
+import { Canvas } from './Models/Canvas';
 
-interface IGameSketchProps {
+interface ICanvasDrawProps {
     room: string;
+    uid: string;
 }
 
-interface IGameSketchStates {
+interface ICanvasDrawStates {
     isPenDown: boolean;
-    isDrawingMode: boolean;
     prevX: number,
     prevY: number,
 }
 
-export default class GameSketch extends React.Component<IGameSketchProps, IGameSketchStates> {
+export default class GameSketch extends React.Component<ICanvasDrawProps, ICanvasDrawStates> {
     canvasRef: React.RefObject<HTMLCanvasElement>;
     canvasLeft: number;
     canvasTop: number;
     socketHelper: SocketHelper;
-    constructor(props: Readonly<IGameSketchProps>) {
+    constructor(props: Readonly<ICanvasDrawProps>) {
         super(props);
         this.socketHelper = new SocketHelper(this.messageChanged.bind(this));
         this.canvasRef = React.createRef<HTMLCanvasElement>();
@@ -29,7 +30,6 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
         this.canvasTop = 0;
         this.state = {
             isPenDown: false,
-            isDrawingMode: true,
             prevX: 0,
             prevY: 0,
         };
@@ -37,7 +37,6 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
 
     componentDidMount() {
         this.socketHelper.joinRoom(this.props.room);
-
         let canvas = this.canvasRef.current;
         if (canvas) {
             const bounding = canvas.getBoundingClientRect();
@@ -45,6 +44,10 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
             canvas.height = bounding.height;
             this.canvasLeft = bounding.left;
             this.canvasTop = bounding.top;
+            var data = new Canvas();
+            data.height = canvas.height;
+            data.width = canvas.width;
+            this.socketHelper.emit("canvas", data);
         }
 
     }
@@ -65,9 +68,15 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
         }
     }
 
-    messageChanged(data: any) {
-        Log.Info(data);
-        this.draw(data as Line);
+    messageChanged(message: Message) {
+        switch (message.type) {
+            case "line":
+                this.draw(message.data as Line);
+                break;
+            case "canvas":
+                break;
+
+        }
     }
 
     componentWillUnmount() {
@@ -84,7 +93,7 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
         if (this.state.isPenDown) {
 
             this.draw(line);
-            this.socketHelper.emit(line);
+            this.socketHelper.emit("line", line);
         }
         this.setState({
             prevX: e.clientX,
@@ -93,7 +102,7 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
 
     }
 
-   
+
 
     handleDisplayMouseDown = (e: { clientX: any; clientY: any; }) => {
         this.setState({ isPenDown: true });
@@ -103,14 +112,13 @@ export default class GameSketch extends React.Component<IGameSketchProps, IGameS
     }
 
     public render() {
-        return (
-            <div className={styles.main}>
-                <canvas ref={this.canvasRef}
-                    onMouseMove={this.handleDisplayMouseMove}
-                    onMouseDown={this.handleDisplayMouseDown}
-                    onMouseUp={this.handleDisplayMouseUp}>
-                </canvas>
-            </div>
-        );
+
+        return <div className={styles.main}>
+            <canvas ref={this.canvasRef}
+                onMouseMove={this.handleDisplayMouseMove}
+                onMouseDown={this.handleDisplayMouseDown}
+                onMouseUp={this.handleDisplayMouseUp}>
+            </canvas>
+        </div>
     }
 }
