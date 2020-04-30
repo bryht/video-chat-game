@@ -1,6 +1,13 @@
 import { Line } from "./Models/Line";
 
-export class Data {
+export class GameData {
+
+    constructor(){
+        this.connect();
+    }
+    connect(){
+
+    }
 
     drawLine() {
 
@@ -14,7 +21,7 @@ export class Data {
 
     }
 
-    onJoinRoom(roomJoined: (room: string, uid: string) => void) {
+    onJoinRoom(roomJoined: (room: string, uid: string,name:string) => void) {
 
 
     }

@@ -20,6 +20,7 @@
     "@types/socket.io-client": "^1.4.32",
     "agora-rtc-sdk": "^3.0.2",
     "bootstrap": "^4.4.1",
+    "concurrently": "^5.2.0",
     "express": "^4.17.1",
     "firebase": "^7.14.1",
     "jquery": "^3.5.0",
@@ -37,10 +38,11 @@
     "redux-logger": "^3.0.6",
     "sentencer": "^0.2.1",
     "socket.io": "^2.3.0",
-    "typescript": "~3.7.2"
+    "typescript": "~3.7.2",
+    "wait-on": "^4.0.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "concurrently \"react-scripts start\" \"wait-on http://localhost:3000  && node ./server.js .\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

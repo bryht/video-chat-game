@@ -13,10 +13,9 @@ import RoomPage from 'pages/RoomPage/RoomPage';
 import LoginPage from 'pages/LoginPage/LoginPage';
 import FirebaseHelper from 'utils/FirebaseHelper';
 import WelcomePage from 'pages/Welcome/WelcomePage';
-import CanvasDraw from 'components/GameSketch/CanvasDraw';
-import CanvasWatcher from 'components/GameSketch/CanvasWatcher';
-import Entrance from 'components/GameSketch/Entrance';
+import CreateGame from 'components/GameSketch/CreateGame';
 import GameRoom from 'components/GameSketch/GameRoom';
+import JoinGame from 'components/GameSketch/JoinGame';
 
 FirebaseHelper.initial();
 
@@ -34,11 +33,14 @@ ReactDOM.render(
         <Route path="/enter">
           <EntrancePage />
         </Route>
+        <Route path="/game-sketch/join">
+          <JoinGame />
+        </Route>
         <Route path="/game-sketch/room">
           <GameRoom />
         </Route>
         <Route path="/game-sketch">
-          <Entrance />
+          <CreateGame />
         </Route>
         <Route path="/">
           <WelcomePage />

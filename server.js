@@ -13,7 +13,7 @@ io.on('connection', (socket) => {
     socket.join(roomData.room);
 
     socket.on("message", data => {
-      console.log(data);
+      // console.log(data);
       io.to(roomData.room).emit("message", data);
     });
 
