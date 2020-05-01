@@ -1,10 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import * as React from 'react';
 import styles from './EntrancePage.module.scss';
-import sentencer from 'sentencer';
 import { IAuthProps } from "common/Authentication/IAuthProps";
 import firebaseHelper from 'utils/FirebaseHelper';
 import { withAuth } from 'common/Connect/Connections';
+import { WordHelper } from 'utils/WordHelper';
 
 export interface IEntrancePageProps extends IAuthProps<any> {
 }
@@ -16,9 +16,8 @@ interface IEntrancePageStates {
 class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStates> {
     constructor(props: Readonly<IEntrancePageProps>) {
         super(props);
-        var noun = sentencer.make("{{ noun }}");
         this.state = {
-            room: noun,
+            room: WordHelper.generateNoun(),
         }
     }
     roomChanged = (room: string) => {

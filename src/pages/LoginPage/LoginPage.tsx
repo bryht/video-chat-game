@@ -3,10 +3,9 @@ import firebase from 'firebase';
 import { StyledFirebaseAuth } from 'react-firebaseui';
 import * as firebaseui from 'firebaseui';
 import styles from './LoginPage.module.scss';
-import Log from 'utils/Log';
 import Loading from 'components/Loading/Loading';
 
-export interface ILoginPageProps {
+interface ILoginPageProps {
 }
 
 export default class LoginPage extends React.Component<ILoginPageProps, { isPending: boolean }> {
@@ -23,8 +22,9 @@ export default class LoginPage extends React.Component<ILoginPageProps, { isPend
                 firebase.auth.EmailAuthProvider.PROVIDER_ID,
                 firebase.auth.PhoneAuthProvider.PROVIDER_ID,
                 firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
-            ]
+            ],
         };
+
         this.state = { isPending: false }
     }
 

@@ -34,7 +34,7 @@ ReactDOM.render(
           <EntrancePage />
         </Route>
         <Route path="/game-sketch/join">
-          <JoinGame />
+          <JoinGame room={"test"}/>
         </Route>
         <Route path="/game-sketch/room">
           <GameRoom />

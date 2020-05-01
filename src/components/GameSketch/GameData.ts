@@ -17,7 +17,7 @@ export class GameData {
 
     }
 
-    joinRoom(room: string, uid: string) {
+    joinRoom(room: string, uid: string,name:string) {
 
     }
 

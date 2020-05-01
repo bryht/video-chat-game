@@ -23,6 +23,7 @@ export default class FirebaseHelper {
         };
         firebase.initializeApp(firebaseConfig);
         firebase.analytics();
+    
         this.database = firebase.firestore();
     }
 
