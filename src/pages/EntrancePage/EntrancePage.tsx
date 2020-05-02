@@ -43,7 +43,7 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
                     <a href={`/room/${this.state.room}`}>Go Room</a>
                 </div>
                 <div className={styles.button}>
-                    <a href="#" onClick={this.props.logout}>Leave</a>
+                    <a href="/welcome" >Back</a>
                 </div>
             </div>
         );

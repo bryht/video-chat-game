@@ -13,10 +13,10 @@ export default class WelcomePage extends React.Component<IWelcomePageProps> {
                     <img src={welcome} alt="" />
                 </div>
                 <div className={styles.button}>
-                    <a href="/enter">Start video and game</a>
+                    <a href="/enter">Start video</a>
                 </div>
                 <div className={styles.button}>
-                    <a href="/enter">Start game</a>
+                    <a href="/game-sketch">Start game(demo)</a>
                 </div>
             </div>);
     }

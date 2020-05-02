@@ -2,6 +2,8 @@ import * as React from 'react';
 import Guid from 'utils/Guid';
 import { GameUser } from './Models/GameUser';
 import { GameData } from './GameData';
+import { UserState } from './Models/UserState';
+import { UserRole } from './Models/UserRole';
 
 interface ICreateGameProps {
 
@@ -22,13 +24,13 @@ export default class CreateGame extends React.Component<ICreateGameProps, ICreat
       room: Guid.newGuid()
     }
     this.gameData = new GameData();
-  
+
     this.gameData.onJoinRoom(this.onJoinRoom);
   }
 
   onJoinRoom = (room: string, uid: string, name: string) => {
     const { users } = this.state;
-    users.push(new GameUser(uid, name));
+    users.push(new GameUser(uid, name, UserState.join, UserRole.player));
     this.setState({ users });
   }
 
