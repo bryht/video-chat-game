@@ -18,7 +18,7 @@ class GameSketchJoinPage extends React.Component<IGameSketchJoinPageProps, IGame
             
         }
     }
-
+    
     public render() {
         return (
             <JoinGame currentUser={this.props.currentUser} roomId={this.props.match.params.roomId}></JoinGame>
@@ -26,4 +26,4 @@ class GameSketchJoinPage extends React.Component<IGameSketchJoinPageProps, IGame
     }
 }
 
-export default withAuth(GameSketchJoinPage,'/game-sketch');
+export default withAuth(GameSketchJoinPage);

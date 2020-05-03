@@ -14,10 +14,9 @@ class LoginPage extends React.Component<ILoginPageProps, { isPending: boolean }>
     uiconfig: firebaseui.auth.Config;
     constructor(props: Readonly<ILoginPageProps>) {
         super(props);
-
         this.uiconfig = {
             signInFlow: 'redirect',
-            signInSuccessUrl: this.props.match.params.redirect?`/${this.props.match.params.redirect}`:'/enter',
+            signInSuccessUrl: this.props.match.params.redirect.split('_').join('/') || '/enter',
             signInOptions: [
                 firebase.auth.GoogleAuthProvider.PROVIDER_ID,
                 firebase.auth.EmailAuthProvider.PROVIDER_ID,

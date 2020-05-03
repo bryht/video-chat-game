@@ -4,6 +4,7 @@ import { RouteComponentProps } from "react-router-dom";
 import FirebaseHelper from "utils/FirebaseHelper";
 import { IAuthProps } from "./IAuthProps";
 import Loading from "components/Loading/Loading";
+import Log from "utils/Log";
 interface IAuthStates {
     currentUser?: User;
 }
@@ -45,8 +46,14 @@ export function AuthenticationConnection<TRouterParas>(ChildComponent: React.Com
             FirebaseHelper.signOut();
         }
 
-        private redirectLogin=()=>{
-           this.props.history.push(config.redirectPath ? `/login${config.redirectPath}` : '/login');
+        private redirectLogin = () => {
+            var redirectPath = '/login';
+            if (config.redirectPath) {
+                redirectPath = `/login/${config.redirectPath.split('/').join('_')}`;
+            } else if (this.props.match.url) {
+                redirectPath = `/login/${this.props.match.url.split('/').join('_')}`;
+            }
+            this.props.history.push(redirectPath);
         }
 
         public render() {
