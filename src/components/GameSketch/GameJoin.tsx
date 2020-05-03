@@ -9,6 +9,7 @@ import { GameUserState } from './Models/GameUserState';
 export interface IGameJoinProps {
     roomId: string;
     currentUser: User;
+    // location: Location;
 }
 
 export interface IGameJoinState {
@@ -38,8 +39,8 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
     joinGame = () => {
 
         this.gameData.joinRoom(this.props.roomId, this.state.gameUser);
-    
-    
+        window.location.pathname = window.location.pathname.replace('join', '');
+
     }
 
     public render() {

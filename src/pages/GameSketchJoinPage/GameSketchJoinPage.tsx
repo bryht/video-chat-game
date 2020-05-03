@@ -21,7 +21,7 @@ class GameSketchJoinPage extends React.Component<IGameSketchJoinPageProps, IGame
     
     public render() {
         return (
-            <GameJoin currentUser={this.props.currentUser} roomId={this.props.match.params.roomId}></GameJoin>
+            <GameJoin currentUser={this.props.currentUser}  roomId={this.props.match.params.roomId}></GameJoin>
         );
     }
 }
