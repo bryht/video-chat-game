@@ -71,7 +71,7 @@ export default class CreateGame extends React.Component<ICreateGameProps, ICreat
         <button onClick={this.joinGame}>Join</button>
         <div>
           <div>Join through link:</div>
-          <a href="/game-sketch/join">http://letshaveaparty.online/game-sketch/{this.state.room.name}</a>
+          <a href={`/game-sketch/${this.state.room.name}`}>http://letshaveaparty.online/game-sketch/{this.state.room.name}</a>
         </div>
         <ul>
 
