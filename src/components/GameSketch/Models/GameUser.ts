@@ -1,15 +1,15 @@
-import { UserState } from "./UserState";
-import { UserRole } from "./UserRole";
+import { GameUserState } from "./GameUserState";
+import { GameUserRole } from "./GameUserRole";
 
 export class GameUser {
     name: string;
     uid: string;
 
-    userState: UserState;
-    role: UserRole;
-    constructor(uid: string, name: string, userState: UserState, role: UserRole) {
-        this.name = name;
+    userState: GameUserState;
+    role: GameUserRole;
+    constructor(uid: string, name: string, userState: GameUserState, role: GameUserRole) {
         this.uid = uid;
+        this.name = name;
         this.userState = userState;
         this.role = role;
     }

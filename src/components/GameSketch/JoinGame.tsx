@@ -1,15 +1,18 @@
 import * as React from 'react';
 import { GameData } from './GameData';
-import Guid from 'utils/Guid';
 import { WordHelper } from 'utils/WordHelper';
+import { User } from 'common/Models/User';
+import { GameUser } from './Models/GameUser';
+import { GameUserRole } from './Models/GameUserRole';
+import { GameUserState } from './Models/GameUserState';
 
 export interface IJoinGameProps {
-    room: string;
+    roomId: string;
+    currentUser: User;
 }
 
 export interface IJoinGameState {
-    uid: string;
-    name: string;
+    gameUser: GameUser
 
 }
 
@@ -19,24 +22,29 @@ export default class JoinGame extends React.Component<IJoinGameProps, IJoinGameS
         super(props);
         this.gameData = new GameData();
         this.state = {
-            uid: Guid.newGuid(),
-            name: WordHelper.generateNoun()
+            gameUser: new GameUser(this.props.currentUser.id, this.props.currentUser.name || WordHelper.newNoun(), GameUserState.waiting, GameUserRole.player)
         }
     }
 
     onNameChanged = (name: string) => {
-        this.setState({ name });
+        this.setState({
+            gameUser: {
+                ...this.state.gameUser,
+                name
+            }
+        });
     }
 
     joinGame = () => {
-        const { name, uid } = this.state;
-        this.gameData.joinRoom(this.props.room, uid, name);
+
+        this.gameData.joinRoom(this.props.roomId, this.state.gameUser);
     }
 
     public render() {
         return (
             <div>
-                <input type="text" value={this.state.name} onChange={e => this.onNameChanged(e.target.value)} />
+                <div>Please input your name:</div>
+                <input type="text" value={this.state.gameUser.name} onChange={e => this.onNameChanged(e.target.value)} />
                 <button onClick={this.joinGame}>Join</button>
             </div>
         );

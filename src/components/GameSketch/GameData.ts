@@ -1,11 +1,12 @@
 import { Line } from "./Models/Line";
+import { GameUser } from "./Models/GameUser";
 
 export class GameData {
 
-    constructor(){
+    constructor() {
         this.connect();
     }
-    connect(){
+    connect() {
 
     }
 
@@ -17,11 +18,11 @@ export class GameData {
 
     }
 
-    joinRoom(room: string, uid: string,name:string) {
+    joinRoom(roomId: string, gameUser: GameUser) {
 
     }
 
-    onJoinRoom(roomJoined: (room: string, uid: string,name:string) => void) {
+    onJoinRoom(roomJoined: (roomId: string, gameUser: GameUser) => void) {
 
 
     }

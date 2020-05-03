@@ -4,11 +4,12 @@ import { StyledFirebaseAuth } from 'react-firebaseui';
 import * as firebaseui from 'firebaseui';
 import styles from './LoginPage.module.scss';
 import Loading from 'components/Loading/Loading';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
-interface ILoginPageProps {
+interface ILoginPageProps extends RouteComponentProps<{ redirect: string }> {
 }
 
-export default class LoginPage extends React.Component<ILoginPageProps, { isPending: boolean }> {
+class LoginPage extends React.Component<ILoginPageProps, { isPending: boolean }> {
 
     uiconfig: firebaseui.auth.Config;
     constructor(props: Readonly<ILoginPageProps>) {
@@ -16,7 +17,7 @@ export default class LoginPage extends React.Component<ILoginPageProps, { isPend
 
         this.uiconfig = {
             signInFlow: 'redirect',
-            signInSuccessUrl: '/enter',
+            signInSuccessUrl: this.props.match.params.redirect || '/enter',
             signInOptions: [
                 firebase.auth.GoogleAuthProvider.PROVIDER_ID,
                 firebase.auth.EmailAuthProvider.PROVIDER_ID,
@@ -43,3 +44,5 @@ export default class LoginPage extends React.Component<ILoginPageProps, { isPend
         );
     }
 }
+
+export default withRouter(LoginPage);

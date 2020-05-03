@@ -17,7 +17,7 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
     constructor(props: Readonly<IEntrancePageProps>) {
         super(props);
         this.state = {
-            room: WordHelper.generateNoun(),
+            room: WordHelper.newNoun(),
         }
     }
     roomChanged = (room: string) => {
