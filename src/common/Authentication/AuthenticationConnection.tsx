@@ -7,9 +7,12 @@ import Loading from "components/Loading/Loading";
 interface IAuthStates {
     currentUser?: User;
 }
-export function AuthenticationConnection<TRouterParas>(ChildComponent: React.ComponentType<IAuthProps<TRouterParas>>) {
+interface AuthenticationConnectionConfig {
+    redirectPath?: string;
+}
+export function AuthenticationConnection<TRouterParas>(ChildComponent: React.ComponentType<IAuthProps<TRouterParas>>, config: AuthenticationConnectionConfig = {}) {
 
-    interface IWithAuthProps extends RouteComponentProps<TRouterParas>{}
+    interface IWithAuthProps extends RouteComponentProps<TRouterParas> { }
 
     class WithAuthentication extends React.Component<IWithAuthProps, IAuthStates> {
         constructor(props: Readonly<IWithAuthProps>) {
@@ -23,23 +26,27 @@ export function AuthenticationConnection<TRouterParas>(ChildComponent: React.Com
             FirebaseHelper.onAuthStateChanged(user => {
                 this.setState({ currentUser: user });
                 if (!user) {
-                    this.props.history.push('/login');
+                    this.redirectLogin();
                 }
             })
         }
 
-        componentWillUnmount(){
+        componentWillUnmount() {
             FirebaseHelper.unregisterAuth();
         }
 
         componentDidUpdate() {
             if (!this.state.currentUser) {
-                this.props.history.push('/login');
+                this.redirectLogin();
             }
         }
 
         logout = () => {
             FirebaseHelper.signOut();
+        }
+
+        private redirectLogin=()=>{
+           this.props.history.push(config.redirectPath ? `/login${config.redirectPath}` : '/login');
         }
 
         public render() {

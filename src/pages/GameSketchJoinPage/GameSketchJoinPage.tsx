@@ -26,4 +26,4 @@ class GameSketchJoinPage extends React.Component<IGameSketchJoinPageProps, IGame
     }
 }
 
-export default withAuth(GameSketchJoinPage);
+export default withAuth(GameSketchJoinPage,'/game-sketch');
