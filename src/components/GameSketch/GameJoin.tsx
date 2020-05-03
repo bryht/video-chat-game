@@ -6,19 +6,19 @@ import { GameUser } from './Models/GameUser';
 import { GameUserRole } from './Models/GameUserRole';
 import { GameUserState } from './Models/GameUserState';
 
-export interface IJoinGameProps {
+export interface IGameJoinProps {
     roomId: string;
     currentUser: User;
 }
 
-export interface IJoinGameState {
+export interface IGameJoinState {
     gameUser: GameUser
 
 }
 
-export default class JoinGame extends React.Component<IJoinGameProps, IJoinGameState> {
+export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinState> {
     gameData: GameData;
-    constructor(props: IJoinGameProps) {
+    constructor(props: IGameJoinProps) {
         super(props);
         this.gameData = new GameData();
         this.state = {

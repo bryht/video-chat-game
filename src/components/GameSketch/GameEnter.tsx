@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Guid from 'utils/Guid';
 import { GameUser } from './Models/GameUser';
 import { GameData } from './GameData';
 import { GameUserState } from './Models/GameUserState';
@@ -9,27 +8,30 @@ import { WordHelper } from 'utils/WordHelper';
 import { GameRoomState } from './Models/GameRoomState';
 import { User } from 'common/Models/User';
 
-interface ICreateGameProps {
+interface IGameEnterProps {
   currentUser: User;
 }
 
-interface ICreateGameStates {
+interface IGameEnterStates {
   users: Array<GameUser>;
   room: GameRoom;
 }
 
-export default class CreateGame extends React.Component<ICreateGameProps, ICreateGameStates> {
+export default class GameEnter extends React.Component<IGameEnterProps, IGameEnterStates> {
 
   gameData: GameData;
-  constructor(props: Readonly<ICreateGameProps>) {
+  constructor(props: Readonly<IGameEnterProps>) {
     super(props);
 
     this.state = {
-      users: [new GameUser(this.props.currentUser.id, this.props.currentUser.name ?? WordHelper.newNoun(), GameUserState.waiting, GameUserRole.owner)],
-      room: new GameRoom(Guid.newGuid(), WordHelper.newNoun(), GameRoomState.waiting)
+      users: [],
+      room: new GameRoom('', GameRoomState.waiting)
     }
     this.gameData = new GameData();
+    let gameRoom = new GameRoom(WordHelper.newAdjectiveNoun(), GameRoomState.waiting);
+    this.gameData.createRoom(gameRoom);
     this.gameData.onJoinRoom(this.onJoinRoom);
+    // this.gameData.joinRoom(gameRoom.id,)
   }
 
   onJoinRoom = (roomId: string, gameUser: GameUser) => {
@@ -45,6 +47,8 @@ export default class CreateGame extends React.Component<ICreateGameProps, ICreat
         roomState: GameRoomState.started
       }
     })
+
+
   }
 
   joinGame = () => {
@@ -54,7 +58,7 @@ export default class CreateGame extends React.Component<ICreateGameProps, ICreat
   public render() {
     return (
       <div>
-        <h1>{this.state.room.name}</h1>
+        <h1>{this.state.room.id}</h1>
         <div>
           10 round
         </div>
@@ -71,7 +75,7 @@ export default class CreateGame extends React.Component<ICreateGameProps, ICreat
         <button onClick={this.joinGame}>Join</button>
         <div>
           <div>Join through link:</div>
-          <a href={`/game-sketch/${this.state.room.name}`}>http://letshaveaparty.online/game-sketch/{this.state.room.name}</a>
+          <a href={`/game-sketch/${this.state.room.id}`}>http://letshaveaparty.online/game-sketch/{this.state.room.id}</a>
         </div>
         <ul>
 

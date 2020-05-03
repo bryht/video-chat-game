@@ -13,7 +13,6 @@ import RoomPage from 'pages/RoomPage/RoomPage';
 import LoginPage from 'pages/LoginPage/LoginPage';
 import FirebaseHelper from 'utils/FirebaseHelper';
 import WelcomePage from 'pages/Welcome/WelcomePage';
-import JoinGame from 'components/GameSketch/JoinGame';
 import GameSketchPage from 'pages/GameSketchPage/GameSketchPage';
 import GameSketchJoinPage from 'pages/GameSketchJoinPage/GameSketchJoinPage';
 

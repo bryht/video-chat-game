@@ -1,5 +1,5 @@
 import * as React from 'react';
-import firebase from 'firebase';
+import * as firebase from 'firebase/app';
 import { StyledFirebaseAuth } from 'react-firebaseui';
 import * as firebaseui from 'firebaseui';
 import styles from './LoginPage.module.scss';

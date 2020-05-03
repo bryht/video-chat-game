@@ -1,13 +1,15 @@
 import { Line } from "./Models/Line";
 import { GameUser } from "./Models/GameUser";
+import FirebaseHelper from "utils/FirebaseHelper";
+import { GameRoom } from "./Models/GameRoom";
 
 export class GameData {
 
     constructor() {
         this.connect();
+
     }
     connect() {
-
     }
 
     drawLine() {
@@ -27,14 +29,13 @@ export class GameData {
 
     }
 
-    createRoom(room: string, uid: string) {
+    createRoom(room: GameRoom) {
 
-        var round = 10;
-        var roundTime = 120;//120 seconds
+        FirebaseHelper.dbAdd("game-sketch-room",room.id, room);
 
     }
 
-    startGame(room: string) {
+    startGame(roomId: string) {
 
     }
 

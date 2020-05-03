@@ -22,7 +22,7 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
     }
     roomChanged = (room: string) => {
         this.setState({ room });
-        firebaseHelper.dbAdd('room', { uid: this.props.currentUser?.id, name: room });
+        firebaseHelper.dbAdd('room', room, { uid: this.props.currentUser?.id, name: room });
     }
 
     public render() {

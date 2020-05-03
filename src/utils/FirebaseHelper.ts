@@ -23,7 +23,7 @@ export default class FirebaseHelper {
         };
         firebase.initializeApp(firebaseConfig);
         firebase.analytics();
-    
+
         this.database = firebase.firestore();
     }
 
@@ -51,17 +51,14 @@ export default class FirebaseHelper {
         this.unregisterAuthObserver();
     }
 
-    public static async dbAdd(collection: string, value: object): Promise<string> {
+    public static async dbAdd(collection: string, docId: string, value: object): Promise<void> {
         try {
-            let guid = Guid.newGuid();
-            let doc = this.database.collection(collection).doc(guid);
-            doc.set(value);
-            return guid;
+            let doc = this.database.collection(collection).doc(docId);
+            doc.set(Object.assign({}, value));
         } catch (error) {
             debugger;
             Log.Error(error)
         }
-        return '';
     }
 
     public static async dbGet(collection: string, query: string) {
@@ -74,6 +71,24 @@ export default class FirebaseHelper {
             var changes = observer.docChanges();
             onChanged(changes);
         })
+    }
+
+    public static cleanAnonymousUsers() {
+        //https://firebase.google.com/docs/admin/setup
+        // List batch of users, 1000 at a time.
+        // firebase.auth().listUsers(1000, nextPageToken)
+        //     .then(function (listUsersResult) {
+        //         listUsersResult.users.forEach(function (userRecord) {
+        //             console.log('user', userRecord.toJSON());
+        //         });
+        //         if (listUsersResult.pageToken) {
+        //             // List next batch of users.
+        //             listAllUsers(listUsersResult.pageToken);
+        //         }
+        //     })
+        //     .catch(function (error) {
+        //         console.log('Error listing users:', error);
+        //     });
     }
 
 }

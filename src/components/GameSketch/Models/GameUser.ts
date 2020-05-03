@@ -4,7 +4,6 @@ import { GameUserRole } from "./GameUserRole";
 export class GameUser {
     name: string;
     uid: string;
-
     userState: GameUserState;
     role: GameUserRole;
     constructor(uid: string, name: string, userState: GameUserState, role: GameUserRole) {

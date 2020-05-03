@@ -1,10 +1,10 @@
 import * as React from 'react';
 import CanvasDraw from './CanvasDraw';
 
-export interface IGameRoomProps {
+export interface IGamePlayingProps {
 }
 
-export default class GameRoom extends React.Component<IGameRoomProps> {
+export default class GamePlaying extends React.Component<IGamePlayingProps> {
 
   public render() {
 

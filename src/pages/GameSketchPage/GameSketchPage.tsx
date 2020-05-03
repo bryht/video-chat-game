@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withAuth } from 'common/Connect/Connections';
 import { IAuthProps } from 'common/Authentication/IAuthProps';
-import CreateGame from 'components/GameSketch/CreateGame';
+import GameEnter from 'components/GameSketch/GameEnter';
 import Log from 'utils/Log';
 
 interface IGameSketchPageProps extends IAuthProps<{ roomId: string }> {
@@ -23,7 +23,7 @@ class GameSketchPage extends React.Component<IGameSketchPageProps, IGameSketchPa
 
     public render() {
         return (
-            <CreateGame currentUser={this.props.currentUser}></CreateGame>
+            <GameEnter currentUser={this.props.currentUser}></GameEnter>
         );
     }
 }
