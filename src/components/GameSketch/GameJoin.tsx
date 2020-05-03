@@ -38,6 +38,8 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
     joinGame = () => {
 
         this.gameData.joinRoom(this.props.roomId, this.state.gameUser);
+    
+    
     }
 
     public render() {

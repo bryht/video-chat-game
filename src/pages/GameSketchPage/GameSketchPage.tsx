@@ -23,7 +23,7 @@ class GameSketchPage extends React.Component<IGameSketchPageProps, IGameSketchPa
 
     public render() {
         return (
-            <GameEnter currentUser={this.props.currentUser}></GameEnter>
+            <GameEnter currentUser={this.props.currentUser} roomId={this.props.match.params.roomId}></GameEnter>
         );
     }
 }

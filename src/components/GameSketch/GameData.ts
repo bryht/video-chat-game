@@ -23,17 +23,22 @@ export class GameData {
     async joinRoom(roomId: string, gameUser: GameUser) {
         var room = await FirebaseHelper.dbGetByDocIdAsync<GameRoom>("game-sketch-room", roomId);
         if (room) {
-            room.users.push(gameUser);
+            if (!room.users.find(p => p.uid === gameUser.uid)) {
+                room.users.push(gameUser);
+            }
             await FirebaseHelper.dbAddOrUpdateAsync("game-sketch-room", room.id, room);
         }
     }
 
-    onJoinRoom(roomId: string, roomJoined: (gameRoom: GameRoom) => void) {
+    onRoomChanged(roomId: string, roomJoined: (gameRoom: GameRoom) => void) {
         FirebaseHelper.dbChanging<GameRoom>("game-sketch-room", roomId, result => {
-            debugger;
             roomJoined(result);
         });
 
+    }
+
+    async getRoom(roomId: string) {
+        return await FirebaseHelper.dbGetByDocIdAsync<GameRoom>("game-sketch-room", roomId);
     }
 
     async createRoom(room: GameRoom) {

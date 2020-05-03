@@ -35,10 +35,10 @@ ReactDOM.render(
         <Route path="/enter">
           <EntrancePage />
         </Route>
-        <Route path="/game-sketch/:roomId">
+        <Route path="/game-sketch/:roomId/join">
           <GameSketchJoinPage />
         </Route>
-        <Route path="/game-sketch/">
+        <Route path="/game-sketch/:roomId">
           <GameSketchPage />
         </Route>
         <Route path="/">

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styles from './WelcomePage.module.scss';
 import welcome from 'assets/welcome.png';
+import { WordHelper } from 'utils/WordHelper';
 export interface IWelcomePageProps {
 }
 
@@ -16,8 +17,9 @@ export default class WelcomePage extends React.Component<IWelcomePageProps> {
                     <a href="/enter">Start video</a>
                 </div>
                 <div className={styles.button}>
-                    <a href="/game-sketch">Start game(demo)</a>
+                    <a href={`/game-sketch/${WordHelper.newAdjectiveNoun()}`}>Start game(demo)</a>
                 </div>
-            </div>);
+            </div>
+        );
     }
 }
