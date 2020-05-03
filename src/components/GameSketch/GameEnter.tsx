@@ -13,8 +13,8 @@ interface IGameEnterProps {
 }
 
 interface IGameEnterStates {
-  users: Array<GameUser>;
-  room: GameRoom;
+
+  gameRoom: GameRoom;
 }
 
 export default class GameEnter extends React.Component<IGameEnterProps, IGameEnterStates> {
@@ -22,28 +22,26 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
   gameData: GameData;
   constructor(props: Readonly<IGameEnterProps>) {
     super(props);
-
-    this.state = {
-      users: [],
-      room: new GameRoom('', GameRoomState.waiting)
-    }
     this.gameData = new GameData();
     let gameRoom = new GameRoom(WordHelper.newAdjectiveNoun(), GameRoomState.waiting);
+    let gameUser=new GameUser(this.props.currentUser.id,this.props.currentUser.name||WordHelper.newNoun(),GameUserState.waiting,GameUserRole.owner);
     this.gameData.createRoom(gameRoom);
-    this.gameData.onJoinRoom(this.onJoinRoom);
-    // this.gameData.joinRoom(gameRoom.id,)
+    this.gameData.onJoinRoom(gameRoom.id, this.onRoomChanged);
+    this.gameData.joinRoom(gameRoom.id, gameUser)
+    this.state = {
+      gameRoom
+    }
   }
 
-  onJoinRoom = (roomId: string, gameUser: GameUser) => {
-    const { users } = this.state;
-    users.push(gameUser);
-    this.setState({ users });
+  onRoomChanged = (gameRoom: GameRoom) => {
+
+    this.setState({ gameRoom });
   }
 
   startGame = () => {
     this.setState({
-      room: {
-        ...this.state.room,
+      gameRoom: {
+        ...this.state.gameRoom,
         roomState: GameRoomState.started
       }
     })
@@ -58,7 +56,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
   public render() {
     return (
       <div>
-        <h1>{this.state.room.id}</h1>
+        <h1>{this.state.gameRoom.id}</h1>
         <div>
           10 round
         </div>
@@ -67,7 +65,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
         </div>
 
         <ul>
-          {this.state.users.map(user =>
+          {this.state.gameRoom.users.map(user =>
             <li key={user.uid}>{user.name} is ready</li>)
           }
         </ul>
@@ -75,7 +73,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
         <button onClick={this.joinGame}>Join</button>
         <div>
           <div>Join through link:</div>
-          <a href={`/game-sketch/${this.state.room.id}`}>http://letshaveaparty.online/game-sketch/{this.state.room.id}</a>
+          <a href={`/game-sketch/${this.state.gameRoom.id}`}>http://letshaveaparty.online/game-sketch/{this.state.gameRoom.id}</a>
         </div>
         <ul>
 

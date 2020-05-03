@@ -51,24 +51,36 @@ export default class FirebaseHelper {
         this.unregisterAuthObserver();
     }
 
-    public static async dbAdd(collection: string, docId: string, value: object): Promise<void> {
+    public static async dbAddOrUpdateAsync(collection: string, docId: string, value: object): Promise<void> {
         try {
             let doc = this.database.collection(collection).doc(docId);
-            doc.set(Object.assign({}, value));
+            let valuePlain= JSON.parse(JSON.stringify(value));
+            await doc.set(valuePlain);
         } catch (error) {
             debugger;
             Log.Error(error)
         }
     }
 
-    public static async dbGet(collection: string, query: string) {
-        return await await this.database.collection(collection).get();
+    public static async dbGetByDocIdAsync<T>(collection: string, docId: string) {
+        let doc = await this.database.collection(collection).doc(docId).get();
+        if (doc.exists) {
+            return doc.data() as T;
+        } else {
+            return null;
+        }
 
     }
 
-    public static dbChanging(collection: string, onChanged: (value: any) => void) {
-        this.database.collection(collection).onSnapshot(observer => {
-            var changes = observer.docChanges();
+    public static async dbGetAsync<T>(collection: string, query: string) {
+
+
+
+    }
+
+    public static dbChanging<T>(collection: string, docId: string, onChanged: (value: T) => void) {
+        this.database.collection(collection).doc(docId).onSnapshot(observer => {
+            var changes = observer.data() as T;
             onChanged(changes);
         })
     }

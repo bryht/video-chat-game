@@ -20,19 +20,25 @@ export class GameData {
 
     }
 
-    joinRoom(roomId: string, gameUser: GameUser) {
+    async joinRoom(roomId: string, gameUser: GameUser) {
+        var room = await FirebaseHelper.dbGetByDocIdAsync<GameRoom>("game-sketch-room", roomId);
+        if (room) {
+            room.users.push(gameUser);
+            await FirebaseHelper.dbAddOrUpdateAsync("game-sketch-room", room.id, room);
+        }
+    }
+
+    onJoinRoom(roomId: string, roomJoined: (gameRoom: GameRoom) => void) {
+        FirebaseHelper.dbChanging<GameRoom>("game-sketch-room", roomId, result => {
+            debugger;
+            roomJoined(result);
+        });
 
     }
 
-    onJoinRoom(roomJoined: (roomId: string, gameUser: GameUser) => void) {
+    async createRoom(room: GameRoom) {
 
-
-    }
-
-    createRoom(room: GameRoom) {
-
-        FirebaseHelper.dbAdd("game-sketch-room",room.id, room);
-
+        await FirebaseHelper.dbAddOrUpdateAsync("game-sketch-room", room.id, room);
     }
 
     startGame(roomId: string) {

@@ -20,9 +20,9 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
             room: WordHelper.newNoun(),
         }
     }
-    roomChanged = (room: string) => {
+    roomChanged = async (room: string) => {
         this.setState({ room });
-        firebaseHelper.dbAdd('room', room, { uid: this.props.currentUser?.id, name: room });
+        await firebaseHelper.dbAddOrUpdateAsync('room', room, { uid: this.props.currentUser?.id, name: room });
     }
 
     public render() {
