@@ -54,7 +54,7 @@ export default class FirebaseHelper {
     public static async dbAddOrUpdateAsync(collection: string, docId: string, value: object): Promise<void> {
         try {
             let doc = this.database.collection(collection).doc(docId);
-            let valuePlain= JSON.parse(JSON.stringify(value));
+            let valuePlain = JSON.parse(JSON.stringify(value));
             await doc.set(valuePlain);
         } catch (error) {
             debugger;
@@ -75,11 +75,10 @@ export default class FirebaseHelper {
     public static async dbGetAsync<T>(collection: string, query: string) {
 
 
-
     }
 
     public static dbChanging<T>(collection: string, docId: string, onChanged: (value: T) => void) {
-        this.database.collection(collection).doc(docId).onSnapshot(observer => {
+        return this.database.collection(collection).doc(docId).onSnapshot(observer => {
             var changes = observer.data() as T;
             onChanged(changes);
         })

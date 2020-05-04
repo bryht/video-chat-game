@@ -9,6 +9,7 @@ export class GameData {
 
     constructor() {
         this.connect();
+        this.unSubscribeRoomChanged = () => { }
 
     }
     connect() {
@@ -36,9 +37,9 @@ export class GameData {
             await FirebaseHelper.dbAddOrUpdateAsync("game-sketch-room", room.id, room);
         }
     }
-
+    unSubscribeRoomChanged: () => void;
     onRoomChanged(roomId: string, roomJoined: (gameRoom: GameRoom) => void) {
-        FirebaseHelper.dbChanging<GameRoom>("game-sketch-room", roomId, result => {
+        this.unSubscribeRoomChanged = FirebaseHelper.dbChanging<GameRoom>("game-sketch-room", roomId, result => {
             roomJoined(result);
         });
 
@@ -66,7 +67,7 @@ export class GameData {
     }
 
     dispose() {
-
+        this.unSubscribeRoomChanged();
     }
 
 
