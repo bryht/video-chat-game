@@ -4,24 +4,36 @@ import FirebaseHelper from "utils/FirebaseHelper";
 import { GameRoom } from "./Models/GameRoom";
 import Log from "utils/Log";
 import { GameRoomState } from "./Models/GameRoomState";
+import { SocketHelper } from "utils/SocketHelper";
+import { GameRoomRoundState } from "./Models/GameRoomRoundState";
 
 export class GameData {
 
-    constructor() {
-        this.connect();
+    unSubscribeRoomChanged: () => void;
+    socketHelper: SocketHelper;
+    constructor(roomId: string) {
         this.unSubscribeRoomChanged = () => { }
+        this.socketHelper = new SocketHelper(message => { });
+        this.socketHelper.joinRoom(roomId);
+    }
 
-    }
-    connect() {
-    }
 
     drawLine() {
+
 
     }
 
     onDrawLine(lineDraw: (line: Line) => void) {
 
     }
+
+
+    startTimer(room: GameRoom, roomRoundStateChanged: (data: GameRoomRoundState) => void) {
+        
+        this.socketHelper.startRoundTimer(room.round, room.roundTime,roomRoundStateChanged);
+    }
+
+
 
     async joinRoom(roomId: string, gameUser: GameUser) {
         var room = await FirebaseHelper.dbGetByDocIdAsync<GameRoom>("game-sketch-room", roomId);
@@ -37,7 +49,6 @@ export class GameData {
             await FirebaseHelper.dbAddOrUpdateAsync("game-sketch-room", room.id, room);
         }
     }
-    unSubscribeRoomChanged: () => void;
     onRoomChanged(roomId: string, roomJoined: (gameRoom: GameRoom) => void) {
         this.unSubscribeRoomChanged = FirebaseHelper.dbChanging<GameRoom>("game-sketch-room", roomId, result => {
             roomJoined(result);
@@ -62,12 +73,9 @@ export class GameData {
         }
     }
 
-    onUserAction(onUserAction: (room: string, uid: string) => void) {
-
-    }
-
     dispose() {
         this.unSubscribeRoomChanged();
+        this.socketHelper.dispose();
     }
 
 

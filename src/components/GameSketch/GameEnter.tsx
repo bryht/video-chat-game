@@ -24,7 +24,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
   gameData: GameData;
   constructor(props: Readonly<IGameEnterProps>) {
     super(props);
-    this.gameData = new GameData();
+    this.gameData = new GameData(this.props.roomId);
     this.gameData.onRoomChanged(this.props.roomId, this.onRoomChanged);
   }
 
@@ -44,17 +44,17 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
     }
 
   }
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.gameData.dispose();
-}
+  }
 
   onRoomChanged = (gameRoom: GameRoom) => {
 
     this.setState({ gameRoom });
   }
 
-  startGame = () => {
-    this.gameData.startGame(this.props.roomId);
+  startGame = async () => {
+    await this.gameData.startGame(this.props.roomId);
   }
 
   isShowStart = () => {

@@ -21,7 +21,7 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
     gameData: GameData;
     constructor(props: IGameJoinProps) {
         super(props);
-        this.gameData = new GameData();
+        this.gameData = new GameData(this.props.roomId);
         this.state = {
             gameUser: new GameUser(this.props.currentUser.id, this.props.currentUser.name || WordHelper.newNoun(), GameUserState.waiting, GameUserRole.player)
         }
