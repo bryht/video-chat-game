@@ -1,7 +1,9 @@
 import * as React from 'react';
 import CanvasDraw from './CanvasDraw';
+import { GameRoom } from './Models/GameRoom';
 
 export interface IGamePlayingProps {
+  gameRoom: GameRoom;
 }
 
 export default class GamePlaying extends React.Component<IGamePlayingProps> {

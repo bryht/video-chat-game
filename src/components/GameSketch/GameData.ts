@@ -2,6 +2,8 @@ import { Line } from "./Models/Line";
 import { GameUser } from "./Models/GameUser";
 import FirebaseHelper from "utils/FirebaseHelper";
 import { GameRoom } from "./Models/GameRoom";
+import Log from "utils/Log";
+import { GameRoomState } from "./Models/GameRoomState";
 
 export class GameData {
 
@@ -23,9 +25,14 @@ export class GameData {
     async joinRoom(roomId: string, gameUser: GameUser) {
         var room = await FirebaseHelper.dbGetByDocIdAsync<GameRoom>("game-sketch-room", roomId);
         if (room) {
-            if (!room.users.find(p => p.uid === gameUser.uid)) {
+            var user = room.users.find(p => p.uid === gameUser.uid)
+            if (!user) {
                 room.users.push(gameUser);
+            } else {
+                var index = room.users.indexOf(user);
+                room.users[index] = gameUser;
             }
+            Log.Info(room);
             await FirebaseHelper.dbAddOrUpdateAsync("game-sketch-room", room.id, room);
         }
     }
@@ -41,13 +48,17 @@ export class GameData {
         return await FirebaseHelper.dbGetByDocIdAsync<GameRoom>("game-sketch-room", roomId);
     }
 
-    async createRoom(room: GameRoom) {
+    async createOrUpdateRoom(room: GameRoom) {
 
         await FirebaseHelper.dbAddOrUpdateAsync("game-sketch-room", room.id, room);
     }
 
-    startGame(roomId: string) {
-
+    async startGame(roomId: string) {
+        var room = await this.getRoom(roomId);
+        if (room) {
+            room.roomState = GameRoomState.started;
+            await this.createOrUpdateRoom(room);
+        }
     }
 
     onUserAction(onUserAction: (room: string, uid: string) => void) {
