@@ -1,13 +1,11 @@
 import * as React from 'react';
 import styles from './GameSketch.module.scss';
-import Log from 'utils/Log';
-import Guid from 'utils/Guid';
 import { SocketHelper, Message } from 'utils/SocketHelper';
 import { Line } from './Models/Line';
 import { Canvas } from './Models/Canvas';
 
 interface ICanvasDrawProps {
-    room: string;
+    roomId: string;
     uid: string;
 }
 
@@ -36,7 +34,7 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
     }
 
     componentDidMount() {
-        this.socketHelper.joinRoom(this.props.room);
+        this.socketHelper.joinRoom(this.props.roomId);
         let canvas = this.canvasRef.current;
         if (canvas) {
             const bounding = canvas.getBoundingClientRect();

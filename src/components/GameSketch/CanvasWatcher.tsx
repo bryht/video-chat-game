@@ -6,7 +6,7 @@ import { Canvas } from './Models/Canvas';
 import Log from 'utils/Log';
 
 interface ICanvasWatcherProps {
-    room: string;
+    roomId: string;
     uid: string;
 }
 
@@ -43,7 +43,7 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
     }
 
     componentDidMount() {
-        this.socketHelper.joinRoom(this.props.room);
+        this.socketHelper.joinRoom(this.props.roomId);
         let canvas = this.canvasRef.current;
         if (canvas) {
             const bounding = canvas.getBoundingClientRect();

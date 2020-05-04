@@ -1,20 +1,36 @@
 import * as React from 'react';
 import CanvasDraw from './CanvasDraw';
 import { GameRoom } from './Models/GameRoom';
+import { GameUser } from './Models/GameUser';
 
-export interface IGamePlayingProps {
+interface IGamePlayingProps {
   gameRoom: GameRoom;
+  uid: string;
 }
 
-export default class GamePlaying extends React.Component<IGamePlayingProps> {
+interface IGamePlayingStates {
+  currentGameUser?: GameUser;
+}
+
+export default class GamePlaying extends React.Component<IGamePlayingProps, IGamePlayingStates> {
+
+  constructor(props: Readonly<IGamePlayingProps>) {
+    super(props);
+    this.state = {
+      currentGameUser: this.props.gameRoom.users.find(p => p.uid === this.props.uid)
+    }
+  }
+
+  componentDidMount(){
+
+  }
 
   public render() {
 
-    //create room
-    //
     return (
       <div>
-        <CanvasDraw room={"test"} uid={"user1"}></CanvasDraw>
+        <p>Game round:1, time left:10s, current player:xxx</p>
+        <CanvasDraw roomId={this.props.gameRoom.id} uid={this.props.uid}></CanvasDraw>
       </div>
     );
   }

@@ -44,6 +44,9 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
     }
 
   }
+  componentWillUnmount(){
+    this.gameData.dispose();
+}
 
   onRoomChanged = (gameRoom: GameRoom) => {
 
@@ -63,7 +66,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
       return <Loading></Loading>
     }
     if (this.state.gameRoom.roomState === GameRoomState.started) {
-      return <GamePlaying gameRoom={this.state.gameRoom}></GamePlaying>
+      return <GamePlaying gameRoom={this.state.gameRoom} uid={this.props.currentUser.id}></GamePlaying>
     }
     return (
       <div>

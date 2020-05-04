@@ -27,6 +27,10 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
         }
     }
 
+    componentWillUnmount(){
+        this.gameData.dispose();
+    }
+
     onNameChanged = (name: string) => {
         this.setState({
             gameUser: {
