@@ -62,6 +62,7 @@ steps:
       docker push docker.pkg.github.com/bryht/video-chat-game/video-chat-game-server:latest
 
 - task: SSH@0
+  continueOnError: true
   inputs:
     sshEndpoint: 'linux-ming'
     runOptions: 'inline'
