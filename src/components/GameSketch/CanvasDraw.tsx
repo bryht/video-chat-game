@@ -3,7 +3,6 @@ import styles from './GameSketch.module.scss';
 import { SocketHelper, Message } from 'utils/SocketHelper';
 import { Line } from './Models/Line';
 import { Canvas } from './Models/Canvas';
-import { throws } from 'assert';
 
 interface ICanvasDrawProps {
     roomId: string;

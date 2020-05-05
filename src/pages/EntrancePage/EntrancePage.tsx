@@ -2,9 +2,9 @@
 import * as React from 'react';
 import styles from './EntrancePage.module.scss';
 import { IAuthProps } from "common/Authentication/IAuthProps";
-import firebaseHelper from 'utils/FirebaseHelper';
 import { withAuth } from 'common/Connect/Connections';
 import { WordHelper } from 'utils/WordHelper';
+import FirebaseHelper from 'utils/FirebaseHelper';
 
 export interface IEntrancePageProps extends IAuthProps<any> {
 }
@@ -14,15 +14,18 @@ interface IEntrancePageStates {
 }
 
 class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStates> {
+    firebaseHelper:FirebaseHelper;
     constructor(props: Readonly<IEntrancePageProps>) {
         super(props);
+        this.firebaseHelper=new FirebaseHelper();
         this.state = {
             room: WordHelper.newNoun(),
         }
     }
     roomChanged = async (room: string) => {
         this.setState({ room });
-        await firebaseHelper.dbAddOrUpdateAsync('room', room, { uid: this.props.currentUser?.id, name: room });
+        //TODO:move to right place
+        await this.firebaseHelper.dbAddOrUpdateAsync('room', room, { uid: this.props.currentUser?.id, name: room });
     }
 
     public render() {

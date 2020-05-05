@@ -4,12 +4,18 @@ import 'firebase/firestore';
 import 'firebase/analytics';
 import { User } from "common/Models/User";
 import Log from "./Log";
-import Guid from "./Guid";
 
 export default class FirebaseHelper {
 
-    static database: firebase.firestore.Firestore;
-    static unregisterAuthObserver: firebase.Unsubscribe;
+    database: firebase.firestore.Firestore;
+    unregisterAuthObserver: firebase.Unsubscribe;
+    onDbChangingObserver: () => void;
+
+    constructor() {
+        this.database = firebase.firestore();
+        this.unregisterAuthObserver = () => { };
+        this.onDbChangingObserver = () => { };
+    }
     public static initial() {
         var firebaseConfig = {
             apiKey: process.env.REACT_APP_FIREBASE_KEY,
@@ -23,15 +29,13 @@ export default class FirebaseHelper {
         };
         firebase.initializeApp(firebaseConfig);
         firebase.analytics();
-
-        this.database = firebase.firestore();
     }
 
-    public static signOut() {
+    public signOut() {
         return firebase.auth().signOut();
     }
 
-    public static onAuthStateChanged(action: (userInput?: User) => void) {
+    public onAuthStateChanged(action: (userInput?: User) => void) {
         this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
             if (user) {
                 var userObj = new User();
@@ -47,11 +51,12 @@ export default class FirebaseHelper {
         });
     }
 
-    public static unregisterAuth() {
+    public dispose() {
         this.unregisterAuthObserver();
+        this.onDbChangingObserver();
     }
 
-    public static async dbAddOrUpdateAsync(collection: string, docId: string, value: object): Promise<void> {
+    public async dbAddOrUpdateAsync(collection: string, docId: string, value: object): Promise<void> {
         try {
             let doc = this.database.collection(collection).doc(docId);
             let valuePlain = JSON.parse(JSON.stringify(value));
@@ -62,7 +67,7 @@ export default class FirebaseHelper {
         }
     }
 
-    public static async dbGetByDocIdAsync<T>(collection: string, docId: string) {
+    public async dbGetByDocIdAsync<T>(collection: string, docId: string) {
         let doc = await this.database.collection(collection).doc(docId).get();
         if (doc.exists) {
             return doc.data() as T;
@@ -72,34 +77,12 @@ export default class FirebaseHelper {
 
     }
 
-    public static async dbGetAsync<T>(collection: string, query: string) {
 
-
-    }
-
-    public static dbChanging<T>(collection: string, docId: string, onChanged: (value: T) => void) {
-        return this.database.collection(collection).doc(docId).onSnapshot(observer => {
+    public dbChanging<T>(collection: string, docId: string, onChanged: (value: T) => void) {
+        this.onDbChangingObserver= this.database.collection(collection).doc(docId).onSnapshot(observer => {
             var changes = observer.data() as T;
             onChanged(changes);
         })
-    }
-
-    public static cleanAnonymousUsers() {
-        //https://firebase.google.com/docs/admin/setup
-        // List batch of users, 1000 at a time.
-        // firebase.auth().listUsers(1000, nextPageToken)
-        //     .then(function (listUsersResult) {
-        //         listUsersResult.users.forEach(function (userRecord) {
-        //             console.log('user', userRecord.toJSON());
-        //         });
-        //         if (listUsersResult.pageToken) {
-        //             // List next batch of users.
-        //             listAllUsers(listUsersResult.pageToken);
-        //         }
-        //     })
-        //     .catch(function (error) {
-        //         console.log('Error listing users:', error);
-        //     });
     }
 
 }

@@ -10,7 +10,6 @@ import Log from 'utils/Log';
 export interface IGameJoinProps {
     roomId: string;
     currentUser: User;
-    // location: Location;
 }
 
 export interface IGameJoinState {
@@ -43,10 +42,8 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
     }
 
     joinGame = async () => {
-
         await this.gameData.joinRoomAsync(this.props.roomId, this.state.gameUser);
-        window.location.pathname = window.location.pathname.replace('join', '');
-
+        window.location.pathname = window.location.pathname.replace('join', '');//TODO: switch to a callback
     }
 
     public render() {

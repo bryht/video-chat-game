@@ -9,11 +9,11 @@ import { GameRoomPlayingRoundState } from "./Models/GameRoomPlayingRoundState";
 
 export class GameData {
 
-    unSubscribeRoomChanged: () => void;
     socketHelper: SocketHelper;
+    firebaseHelper:FirebaseHelper;
     constructor(roomId: string) {
-        this.unSubscribeRoomChanged = () => { }
         this.socketHelper = new SocketHelper(roomId);
+        this.firebaseHelper=new FirebaseHelper();
     }
 
 
@@ -46,7 +46,7 @@ export class GameData {
 
 
     async joinRoomAsync(roomId: string, gameUser: GameUser) {
-        var room = await FirebaseHelper.dbGetByDocIdAsync<GameRoom>("game-sketch-room", roomId);
+        var room = await this.firebaseHelper.dbGetByDocIdAsync<GameRoom>("game-sketch-room", roomId);
         if (room) {
             var user = room.users.find(p => p.uid === gameUser.uid)
             if (!user) {
@@ -56,23 +56,23 @@ export class GameData {
                 room.users[index] = gameUser;
             }
             Log.Info(room);
-            await FirebaseHelper.dbAddOrUpdateAsync("game-sketch-room", room.id, room);
+            await this.firebaseHelper.dbAddOrUpdateAsync("game-sketch-room", room.id, room);
         }
     }
     onRoomChanged(roomId: string, roomJoined: (gameRoom: GameRoom) => void) {
-        this.unSubscribeRoomChanged = FirebaseHelper.dbChanging<GameRoom>("game-sketch-room", roomId, result => {
+        this.firebaseHelper.dbChanging<GameRoom>("game-sketch-room", roomId, result => {
             roomJoined(result);
         });
 
     }
 
     async getRoomAsync(roomId: string) {
-        return await FirebaseHelper.dbGetByDocIdAsync<GameRoom>("game-sketch-room", roomId);
+        return await this.firebaseHelper.dbGetByDocIdAsync<GameRoom>("game-sketch-room", roomId);
     }
 
     async createOrUpdateRoomAsync(room: GameRoom) {
 
-        await FirebaseHelper.dbAddOrUpdateAsync("game-sketch-room", room.id, room);
+        await this.firebaseHelper.dbAddOrUpdateAsync("game-sketch-room", room.id, room);
     }
 
     async startGame(roomId: string) {
@@ -87,7 +87,7 @@ export class GameData {
     }
 
     dispose() {
-        this.unSubscribeRoomChanged();
+        this.firebaseHelper.dispose();
         this.socketHelper.dispose();
     }
 

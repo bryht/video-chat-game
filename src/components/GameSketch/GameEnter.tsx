@@ -9,7 +9,6 @@ import { GameRoomState } from './Models/GameRoomState';
 import { User } from 'common/Models/User';
 import Loading from 'components/Loading/Loading';
 import GamePlaying from './GamePlaying';
-import { GameRoomPlayingRoundState } from './Models/GameRoomPlayingRoundState';
 
 interface IGameEnterProps {
   currentUser: User;

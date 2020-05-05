@@ -2,7 +2,6 @@ import * as React from 'react';
 import VideoRoom from 'components/VideoRoom/VideoRoom';
 import { withAuth } from 'common/Connect/Connections';
 import { IAuthProps } from 'common/Authentication/IAuthProps';
-import Room from 'components/Room/Room';
 
 interface RouteInfo {
     id: string;

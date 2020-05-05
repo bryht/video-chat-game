@@ -4,7 +4,6 @@ import { RouteComponentProps } from "react-router-dom";
 import FirebaseHelper from "utils/FirebaseHelper";
 import { IAuthProps } from "./IAuthProps";
 import Loading from "components/Loading/Loading";
-import Log from "utils/Log";
 interface IAuthStates {
     currentUser?: User;
 }
@@ -16,15 +15,16 @@ export function AuthenticationConnection<TRouterParas>(ChildComponent: React.Com
     interface IWithAuthProps extends RouteComponentProps<TRouterParas> { }
 
     class WithAuthentication extends React.Component<IWithAuthProps, IAuthStates> {
+        firebaseHelper:FirebaseHelper;
         constructor(props: Readonly<IWithAuthProps>) {
             super(props);
-
+            this.firebaseHelper=new FirebaseHelper();
             this.state = {
                 currentUser: undefined
             };
         }
         componentDidMount() {
-            FirebaseHelper.onAuthStateChanged(user => {
+            this.firebaseHelper.onAuthStateChanged(user => {
                 this.setState({ currentUser: user });
                 if (!user) {
                     this.redirectLogin();
@@ -33,7 +33,7 @@ export function AuthenticationConnection<TRouterParas>(ChildComponent: React.Com
         }
 
         componentWillUnmount() {
-            FirebaseHelper.unregisterAuth();
+            this.firebaseHelper.dispose();
         }
 
         componentDidUpdate() {
@@ -43,7 +43,7 @@ export function AuthenticationConnection<TRouterParas>(ChildComponent: React.Com
         }
 
         logout = () => {
-            FirebaseHelper.signOut();
+            this.firebaseHelper.signOut();
         }
 
         private redirectLogin = () => {

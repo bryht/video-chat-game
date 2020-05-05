@@ -1,6 +1,5 @@
 import * as React from 'react';
 import styles from './Room.module.scss';
-import { GoScreenFull, GoScreenNormal } from "react-icons/go";
 import RoomItem from 'components/RoomItem/RoomItem';
 
 
