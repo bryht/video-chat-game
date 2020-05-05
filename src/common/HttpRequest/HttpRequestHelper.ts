@@ -1,6 +1,5 @@
 import Log from "../../utils/Log";
 import { IHttpRequest } from "./IHttpRequest";
-import Env from "config/env";
 
 export default class HttpRequestHelper {
 
@@ -23,7 +22,7 @@ export default class HttpRequestHelper {
                     Log.Info(request.status + request.responseText);
                 }
             };
-            request.open(requestObj.method, Env.baseUrl + requestObj.url);
+            request.open(requestObj.method, "baseUrl" + requestObj.url);
             request.setRequestHeader('Accept', 'application/json');
             request.setRequestHeader('Content-Type', 'application/json');
             if (accessToken) {

@@ -6,6 +6,7 @@ import { GameUser } from './Models/GameUser';
 import { GameUserRole } from './Models/GameUserRole';
 import { GameUserState } from './Models/GameUserState';
 import Log from 'utils/Log';
+import { GameRoom } from './Models/GameRoom';
 
 export interface IGameJoinProps {
     roomId: string;
@@ -13,7 +14,8 @@ export interface IGameJoinProps {
 }
 
 export interface IGameJoinState {
-    gameUser: GameUser
+    gameRoom: GameRoom;
+    gameUserName: string;
 
 }
 
@@ -22,27 +24,39 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
     constructor(props: IGameJoinProps) {
         super(props);
         this.gameData = new GameData(this.props.roomId);
-        this.state = {
-            gameUser: new GameUser(this.props.currentUser.id, this.props.currentUser.name || WordHelper.newNoun(), GameUserState.waiting, GameUserRole.player)
-        }
+        this.gameData.onGameRoomChanged(this.onGameRoomChanged);
     }
 
-    componentWillUnmount(){
-        this.gameData.dispose();
+    onGameRoomChanged = (gameRoom: GameRoom) => {
+
+        this.setState({ gameRoom });
+    }
+    async  componentDidMount() {
+        await this.gameData.initialAsync();
+        this.setState({
+            gameRoom: this.gameData.gameRoom,
+            gameUserName: this.props.currentUser.name || WordHelper.newNoun()
+        })
+
+    }
+
+    async  componentWillUnmount() {
+        debugger;
+        Log.Info(this.gameData.gameRoom);
+        await this.gameData.disposeAsync();
     }
 
     onNameChanged = (name: string) => {
         this.setState({
-            gameUser: {
-                ...this.state.gameUser,
-                name
-            }
-        });
-        Log.Info(this.state.gameUser);
+            gameUserName: name
+        })
     }
 
     joinGame = async () => {
-        await this.gameData.joinRoomAsync(this.props.roomId, this.state.gameUser);
+        var _gameUser = new GameUser(this.props.currentUser.id, this.state.gameUserName, GameUserState.waiting, GameUserRole.player);
+        this.gameData.joinRoom(_gameUser);
+
+        await this.gameData.saveGameRoomAsync();
         window.location.pathname = window.location.pathname.replace('join', '');//TODO: switch to a callback
     }
 
@@ -50,7 +64,7 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
         return (
             <div>
                 <div>Please input your name:</div>
-                <input type="text" value={this.state.gameUser.name} onChange={e => this.onNameChanged(e.target.value)} />
+                <input type="text" value={this.state?.gameUserName} onChange={e => this.onNameChanged(e.target.value)} />
                 <button onClick={this.joinGame}>Join</button>
             </div>
         );

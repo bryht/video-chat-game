@@ -18,10 +18,17 @@ export class SocketHelper {
     private joinRoom(room: string) {
         this.socketClient.emit('join', { 'room': room });
     }
-    emit<T>(type: string, data: T) {
-        this.socketClient.emit("message", new Message(type, data));
+    emit<T>(event: string, data: T) {
+        this.socketClient.emit(event, data);
     }
 
+    onEventChanged<T>(event: string, onChange: (data: T) => void) {
+        this.socketClient.on(event, onChange);
+    }
+
+    emitMessage<T>(type: string, data: T) {
+        this.socketClient.emit("message", new Message(type, data));
+    }
     onMessageChanged(onChange: (data: Message) => void) {
         this.socketClient.on('message', onChange);
     }
@@ -31,7 +38,7 @@ export class SocketHelper {
     }
 
     onRoundTimerChanged(onChange: (data: { currentRound: number, timing: number, isFinished: boolean }) => void) {
-        this.socketClient.on('timer', onChange);
+        this.socketClient.on('gameRound', onChange);
     }
 
     dispose() {

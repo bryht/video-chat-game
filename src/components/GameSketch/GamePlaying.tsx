@@ -4,9 +4,10 @@ import { GameRoom } from './Models/GameRoom';
 import { GameUser } from './Models/GameUser';
 import { GameData } from './GameData';
 import { GameUserRole } from './Models/GameUserRole';
-import { GameRoomPlayingState } from './Models/GameRoomPlayingState';
 import Log from 'utils/Log';
 import CanvasWatcher from './CanvasWatcher';
+import { GameRound } from './Models/GameRound';
+import { GameUserState } from './Models/GameUserState';
 
 interface IGamePlayingProps {
   gameRoom: GameRoom;
@@ -16,7 +17,7 @@ interface IGamePlayingProps {
 
 interface IGamePlayingStates {
   currentGameUser?: GameUser;
-  playingState: GameRoomPlayingState;
+  gameRound: GameRound;
 }
 
 export default class GamePlaying extends React.Component<IGamePlayingProps, IGamePlayingStates> {
@@ -24,32 +25,28 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
   gameData: GameData;
   constructor(props: Readonly<IGamePlayingProps>) {
     super(props);
+    this.gameData = new GameData(this.props.gameRoom.id);
     this.state = {
       currentGameUser: this.getGameUser(this.props.uid),
-      playingState: this.props.gameRoom.playingState,
+      gameRound: this.gameData.gameRound
     }
-    this.gameData = new GameData(this.props.gameRoom.id);
-    this.gameData.onRoomPlayingRoundStateChanged(roundState => {
+    this.gameData.onGameRoundChanged(gameRound => {
 
       //update currentPlayer
-      let currentPlayerUid = this.state.playingState.currentPlayerUid;
-      if (this.state.playingState.roundState.currentRound !== roundState.currentRound &&
-        roundState.currentRound > 1) {
-        currentPlayerUid = this.getNextGameUser(this.state.playingState.currentPlayerUid).uid;
-        Log.Info(currentPlayerUid);
-      }
+      // let currentPlayerUid = this.state.gameRound.currentPlayerUid;
+      // if (this.state.gameRound.roundState.currentRound !== roundState.currentRound &&
+      //   roundState.currentRound > 1) {
+      //   currentPlayerUid = this.getNextGameUser(this.state.gameRound.currentPlayerUid).uid;
+      //   Log.Info(currentPlayerUid);
+      // }
 
       //update roundState
       this.setState({
-        playingState: {
-          ...this.state.playingState,
-          roundState,
-          currentPlayerUid,
-        }
+        gameRound
       });
 
       //finished game
-      if (roundState.isFinished) {
+      if (gameRound.isFinished) {
         this.props.onFinished();
       }
 
@@ -57,19 +54,12 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
 
   }
   async componentDidMount() {
+    await this.gameData.initialAsync();
+
     if (this.state.currentGameUser?.role === GameUserRole.owner) {
-      await this.gameData.startTimerAsync(this.props.gameRoom);
+      this.gameData.startTimer();
     }
-    let gameRoom = await this.gameData.getRoomAsync(this.props.gameRoom.id);
-    Log.Info(gameRoom?.playingState);
-    if (gameRoom) {
-      this.setState({
-        playingState: gameRoom.playingState
-      })
-      if (gameRoom.playingState.roundState.isFinished) {
-        this.props.onFinished();
-      }
-    }
+
   }
 
   private getGameUser(uid: string) {
@@ -95,27 +85,24 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
   }
 
   private getCurrentPlayingGameUser() {
-    return this.props.gameRoom.users.find(p=>p.uid===this.state.playingState.currentPlayerUid);
+    return this.props.gameRoom.users.find(p => p.userState === GameUserState.playing);
   }
 
 
 
 
   async componentWillUnmount() {
-    const { gameRoom } = this.props;
-    gameRoom.playingState = this.state.playingState;
-    await this.gameData.createOrUpdateRoomAsync(gameRoom);
-    this.gameData.dispose();
+    await this.gameData.disposeAsync();
   }
 
   public render() {
 
     return (
       <div>
-        <p>Hi {this.state.currentGameUser?.name},Game round:{this.state.playingState.roundState?.currentRound},
-          time left:{this.props.gameRoom.roundTime - this.state.playingState.roundState?.timing}s,
+        <p>Hi {this.state.currentGameUser?.name},Game round:{this.state.gameRound.currentRound},
+          time left:{this.props.gameRoom.roundTime - this.state.gameRound.timing}s,
           current player:{this.getCurrentPlayingGameUser()?.name}</p>
-        {this.state.currentGameUser?.uid === this.state.playingState.currentPlayerUid ?
+        {this.state.currentGameUser?.uid === this.getCurrentPlayingGameUser()?.uid ?
           <CanvasDraw roomId={this.props.gameRoom.id} uid={this.props.uid}></CanvasDraw> :
           <CanvasWatcher roomId={this.props.gameRoom.id} uid={this.props.uid}></CanvasWatcher>
         }

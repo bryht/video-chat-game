@@ -5,10 +5,11 @@ import { GameUserState } from './Models/GameUserState';
 import { GameUserRole } from './Models/GameUserRole';
 import { GameRoom } from './Models/GameRoom';
 import { WordHelper } from 'utils/WordHelper';
-import { GameRoomState } from './Models/GameRoomState';
+import { RoomState } from './Models/RoomState';
 import { User } from 'common/Models/User';
 import Loading from 'components/Loading/Loading';
 import GamePlaying from './GamePlaying';
+import Log from 'utils/Log';
 
 interface IGameEnterProps {
   currentUser: User;
@@ -25,54 +26,49 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
   constructor(props: Readonly<IGameEnterProps>) {
     super(props);
     this.gameData = new GameData(this.props.roomId);
-    this.gameData.onRoomChanged(this.props.roomId, this.onRoomChanged);
+    this.gameData.onGameRoomChanged(this.onGameRoomChanged);
   }
 
   async componentDidMount() {
-    let _gameRoom = await this.gameData.getRoomAsync(this.props.roomId);
-    if (_gameRoom == null) {
-      _gameRoom = new GameRoom(this.props.roomId, GameRoomState.waiting);
-      await this.gameData.createOrUpdateRoomAsync(_gameRoom);
-    }
+    await this.gameData.initialAsync();
+    let _gameRoom = this.gameData.gameRoom;
     if (!_gameRoom.users.find(p => p.uid === this.props.currentUser.id) && _gameRoom.users.length === 0) {
 
       let gameUser = new GameUser(this.props.currentUser.id, this.props.currentUser.name || WordHelper.newNoun(), GameUserState.waiting, GameUserRole.owner);
-      await this.gameData.joinRoomAsync(_gameRoom.id, gameUser)
+      this.gameData.joinRoom(gameUser)
+      await this.gameData.saveGameRoomAsync();
     }
-    this.state = {
-      gameRoom: _gameRoom
-    }
-
+    this.setState({
+      gameRoom:_gameRoom
+    })
   }
-  componentWillUnmount() {
+  async componentWillUnmount() {
 
-    this.gameData.dispose();
+    await this.gameData.disposeAsync();
   }
 
-  onRoomChanged = (gameRoom: GameRoom) => {
+  onGameRoomChanged = (gameRoom: GameRoom) => {
 
     this.setState({ gameRoom });
   }
 
-  startGame = async () => {
-    await this.gameData.startGame(this.props.roomId);
+  startGame = () => {
+    this.gameData.startGame();
   }
 
   isShowStart = () => {
     return this.state.gameRoom.users.length > 1 && this.state.gameRoom.users.find(p => p.uid === this.props.currentUser.id)?.role === GameUserRole.owner;
   }
 
-  gameFinished = async () => {
-    let _gameRoom = this.state.gameRoom;
-    _gameRoom.roomState = GameRoomState.waiting;
-    await this.gameData.createOrUpdateRoomAsync(_gameRoom);
+  gameFinished = () => {
+    this.gameData.finishGame();
   }
 
   public render() {
     if (!this.state?.gameRoom) {
       return <Loading></Loading>
     }
-    if (this.state.gameRoom.roomState === GameRoomState.started) {
+    if (this.state.gameRoom.roomState === RoomState.started) {
       return <GamePlaying gameRoom={this.state.gameRoom} uid={this.props.currentUser.id} onFinished={this.gameFinished}></GamePlaying>
     }
     return (

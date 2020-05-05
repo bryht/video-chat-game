@@ -17,6 +17,13 @@ io.on('connection', (socket) => {
       io.to(roomData.room).emit("message", data);
     });
 
+    socket.on("gameRoom", data => {
+      io.to(roomData.room).emit("gameRoom", data);
+    });
+    socket.on("gameRound", data => {
+      io.to(roomData.room).emit("gameRound", data);
+    });
+
     socket.on("timer-start", config => {
       const { roundNumber, timeLimit } = config;
       let currentRound = 1;
@@ -31,7 +38,7 @@ io.on('connection', (socket) => {
         }
         var isFinished = (currentRound - 1) * timeLimit + currentRoundTiming >= total;
         console.log({ currentRound, timing: currentRoundTiming, isFinished });
-        io.to(roomData.room).emit('timer', { currentRound, timing: currentRoundTiming, isFinished });
+        io.to(roomData.room).emit('gameRound', { currentRound, timing: currentRoundTiming, isFinished });
         if (isFinished) {
           clearInterval(timer);
         }

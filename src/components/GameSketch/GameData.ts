@@ -1,92 +1,113 @@
-import { Line } from "./Models/Line";
 import { GameUser } from "./Models/GameUser";
 import FirebaseHelper from "utils/FirebaseHelper";
 import { GameRoom } from "./Models/GameRoom";
-import Log from "utils/Log";
-import { GameRoomState } from "./Models/GameRoomState";
+import { RoomState } from "./Models/RoomState";
 import { SocketHelper } from "utils/SocketHelper";
-import { GameRoomPlayingRoundState } from "./Models/GameRoomPlayingRoundState";
+import Consts from "./Consts";
+import { GameUserState } from "./Models/GameUserState";
+import { GameRound } from "./Models/GameRound";
+import Log from "utils/Log";
 
 export class GameData {
 
     socketHelper: SocketHelper;
-    firebaseHelper:FirebaseHelper;
+    firebaseHelper: FirebaseHelper;
+    gameRoom: GameRoom;
+    gameRound: GameRound;
     constructor(roomId: string) {
         this.socketHelper = new SocketHelper(roomId);
-        this.firebaseHelper=new FirebaseHelper();
+        this.firebaseHelper = new FirebaseHelper();
+        this.gameRoom = new GameRoom(roomId);
+        this.gameRound = new GameRound(roomId);
     }
 
 
-    drawLine() {
-
-
+    async initialAsync() {
+        let _gameRoom = await this.firebaseHelper.dbGetByDocIdAsync<GameRoom>(Consts.gameSketchRoom, this.gameRoom.id);
+        if (_gameRoom) {
+            this.gameRoom = _gameRoom;
+        }
+        let _gameRound = await this.firebaseHelper.dbGetByDocIdAsync<GameRound>(Consts.gameSketchRound, this.gameRound.id);
+        if (_gameRound) {
+            this.gameRound = _gameRound;
+        }
     }
 
-    onDrawLine(lineDraw: (line: Line) => void) {
-
+    async saveGameRoomAsync() {
+        await this.firebaseHelper.dbAddOrUpdateAsync(Consts.gameSketchRoom, this.gameRoom.id, this.gameRoom);
     }
 
+    async saveGameRoundAsync() {
+        await this.firebaseHelper.dbAddOrUpdateAsync(Consts.gameSketchRound, this.gameRound.id, this.gameRound);
+    }
 
-    async startTimerAsync(room: GameRoom) {
+    emitGameRoom() {
+        this.socketHelper.emit<GameRoom>("gameRoom", this.gameRoom)
+    }
 
-        if (room.playingState.isTimerStarted) {
+    emitGameRound() {
+        this.socketHelper.emit<GameRound>("gameRound", this.gameRound)
+    }
+
+    startTimer() {
+
+        if (this.gameRoom.isTimerStarted) {
             return;
         }
 
-        this.socketHelper.startRoundTimer(room.round, room.roundTime);
-        room.playingState.currentPlayerUid = room.users[0].uid;
-        room.playingState.isTimerStarted = true;
-        await this.createOrUpdateRoomAsync(room);
+        this.socketHelper.startRoundTimer(this.gameRoom.round, this.gameRoom.roundTime);
+        this.gameRoom.users[0].userState = GameUserState.playing;
+        this.gameRoom.isTimerStarted = true;
+        this.emitGameRoom();
     }
 
-    onRoomPlayingRoundStateChanged(onChange: (data: GameRoomPlayingRoundState) => void) {
-        this.socketHelper.onRoundTimerChanged(onChange);
-    }
-
-
-
-    async joinRoomAsync(roomId: string, gameUser: GameUser) {
-        var room = await this.firebaseHelper.dbGetByDocIdAsync<GameRoom>("game-sketch-room", roomId);
-        if (room) {
-            var user = room.users.find(p => p.uid === gameUser.uid)
-            if (!user) {
-                room.users.push(gameUser);
-            } else {
-                var index = room.users.indexOf(user);
-                room.users[index] = gameUser;
-            }
-            Log.Info(room);
-            await this.firebaseHelper.dbAddOrUpdateAsync("game-sketch-room", room.id, room);
-        }
-    }
-    onRoomChanged(roomId: string, roomJoined: (gameRoom: GameRoom) => void) {
-        this.firebaseHelper.dbChanging<GameRoom>("game-sketch-room", roomId, result => {
-            roomJoined(result);
+    onGameRoundChanged(onChange: (data: GameRound) => void) {
+        this.socketHelper.onRoundTimerChanged(data => {
+            this.gameRound.currentRound = data.currentRound;
+            this.gameRound.timing = data.timing;
+            this.gameRound.isFinished = data.isFinished;
+            onChange(this.gameRound);
         });
-
     }
 
-    async getRoomAsync(roomId: string) {
-        return await this.firebaseHelper.dbGetByDocIdAsync<GameRoom>("game-sketch-room", roomId);
-    }
-
-    async createOrUpdateRoomAsync(room: GameRoom) {
-
-        await this.firebaseHelper.dbAddOrUpdateAsync("game-sketch-room", room.id, room);
-    }
-
-    async startGame(roomId: string) {
-        var room = await this.getRoomAsync(roomId);
-        if (room) {
-            room.roomState = GameRoomState.started;
-            room.playingState.isTimerStarted=false;
-            room.playingState.roundState.currentRound=1;
-            room.playingState.roundState.isFinished=false;
-            await this.createOrUpdateRoomAsync(room);
+    joinRoom(gameUser: GameUser) {
+        var user = this.gameRoom.users.find(p => p.uid === gameUser.uid)
+        if (!user) {
+            this.gameRoom.users.push(gameUser);
+        } else {
+            var index = this.gameRoom.users.indexOf(user);
+            this.gameRoom.users[index] = gameUser;
         }
+        this.emitGameRoom();
+    }
+    onGameRoomChanged(onChange: (gameRoom: GameRoom) => void) {
+        this.socketHelper.onEventChanged<GameRoom>("gameRoom", onChange);
     }
 
-    dispose() {
+    startGame() {
+
+        this.gameRoom.roomState = RoomState.started;
+        this.gameRoom.isTimerStarted = false;
+        this.gameRound.currentRound = 1;
+        this.gameRound.isFinished = false;
+
+        this.emitGameRoom();
+        this.emitGameRound();
+    }
+
+    finishGame(){
+        this.gameRoom.roomState = RoomState.waiting;
+        this.gameRoom.isTimerStarted = false;
+        this.gameRound.currentRound = 1;
+        this.gameRound.isFinished = false;
+        this.emitGameRoom();
+        this.emitGameRound();
+    }
+
+    async disposeAsync() {
+        await this.saveGameRoomAsync();
+        await this.saveGameRoundAsync();
+        Log.Info(this.gameRoom);
         this.firebaseHelper.dispose();
         this.socketHelper.dispose();
     }

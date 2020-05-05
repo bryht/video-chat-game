@@ -1,16 +1,14 @@
-import { GameRoomState } from "./GameRoomState";
+import { RoomState } from "./RoomState";
 import { GameUser } from "./GameUser";
-import { GameRoomPlayingState } from "./GameRoomPlayingState";
 
 export class GameRoom {
-    constructor(id: string, roomState: GameRoomState) {
+    constructor(id: string) {
         this.id = id;
-        this.roomState = roomState;
     }
     id: string;
-    roomState: GameRoomState;
+    roomState: RoomState= RoomState.waiting;
     round: number = 3;
     roundTime: number = 25;
     users: Array<GameUser> = [];
-    playingState: GameRoomPlayingState = new GameRoomPlayingState();
+    isTimerStarted: boolean = false;
 }
