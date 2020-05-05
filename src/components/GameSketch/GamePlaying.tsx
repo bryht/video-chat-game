@@ -106,7 +106,7 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
 
     return (
       <div>
-        <p>Game round:{this.state.playingState.roundState?.currentRound},
+        <p>Hi {this.state.currentGameUser?.name},Game round:{this.state.playingState.roundState?.currentRound},
           time left:{this.props.gameRoom.roundTime - this.state.playingState.roundState?.timing}s,
           current player:{this.getCurrentPlayingGameUser()?.name}</p>
         {this.state.currentGameUser?.uid === this.state.playingState.currentPlayerUid ?
