@@ -6,7 +6,6 @@ import Log from "utils/Log";
 import { GameRoomState } from "./Models/GameRoomState";
 import { SocketHelper } from "utils/SocketHelper";
 import { GameRoomPlayingRoundState } from "./Models/GameRoomPlayingRoundState";
-import { GameRoomPlayingState } from "./Models/GameRoomPlayingState";
 
 export class GameData {
 
@@ -80,7 +79,9 @@ export class GameData {
         var room = await this.getRoomAsync(roomId);
         if (room) {
             room.roomState = GameRoomState.started;
-            room.playingState = new GameRoomPlayingState();
+            room.playingState.isTimerStarted=false;
+            room.playingState.roundState.currentRound=1;
+            room.playingState.roundState.isFinished=false;
             await this.createOrUpdateRoomAsync(room);
         }
     }

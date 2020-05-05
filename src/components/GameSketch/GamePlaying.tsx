@@ -34,7 +34,7 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
       //update currentPlayer
       let currentPlayerUid = this.state.playingState.currentPlayerUid;
       if (this.state.playingState.roundState.currentRound !== roundState.currentRound &&
-        this.state.playingState.roundState.currentRound > 1) {
+        roundState.currentRound > 1) {
         currentPlayerUid = this.getNextGameUser(this.state.playingState.currentPlayerUid).uid;
         Log.Info(currentPlayerUid);
       }
@@ -61,6 +61,7 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
       await this.gameData.startTimerAsync(this.props.gameRoom);
     }
     let gameRoom = await this.gameData.getRoomAsync(this.props.gameRoom.id);
+    Log.Info(gameRoom?.playingState);
     if (gameRoom) {
       this.setState({
         playingState: gameRoom.playingState
@@ -81,6 +82,7 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
       if (a.uid > b.uid) { return 1; }
       return 0;
     });
+    Log.Info(users);
     let item = users.find(p => p.uid === uid);
     if (item) {
       let index = users.indexOf(item);
@@ -93,7 +95,7 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
   }
 
   private getCurrentPlayingGameUser() {
-    return this.getGameUser(this.state.playingState.currentPlayerUid);
+    return this.props.gameRoom.users.find(p=>p.uid===this.state.playingState.currentPlayerUid);
   }
 
 
