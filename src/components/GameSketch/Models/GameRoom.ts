@@ -9,8 +9,8 @@ export class GameRoom {
     }
     id: string;
     roomState: GameRoomState;
-    round: number = 10;
-    roundTime: number = 120;
+    round: number = 3;
+    roundTime: number = 25;
     users: Array<GameUser> = [];
     playingState: GameRoomPlayingState = new GameRoomPlayingState();
 }

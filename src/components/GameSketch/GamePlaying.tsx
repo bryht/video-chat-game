@@ -76,7 +76,11 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
   }
 
   private getNextGameUser(uid: string) {
-    let users = this.props.gameRoom.users;
+    let users = this.props.gameRoom.users.sort((a, b) => {
+      if (a.uid < b.uid) { return -1; }
+      if (a.uid > b.uid) { return 1; }
+      return 0;
+    });
     let item = users.find(p => p.uid === uid);
     if (item) {
       let index = users.indexOf(item);
