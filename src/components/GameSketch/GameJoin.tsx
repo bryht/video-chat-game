@@ -5,6 +5,7 @@ import { User } from 'common/Models/User';
 import { GameUser } from './Models/GameUser';
 import { GameUserRole } from './Models/GameUserRole';
 import { GameUserState } from './Models/GameUserState';
+import Log from 'utils/Log';
 
 export interface IGameJoinProps {
     roomId: string;
@@ -38,11 +39,12 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
                 name
             }
         });
+        Log.Info(this.state.gameUser);
     }
 
-    joinGame = () => {
+    joinGame = async () => {
 
-        this.gameData.joinRoom(this.props.roomId, this.state.gameUser);
+        await this.gameData.joinRoomAsync(this.props.roomId, this.state.gameUser);
         window.location.pathname = window.location.pathname.replace('join', '');
 
     }

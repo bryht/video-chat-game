@@ -4,8 +4,7 @@ import { GameRoom } from './Models/GameRoom';
 import { GameUser } from './Models/GameUser';
 import { GameData } from './GameData';
 import { GameUserRole } from './Models/GameUserRole';
-import { GameRoomRoundState } from './Models/GameRoomRoundState';
-import Log from 'utils/Log';
+import { GameRoomPlayingState } from './Models/GameRoomPlayingState';
 
 interface IGamePlayingProps {
   gameRoom: GameRoom;
@@ -14,7 +13,7 @@ interface IGamePlayingProps {
 
 interface IGamePlayingStates {
   currentGameUser?: GameUser;
-  currentGameRoundState: GameRoomRoundState;
+  currentGameRoomPlayingState: GameRoomPlayingState;
 }
 
 export default class GamePlaying extends React.Component<IGamePlayingProps, IGamePlayingStates> {
@@ -24,17 +23,21 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
     super(props);
     this.state = {
       currentGameUser: this.props.gameRoom.users.find(p => p.uid === this.props.uid),
-      currentGameRoundState: new GameRoomRoundState()
+      currentGameRoomPlayingState: this.props.gameRoom.playingState
     }
     this.gameData = new GameData(this.props.gameRoom.id);
 
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     if (this.state.currentGameUser?.role === GameUserRole.owner) {
-      this.gameData.startTimer(this.props.gameRoom, currentGameRoundState => {
-        Log.Info(currentGameRoundState);
-        this.setState({ currentGameRoundState });
+      await this.gameData.startTimerAsync(this.props.gameRoom, roundState => {
+
+        this.setState({ 
+          currentGameRoomPlayingState:{
+            ...this.state.currentGameRoomPlayingState,
+            roundState
+        } });
       });
     }
 
@@ -42,7 +45,9 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
 
 
 
-  componentWillUnmount() {
+  async componentWillUnmount() {
+    this.props.gameRoom.playingState=this.state.currentGameRoomPlayingState;
+    await this.gameData.createOrUpdateRoomAsync(this.props.gameRoom);
     this.gameData.dispose();
   }
 
@@ -50,7 +55,7 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
 
     return (
       <div>
-        <p>Game round:{this.state.currentGameRoundState.currentRound}, time left:{this.state.currentGameRoundState.timing}s, current player:xxx</p>
+        <p>Game round:{this.state.currentGameRoomPlayingState.roundState?.currentRound}, time left:{this.state.currentGameRoomPlayingState.roundState?.timing}s, current player:xxx</p>
         <CanvasDraw roomId={this.props.gameRoom.id} uid={this.props.uid}></CanvasDraw>
       </div>
     );

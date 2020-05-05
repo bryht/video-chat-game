@@ -5,7 +5,7 @@ import { GameRoom } from "./Models/GameRoom";
 import Log from "utils/Log";
 import { GameRoomState } from "./Models/GameRoomState";
 import { SocketHelper } from "utils/SocketHelper";
-import { GameRoomRoundState } from "./Models/GameRoomRoundState";
+import { GameRoomPlayingRoundState } from "./Models/GameRoomPlayingRoundState";
 
 export class GameData {
 
@@ -28,14 +28,21 @@ export class GameData {
     }
 
 
-    startTimer(room: GameRoom, roomRoundStateChanged: (data: GameRoomRoundState) => void) {
+    async startTimerAsync(room: GameRoom, roomRoundStateChanged: (data: GameRoomPlayingRoundState) => void) {
+
+        if (room.playingState.isTimerStarted) {
+            return;
+        }
         
-        this.socketHelper.startRoundTimer(room.round, room.roundTime,roomRoundStateChanged);
+        this.socketHelper.startRoundTimer(room.round, room.roundTime, roomRoundStateChanged);
+        room.playingState.currentPlayerUid=room.users[0].uid;
+        room.playingState.isTimerStarted=true;
+        await this.createOrUpdateRoomAsync(room);
     }
 
 
 
-    async joinRoom(roomId: string, gameUser: GameUser) {
+    async joinRoomAsync(roomId: string, gameUser: GameUser) {
         var room = await FirebaseHelper.dbGetByDocIdAsync<GameRoom>("game-sketch-room", roomId);
         if (room) {
             var user = room.users.find(p => p.uid === gameUser.uid)
@@ -56,20 +63,20 @@ export class GameData {
 
     }
 
-    async getRoom(roomId: string) {
+    async getRoomAsync(roomId: string) {
         return await FirebaseHelper.dbGetByDocIdAsync<GameRoom>("game-sketch-room", roomId);
     }
 
-    async createOrUpdateRoom(room: GameRoom) {
+    async createOrUpdateRoomAsync(room: GameRoom) {
 
         await FirebaseHelper.dbAddOrUpdateAsync("game-sketch-room", room.id, room);
     }
 
     async startGame(roomId: string) {
-        var room = await this.getRoom(roomId);
+        var room = await this.getRoomAsync(roomId);
         if (room) {
             room.roomState = GameRoomState.started;
-            await this.createOrUpdateRoom(room);
+            await this.createOrUpdateRoomAsync(room);
         }
     }
 

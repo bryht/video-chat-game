@@ -22,7 +22,7 @@ export class SocketHelper {
         this.socketClient.emit("message", new Message(type, data));
     }
 
-    startRoundTimer(roundNumber: number, timeLimit: number, onChange: (data: { currentRound: number, timing: number, isGoing: boolean }) => void) {
+    startRoundTimer(roundNumber: number, timeLimit: number, onChange: (data: { currentRound: number, timing: number, isFinished: boolean }) => void) {
         this.socketClient.on('timer', onChange);
         this.socketClient.emit('timer-start', { roundNumber, timeLimit });
     }

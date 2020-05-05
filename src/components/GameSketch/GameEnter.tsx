@@ -29,15 +29,15 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
   }
 
   async componentDidMount() {
-    let _gameRoom = await this.gameData.getRoom(this.props.roomId);
+    let _gameRoom = await this.gameData.getRoomAsync(this.props.roomId);
     if (_gameRoom == null) {
       _gameRoom = new GameRoom(this.props.roomId, GameRoomState.waiting);
-      this.gameData.createOrUpdateRoom(_gameRoom);
+      await this.gameData.createOrUpdateRoomAsync(_gameRoom);
     }
     if (!_gameRoom.users.find(p => p.uid === this.props.currentUser.id) && _gameRoom.users.length === 0) {
 
       let gameUser = new GameUser(this.props.currentUser.id, this.props.currentUser.name || WordHelper.newNoun(), GameUserState.waiting, GameUserRole.owner);
-      this.gameData.joinRoom(_gameRoom.id, gameUser)
+      await this.gameData.joinRoomAsync(_gameRoom.id, gameUser)
     }
     this.state = {
       gameRoom: _gameRoom
@@ -45,6 +45,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
 
   }
   componentWillUnmount() {
+    
     this.gameData.dispose();
   }
 

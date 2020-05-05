@@ -12,27 +12,27 @@ io.on('connection', (socket) => {
   socket.on('join', roomData => {
 
     socket.join(roomData.room);
+
     socket.on("message", data => {
       io.to(roomData.room).emit("message", data);
     });
 
-    let timer = null;
     socket.on("timer-start", config => {
       const { roundNumber, timeLimit } = config;
       let currentRound = 1;
       let currentRoundTiming = 0;
       let total = roundNumber * timeLimit;
-      timer = setInterval(() => {
+      let timer = setInterval(() => {
 
         currentRoundTiming++;
         if (currentRoundTiming > timeLimit) {
           currentRound++;
           currentRoundTiming -= timeLimit;
         }
-        var isGoing = (currentRound - 1) * timeLimit + currentRoundTiming < total;
-        console.log({ currentRound, timing: currentRoundTiming, isGoing });
-        io.to(roomData.room).emit('timer', { currentRound, timing: currentRoundTiming, isGoing });
-        if (!isGoing) {
+        var isFinished = (currentRound - 1) * timeLimit + currentRoundTiming >= total;
+        console.log({ currentRound, timing: currentRoundTiming, isFinished });
+        io.to(roomData.room).emit('timer', { currentRound, timing: currentRoundTiming, isFinished });
+        if (isFinished) {
           clearInterval(timer);
         }
       }, 1000);
