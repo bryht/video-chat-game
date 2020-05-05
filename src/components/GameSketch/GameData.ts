@@ -13,8 +13,7 @@ export class GameData {
     socketHelper: SocketHelper;
     constructor(roomId: string) {
         this.unSubscribeRoomChanged = () => { }
-        this.socketHelper = new SocketHelper(message => { });
-        this.socketHelper.joinRoom(roomId);
+        this.socketHelper = new SocketHelper(roomId);
     }
 
 
@@ -28,16 +27,20 @@ export class GameData {
     }
 
 
-    async startTimerAsync(room: GameRoom, roomRoundStateChanged: (data: GameRoomPlayingRoundState) => void) {
+    async startTimerAsync(room: GameRoom) {
 
         if (room.playingState.isTimerStarted) {
             return;
         }
-        
-        this.socketHelper.startRoundTimer(room.round, room.roundTime, roomRoundStateChanged);
-        room.playingState.currentPlayerUid=room.users[0].uid;
-        room.playingState.isTimerStarted=true;
+
+        this.socketHelper.startRoundTimer(room.round, room.roundTime);
+        room.playingState.currentPlayerUid = room.users[0].uid;
+        room.playingState.isTimerStarted = true;
         await this.createOrUpdateRoomAsync(room);
+    }
+
+    onRoomPlayingRoundStateChanged(onChange: (data: GameRoomPlayingRoundState) => void) {
+        this.socketHelper.onRoundTimerChanged(onChange);
     }
 
 

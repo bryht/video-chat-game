@@ -10,21 +10,28 @@ export class Message {
 }
 export class SocketHelper {
     socketClient: SocketIOClient.Socket;
-    constructor(onMessageChanged: (data: Message) => void) {
+    constructor(roomId: string) {
         this.socketClient = io({ path: '/api' });
-        this.socketClient.on('message', onMessageChanged);
+        this.joinRoom(roomId);
     }
 
-    joinRoom(room: string) {
+    private joinRoom(room: string) {
         this.socketClient.emit('join', { 'room': room });
     }
     emit<T>(type: string, data: T) {
         this.socketClient.emit("message", new Message(type, data));
     }
 
-    startRoundTimer(roundNumber: number, timeLimit: number, onChange: (data: { currentRound: number, timing: number, isFinished: boolean }) => void) {
-        this.socketClient.on('timer', onChange);
+    onMessageChanged(onChange: (data: Message) => void) {
+        this.socketClient.on('message', onChange);
+    }
+
+    startRoundTimer(roundNumber: number, timeLimit: number, ) {
         this.socketClient.emit('timer-start', { roundNumber, timeLimit });
+    }
+
+    onRoundTimerChanged(onChange: (data: { currentRound: number, timing: number, isFinished: boolean }) => void) {
+        this.socketClient.on('timer', onChange);
     }
 
     dispose() {

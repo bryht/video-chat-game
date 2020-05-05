@@ -31,15 +31,18 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
 
   async componentDidMount() {
     if (this.state.currentGameUser?.role === GameUserRole.owner) {
-      await this.gameData.startTimerAsync(this.props.gameRoom, roundState => {
-
-        this.setState({ 
-          currentGameRoomPlayingState:{
-            ...this.state.currentGameRoomPlayingState,
-            roundState
-        } });
-      });
+      await this.gameData.startTimerAsync(this.props.gameRoom);
     }
+    
+    this.gameData.onRoomPlayingRoundStateChanged(roundState=>{
+      
+      this.setState({ 
+        currentGameRoomPlayingState:{
+          ...this.state.currentGameRoomPlayingState,
+          roundState
+      } });
+      
+    })
 
   }
 

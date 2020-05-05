@@ -28,7 +28,7 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
     socketHelper: SocketHelper;
     constructor(props: Readonly<ICanvasWatcherProps>) {
         super(props);
-        this.socketHelper = new SocketHelper(this.messageChanged.bind(this));
+        this.socketHelper = new SocketHelper(this.props.roomId);
         this.canvasRef = React.createRef<HTMLCanvasElement>();
         this.state = {
             prevX: 0,
@@ -43,7 +43,6 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
     }
 
     componentDidMount() {
-        this.socketHelper.joinRoom(this.props.roomId);
         let canvas = this.canvasRef.current;
         if (canvas) {
             const bounding = canvas.getBoundingClientRect();
