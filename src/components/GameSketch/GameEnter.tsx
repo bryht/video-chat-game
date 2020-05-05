@@ -9,6 +9,7 @@ import { GameRoomState } from './Models/GameRoomState';
 import { User } from 'common/Models/User';
 import Loading from 'components/Loading/Loading';
 import GamePlaying from './GamePlaying';
+import { GameRoomPlayingRoundState } from './Models/GameRoomPlayingRoundState';
 
 interface IGameEnterProps {
   currentUser: User;
@@ -45,7 +46,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
 
   }
   componentWillUnmount() {
-    
+
     this.gameData.dispose();
   }
 
@@ -62,12 +63,18 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
     return this.state.gameRoom.users.length > 1 && this.state.gameRoom.users.find(p => p.uid === this.props.currentUser.id)?.role === GameUserRole.owner;
   }
 
+  gameFinished = async () => {
+    let _gameRoom = this.state.gameRoom;
+    _gameRoom.roomState = GameRoomState.waiting;
+    await this.gameData.createOrUpdateRoomAsync(_gameRoom);
+  }
+
   public render() {
     if (!this.state?.gameRoom) {
       return <Loading></Loading>
     }
     if (this.state.gameRoom.roomState === GameRoomState.started) {
-      return <GamePlaying gameRoom={this.state.gameRoom} uid={this.props.currentUser.id}></GamePlaying>
+      return <GamePlaying gameRoom={this.state.gameRoom} uid={this.props.currentUser.id} onFinished={this.gameFinished}></GamePlaying>
     }
     return (
       <div>

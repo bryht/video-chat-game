@@ -3,7 +3,6 @@ import styles from './GameSketch.module.scss';
 import { SocketHelper, Message } from 'utils/SocketHelper';
 import { Line } from './Models/Line';
 import { Canvas } from './Models/Canvas';
-import Log from 'utils/Log';
 
 interface ICanvasWatcherProps {
     roomId: string;
@@ -29,6 +28,7 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
     constructor(props: Readonly<ICanvasWatcherProps>) {
         super(props);
         this.socketHelper = new SocketHelper(this.props.roomId);
+        this.socketHelper.onMessageChanged(this.messageChanged.bind(this));
         this.canvasRef = React.createRef<HTMLCanvasElement>();
         this.state = {
             prevX: 0,
@@ -56,7 +56,6 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
     }
 
     draw(line: Line) {
-        Log.Info(line);
         let canvas = this.canvasRef.current;
         let context2d = canvas?.getContext("2d");
         if (canvas && context2d) {

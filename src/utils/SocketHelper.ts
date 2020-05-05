@@ -36,9 +36,7 @@ export class SocketHelper {
 
     dispose() {
         if (this.socketClient) {
-            this.socketClient.emit('timer-stop');
             this.socketClient.close();
-
         }
     }
 }
