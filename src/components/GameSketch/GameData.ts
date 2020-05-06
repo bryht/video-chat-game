@@ -6,7 +6,6 @@ import { SocketHelper } from "utils/SocketHelper";
 import Consts from "./Consts";
 import { GameUserState } from "./Models/GameUserState";
 import { GameRound } from "./Models/GameRound";
-import Log from "utils/Log";
 
 export class GameData {
 
@@ -42,11 +41,11 @@ export class GameData {
     }
 
     emitGameRoom() {
-        this.socketHelper.emit<GameRoom>("gameRoom", this.gameRoom)
+        this.socketHelper.emit<GameRoom>(Consts.gameRoom, this.gameRoom)
     }
 
     emitGameRound() {
-        this.socketHelper.emit<GameRound>("gameRound", this.gameRound)
+        this.socketHelper.emit<GameRound>(Consts.gameRound, this.gameRound)
     }
 
     startTimer() {
@@ -63,6 +62,10 @@ export class GameData {
 
     onGameRoundChanged(onChange: (data: GameRound) => void) {
         this.socketHelper.onRoundTimerChanged(data => {
+            if (this.gameRound.currentRound !== data.currentRound) {
+                this.setNextPlayer();
+
+            }
             this.gameRound.currentRound = data.currentRound;
             this.gameRound.timing = data.timing;
             this.gameRound.isFinished = data.isFinished;
@@ -70,7 +73,32 @@ export class GameData {
         });
     }
 
-    joinRoom(gameUser: GameUser) {
+    private setNextPlayer() {
+
+        let users = this.gameRoom.users.sort((a, b) => {
+            if (a.uid < b.uid) { return -1; }
+            if (a.uid > b.uid) { return 1; }
+            return 0;
+        });
+
+        let playingIndex = users.findIndex(p => p.userState === GameUserState.playing);
+        let nextPlayingIndex = playingIndex + 1 >= users.length ? 0 : playingIndex + 1;
+
+
+        for (let index = 0; index < users.length; index++) {
+            const element = users[index];
+            if (index === playingIndex) {
+                element.userState = GameUserState.waiting;
+            }
+            if (index === nextPlayingIndex) {
+                element.userState = GameUserState.playing;
+            }
+        }
+        this.gameRoom.users = users;
+        this.emitGameRoom();
+    }
+
+    async joinRoomAsync(gameUser: GameUser) {
         var user = this.gameRoom.users.find(p => p.uid === gameUser.uid)
         if (!user) {
             this.gameRoom.users.push(gameUser);
@@ -79,10 +107,14 @@ export class GameData {
             this.gameRoom.users[index] = gameUser;
         }
         this.emitGameRoom();
-        
+        await this.saveGameRoomAsync();
+
     }
     onGameRoomChanged(onChange: (gameRoom: GameRoom) => void) {
-        this.socketHelper.onEventChanged<GameRoom>("gameRoom", onChange);
+        this.socketHelper.onEventChanged<GameRoom>(Consts.gameRoom, data=>{
+            this.gameRoom=data;
+            onChange(data);
+        });
     }
 
     async startGameAsync() {
@@ -97,7 +129,7 @@ export class GameData {
         await this.saveGameRoundAsync();
     }
 
-    async finishGameAsync(){
+    async finishGameAsync() {
         this.gameRoom.roomState = RoomState.waiting;
         this.gameRoom.isTimerStarted = false;
         this.gameRound.currentRound = 1;

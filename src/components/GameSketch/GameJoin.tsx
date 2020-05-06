@@ -7,7 +7,6 @@ import { GameUserRole } from './Models/GameUserRole';
 import { GameUserState } from './Models/GameUserState';
 import Log from 'utils/Log';
 import { GameRoom } from './Models/GameRoom';
-import { Link } from 'react-router-dom';
 
 export interface IGameJoinProps {
     roomId: string;
@@ -26,9 +25,9 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
         super(props);
         this.gameData = new GameData(this.props.roomId);
         this.gameData.onGameRoomChanged(this.onGameRoomChanged);
-        this.state={
-            gameRoom:this.gameData.gameRoom,
-            gameUserName:''
+        this.state = {
+            gameRoom: this.gameData.gameRoom,
+            gameUserName: ''
         }
     }
 
@@ -45,10 +44,8 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
 
     }
 
-     componentWillUnmount() {
-        debugger;
-        Log.Info(this.gameData.gameRoom);
-         this.gameData.disposeAsync();
+    componentWillUnmount() {
+        this.gameData.disposeAsync();
     }
 
     onNameChanged = (name: string) => {
@@ -59,8 +56,7 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
 
     joinGame = async () => {
         var _gameUser = new GameUser(this.props.currentUser.id, this.state.gameUserName, GameUserState.waiting, GameUserRole.player);
-        this.gameData.joinRoom(_gameUser);
-        await this.gameData.saveGameRoomAsync();
+        await this.gameData.joinRoomAsync(_gameUser);
 
         window.location.pathname = window.location.pathname.replace('join', '');//TODO: switch to a callback
     }

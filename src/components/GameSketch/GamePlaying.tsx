@@ -32,14 +32,6 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
     }
     this.gameData.onGameRoundChanged(gameRound => {
 
-      //update currentPlayer
-      // let currentPlayerUid = this.state.gameRound.currentPlayerUid;
-      // if (this.state.gameRound.roundState.currentRound !== roundState.currentRound &&
-      //   roundState.currentRound > 1) {
-      //   currentPlayerUid = this.getNextGameUser(this.state.gameRound.currentPlayerUid).uid;
-      //   Log.Info(currentPlayerUid);
-      // }
-
       //update roundState
       this.setState({
         gameRound
@@ -67,23 +59,6 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
     return this.props.gameRoom.users.find(p => p.uid === uid);
   }
 
-  private getNextGameUser(uid: string) {
-    let users = this.props.gameRoom.users.sort((a, b) => {
-      if (a.uid < b.uid) { return -1; }
-      if (a.uid > b.uid) { return 1; }
-      return 0;
-    });
-    Log.Info(users);
-    let item = users.find(p => p.uid === uid);
-    if (item) {
-      let index = users.indexOf(item);
-      if (index < users.length - 1) {
-        return users[index + 1];
-      }
-    }
-    return users[0];
-
-  }
 
   private getCurrentPlayingGameUser() {
     return this.props.gameRoom.users.find(p => p.userState === GameUserState.playing);

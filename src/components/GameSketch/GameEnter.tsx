@@ -34,11 +34,11 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
     if (!_gameRoom.users.find(p => p.uid === this.props.currentUser.id) && _gameRoom.users.length === 0) {
 
       let gameUser = new GameUser(this.props.currentUser.id, this.props.currentUser.name || WordHelper.newNoun(), GameUserState.waiting, GameUserRole.owner);
-      this.gameData.joinRoom(gameUser)
-     
+      await this.gameData.joinRoomAsync(gameUser)
+
     }
     this.setState({
-      gameRoom:_gameRoom
+      gameRoom: _gameRoom
     })
   }
   async componentWillUnmount() {
