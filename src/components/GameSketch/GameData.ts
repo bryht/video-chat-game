@@ -61,11 +61,14 @@ export class GameData {
     }
 
     onGameRoundChanged(onChange: (data: GameRound) => void) {
-        this.socketHelper.onRoundTimerChanged(data => {
+        this.socketHelper.onRoundTimerChanged(async data => {
             if (this.gameRound.currentRound !== data.currentRound) {
-                this.setNextPlayer();
-
+               await this.setNextPlayerAsync();
             }
+            if (data.isFinished) {
+               await  this.finishGameAsync();
+            }
+
             this.gameRound.currentRound = data.currentRound;
             this.gameRound.timing = data.timing;
             this.gameRound.isFinished = data.isFinished;
@@ -73,7 +76,16 @@ export class GameData {
         });
     }
 
-    private setNextPlayer() {
+    onGameRoomChanged(onChange: (gameRoom: GameRoom) => void) {
+        this.socketHelper.onEventChanged<GameRoom>(Consts.gameRoom, async data => {
+            this.gameRoom = data;
+            await this.saveGameRoomAsync();
+            onChange(data);
+        });
+    }
+
+
+    private async setNextPlayerAsync() {
 
         let users = this.gameRoom.users.sort((a, b) => {
             if (a.uid < b.uid) { return -1; }
@@ -96,6 +108,7 @@ export class GameData {
         }
         this.gameRoom.users = users;
         this.emitGameRoom();
+        // await this.saveGameRoomAsync();
     }
 
     async joinRoomAsync(gameUser: GameUser) {
@@ -107,14 +120,7 @@ export class GameData {
             this.gameRoom.users[index] = gameUser;
         }
         this.emitGameRoom();
-        await this.saveGameRoomAsync();
 
-    }
-    onGameRoomChanged(onChange: (gameRoom: GameRoom) => void) {
-        this.socketHelper.onEventChanged<GameRoom>(Consts.gameRoom, data=>{
-            this.gameRoom=data;
-            onChange(data);
-        });
     }
 
     async startGameAsync() {
@@ -131,16 +137,13 @@ export class GameData {
 
     async finishGameAsync() {
         this.gameRoom.roomState = RoomState.waiting;
-        this.gameRoom.isTimerStarted = false;
-        this.gameRound.currentRound = 1;
-        this.gameRound.isFinished = false;
         this.emitGameRoom();
-        this.emitGameRound();
         await this.saveGameRoomAsync();
-        await this.saveGameRoundAsync();
     }
 
     async disposeAsync() {
+        await this.saveGameRoomAsync();
+        await this.saveGameRoundAsync();
         this.firebaseHelper.dispose();
         this.socketHelper.dispose();
     }

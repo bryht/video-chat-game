@@ -5,7 +5,6 @@ import { User } from 'common/Models/User';
 import { GameUser } from './Models/GameUser';
 import { GameUserRole } from './Models/GameUserRole';
 import { GameUserState } from './Models/GameUserState';
-import Log from 'utils/Log';
 import { GameRoom } from './Models/GameRoom';
 
 export interface IGameJoinProps {
