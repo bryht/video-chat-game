@@ -9,7 +9,6 @@ import { RoomState } from './Models/RoomState';
 import { User } from 'common/Models/User';
 import Loading from 'components/Loading/Loading';
 import GamePlaying from './GamePlaying';
-import Log from 'utils/Log';
 
 interface IGameEnterProps {
   currentUser: User;
@@ -52,19 +51,15 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
   }
 
   startGame = async () => {
-    this.gameData.startGame();
-    this.gameData.saveGameRoomAsync();
-    this.gameData.saveGameRoundAsync();
+    await this.gameData.startGameAsync();
   }
 
   isShowStart = () => {
     return this.state.gameRoom.users.length > 1 && this.state.gameRoom.users.find(p => p.uid === this.props.currentUser.id)?.role === GameUserRole.owner;
   }
 
-  gameFinished = () => {
-    this.gameData.finishGame();
-    this.gameData.saveGameRoomAsync();
-    this.gameData.saveGameRoundAsync();
+  gameFinished = async () => {
+    await this.gameData.finishGameAsync();
   }
 
   public render() {
@@ -78,10 +73,10 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
       <div>
         <h1>{this.state.gameRoom.id}</h1>
         <div>
-          10 round
+          {this.state.gameRoom.round} round
         </div>
         <div>
-          120 seconde per round
+          {this.state.gameRoom.roundTime} seconde per round
         </div>
 
         <ul>

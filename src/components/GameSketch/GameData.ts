@@ -85,24 +85,27 @@ export class GameData {
         this.socketHelper.onEventChanged<GameRoom>("gameRoom", onChange);
     }
 
-    startGame() {
+    async startGameAsync() {
 
         this.gameRoom.roomState = RoomState.started;
         this.gameRoom.isTimerStarted = false;
         this.gameRound.currentRound = 1;
         this.gameRound.isFinished = false;
-
         this.emitGameRoom();
         this.emitGameRound();
+        await this.saveGameRoomAsync();
+        await this.saveGameRoundAsync();
     }
 
-    finishGame(){
+    async finishGameAsync(){
         this.gameRoom.roomState = RoomState.waiting;
         this.gameRoom.isTimerStarted = false;
         this.gameRound.currentRound = 1;
         this.gameRound.isFinished = false;
         this.emitGameRoom();
         this.emitGameRound();
+        await this.saveGameRoomAsync();
+        await this.saveGameRoundAsync();
     }
 
     async disposeAsync() {
