@@ -1,8 +1,9 @@
 import * as React from 'react';
 import styles from './GameSketch.module.scss';
-import { SocketHelper, Message } from 'utils/SocketHelper';
+import { SocketHelper } from 'utils/SocketHelper';
 import { Line } from './Models/Line';
 import { Canvas } from './Models/Canvas';
+import Log from 'utils/Log';
 
 interface ICanvasWatcherProps {
     roomId: string;
@@ -28,7 +29,8 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
     constructor(props: Readonly<ICanvasWatcherProps>) {
         super(props);
         this.socketHelper = new SocketHelper(this.props.roomId);
-        this.socketHelper.onMessageChanged(this.messageChanged.bind(this));
+        this.socketHelper.onEventChanged('line',this.draw.bind(this));
+        this.socketHelper.onEventChanged('canvas',this.resizeCanvas.bind(this));
         this.canvasRef = React.createRef<HTMLCanvasElement>();
         this.state = {
             prevX: 0,
@@ -54,7 +56,7 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
             })
         }
     }
-
+   
     draw(line: Line) {
         let canvas = this.canvasRef.current;
         let context2d = canvas?.getContext("2d");
@@ -78,18 +80,6 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
             scaleWidth: data.width / this.state.canvasWidth
         })
 
-    }
-
-    messageChanged(message: Message) {
-        switch (message.type) {
-            case "line":
-                this.draw(message.data);
-                break;
-            case "canvas":
-                this.resizeCanvas(message.data);
-                break;
-
-        }
     }
 
     componentWillUnmount() {

@@ -26,13 +26,6 @@ export class SocketHelper {
         this.socketClient.on(event, onChange);
     }
 
-    emitMessage<T>(type: string, data: T) {
-        this.socketClient.emit("message", new Message(type, data));
-    }
-    onMessageChanged(onChange: (data: Message) => void) {
-        this.socketClient.on('message', onChange);
-    }
-
     startRoundTimer(roundNumber: number, timeLimit: number, ) {
         this.socketClient.emit('timer-start', { roundNumber, timeLimit });
     }

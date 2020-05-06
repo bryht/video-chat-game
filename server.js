@@ -13,8 +13,12 @@ io.on('connection', (socket) => {
 
     socket.join(roomData.room);
 
-    socket.on("message", data => {
-      io.to(roomData.room).emit("message", data);
+    socket.on("line", data => {
+      io.to(roomData.room).emit("line", data);
+    });
+
+    socket.on("canvas", data => {
+      io.to(roomData.room).emit("canvas", data);
     });
 
     socket.on("gameRoom", data => {
