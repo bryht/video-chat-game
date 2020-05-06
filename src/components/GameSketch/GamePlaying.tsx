@@ -58,6 +58,7 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
 
     if (this.state.currentGameUser?.role === GameUserRole.owner) {
       this.gameData.startTimer();
+      await this.gameData.saveGameRoomAsync();
     }
 
   }

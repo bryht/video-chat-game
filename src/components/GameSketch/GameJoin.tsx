@@ -7,6 +7,7 @@ import { GameUserRole } from './Models/GameUserRole';
 import { GameUserState } from './Models/GameUserState';
 import Log from 'utils/Log';
 import { GameRoom } from './Models/GameRoom';
+import { Link } from 'react-router-dom';
 
 export interface IGameJoinProps {
     roomId: string;
@@ -25,6 +26,10 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
         super(props);
         this.gameData = new GameData(this.props.roomId);
         this.gameData.onGameRoomChanged(this.onGameRoomChanged);
+        this.state={
+            gameRoom:this.gameData.gameRoom,
+            gameUserName:''
+        }
     }
 
     onGameRoomChanged = (gameRoom: GameRoom) => {
@@ -40,10 +45,10 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
 
     }
 
-    async  componentWillUnmount() {
+     componentWillUnmount() {
         debugger;
         Log.Info(this.gameData.gameRoom);
-        await this.gameData.disposeAsync();
+         this.gameData.disposeAsync();
     }
 
     onNameChanged = (name: string) => {
@@ -55,8 +60,8 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
     joinGame = async () => {
         var _gameUser = new GameUser(this.props.currentUser.id, this.state.gameUserName, GameUserState.waiting, GameUserRole.player);
         this.gameData.joinRoom(_gameUser);
-
         await this.gameData.saveGameRoomAsync();
+
         window.location.pathname = window.location.pathname.replace('join', '');//TODO: switch to a callback
     }
 
@@ -64,7 +69,7 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
         return (
             <div>
                 <div>Please input your name:</div>
-                <input type="text" value={this.state?.gameUserName} onChange={e => this.onNameChanged(e.target.value)} />
+                <input type="text" value={this.state.gameUserName} onChange={e => this.onNameChanged(e.target.value)} />
                 <button onClick={this.joinGame}>Join</button>
             </div>
         );

@@ -79,6 +79,7 @@ export class GameData {
             this.gameRoom.users[index] = gameUser;
         }
         this.emitGameRoom();
+        
     }
     onGameRoomChanged(onChange: (gameRoom: GameRoom) => void) {
         this.socketHelper.onEventChanged<GameRoom>("gameRoom", onChange);
@@ -105,9 +106,6 @@ export class GameData {
     }
 
     async disposeAsync() {
-        await this.saveGameRoomAsync();
-        await this.saveGameRoundAsync();
-        Log.Info(this.gameRoom);
         this.firebaseHelper.dispose();
         this.socketHelper.dispose();
     }
