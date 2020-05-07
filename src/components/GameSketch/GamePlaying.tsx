@@ -47,13 +47,21 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
     }
   }
 
-  private getGameUser(uid: string) {
+  private getGameUser=(uid: string)=> {
     return this.props.gameData.gameRoom.users.find(p => p.uid === uid);
   }
 
 
-  private getCurrentPlayingGameUser() {
+  private getCurrentPlayingGameUser=()=> {
     return this.props.gameData.gameRoom.users.find(p => p.userState === GameUserState.playing);
+  }
+
+  pauseGame = () => {
+    this.props.gameData.socketHelper.emit('timer-pause',{});
+  }
+
+  startGame = () => {
+    this.props.gameData.socketHelper.emit('timer-start',{});
   }
 
 
@@ -61,6 +69,8 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
 
     return (
       <div>
+        <button onClick={this.pauseGame}>Pause</button>
+        <button onClick={this.startGame}>Start</button>
         <p>Hi {this.state.currentGameUser?.name},Game round:{this.state.gameRound.currentRound},
           time left:{this.state.gameRoom.roundTime - this.state.gameRound.timing}s,
           current player:{this.getCurrentPlayingGameUser()?.name}</p>

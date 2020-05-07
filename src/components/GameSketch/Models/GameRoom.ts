@@ -7,8 +7,8 @@ export class GameRoom {
     }
     id: string;
     roomState: RoomState= RoomState.waiting;
-    round: number = 12;
-    roundTime: number = 120;
+    round: number = 3;
+    roundTime: number = 6;
     users: Array<GameUser> = [];
     isTimerStarted: boolean = false;
 }

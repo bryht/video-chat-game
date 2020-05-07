@@ -2,6 +2,49 @@ var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http, { path: '/api' });
 
+var timers = [];
+
+function getOrCreateTimer(key) {
+  var item = timers[key];
+  if (item) {
+    return item;
+  } else {
+    timers[key] = {};
+    timers[key].isPaused = false;
+    timers[key].onChanged = null;
+    timers[key].timer = setInterval(() => {
+      if (!timers[key].isPaused) {
+        if (timers[key].onChanged) {
+          timers[key].onChanged()
+        }
+      }
+    }, 1000);;
+    return timers[key];
+  }
+}
+
+function pauseTimer(key) {
+  var item = timers[key];
+  if (item) {
+    item.isPaused = true;
+  }
+}
+
+function startTimer(key) {
+  var item = timers[key];
+  if (item) {
+    item.isPaused = false;
+  }
+}
+
+function disposeTimer(key) {
+  var item = timers[key];
+  if (item) {
+    clearInterval(item.timer);
+    item = null;
+  }
+}
+
 io.on('connection', (socket) => {
 
   console.log('a user connected');
@@ -33,25 +76,29 @@ io.on('connection', (socket) => {
       let currentRound = 1;
       let currentRoundTiming = 0;
       let total = roundNumber * timeLimit;
-      let timer = setInterval(() => {
 
-        currentRoundTiming++;
-        if (currentRoundTiming > timeLimit) {
-          currentRound++;
-          currentRoundTiming -= timeLimit;
+      let timer = getOrCreateTimer(roomData.room);
+      if (!timer.onChanged) {
+        timer.onChanged = () => {
+          currentRoundTiming++;
+          if (currentRoundTiming > timeLimit) {
+            currentRound++;
+            currentRoundTiming -= timeLimit;
+          }
+          var isFinished = (currentRound - 1) * timeLimit + currentRoundTiming >= total;
+          console.log({ currentRound, timing: currentRoundTiming, isFinished });
+          io.to(roomData.room).emit('gameRound', { currentRound, timing: currentRoundTiming, isFinished });
+          if (isFinished) {
+            disposeTimer(roomData.room);
+          }
         }
-        var isFinished = (currentRound - 1) * timeLimit + currentRoundTiming >= total;
-        console.log({ currentRound, timing: currentRoundTiming, isFinished });
-        io.to(roomData.room).emit('gameRound', { currentRound, timing: currentRoundTiming, isFinished });
-        if (isFinished) {
-          clearInterval(timer);
-        }
-      }, 1000);
+      }
+      socket.on('timer-pause', () => {
+        pauseTimer(roomData.room);
+      })
 
-      socket.on('timer-stop', () => {
-        if (timer) {
-          clearInterval(timer);
-        }
+      socket.on('timer-start', () => {
+        startTimer(roomData.room);
       })
 
     });
