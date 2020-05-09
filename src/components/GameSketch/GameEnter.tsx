@@ -45,7 +45,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
   }
   async componentWillUnmount() {
     Log.Info("dispose data");
-    
+
     await this.gameData.disposeAsync();
   }
 
@@ -84,7 +84,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
             <li key={user.uid}>{user.name} is ready</li>)
           }
         </ul>
-        {this.isShowStart() && <button onClick={this.startGame}>Start</button>}
+        {this.isShowStart() && <button onClick={() => this.startGame()}>Start</button>}
         <div>
           <div>Join through link:</div>
           <a href={`/game-sketch/${this.state.gameRoom.id}/join`}>http://letshaveaparty.online/game-sketch/{this.state.gameRoom.id}/join</a>

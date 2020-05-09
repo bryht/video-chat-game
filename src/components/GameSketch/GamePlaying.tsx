@@ -2,14 +2,14 @@ import * as React from 'react';
 import CanvasDraw from './CanvasDraw';
 import { GameUser } from './Models/GameUser';
 import { GameData } from './GameData';
-import { GameUserRole } from './Models/GameUserRole';
 import CanvasWatcher from './CanvasWatcher';
 import { GameRound } from './Models/GameRound';
 import { GameUserState } from './Models/GameUserState';
 import { GameRoom } from './Models/GameRoom';
 
 interface IGamePlayingProps {
-  gameData: GameData;
+  // gameData: GameData;
+  gameId: string;
   uid: string;
 }
 
@@ -21,19 +21,16 @@ interface IGamePlayingStates {
 
 export default class GamePlaying extends React.Component<IGamePlayingProps, IGamePlayingStates> {
 
+  gameData: GameData;
   constructor(props: Readonly<IGamePlayingProps>) {
     super(props);
-    this.state = {
-      gameRound: this.props.gameData.gameRound,
-      gameRoom: this.props.gameData.gameRoom,
-      currentGameUser: this.getGameUser(this.props.uid),
-    }
-    this.props.gameData.onGameRoundChanged(gameRound => {
+    this.gameData = new GameData(this.props.gameId);
+    this.gameData.onGameRoundChanged(gameRound => {
       this.setState({
         gameRound
       });
     })
-    this.props.gameData.onGameRoomChanged(gameRoom => {
+    this.gameData.onGameRoomChanged(gameRoom => {
       this.setState({
         gameRoom
       });
@@ -41,27 +38,24 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
 
   }
   async componentDidMount() {
-    if (this.state.currentGameUser?.role === GameUserRole.owner) {
-      await this.props.gameData.initialAsync();
-      this.props.gameData.startTimer();
-    }
+    await this.gameData.initialAsync();
   }
 
-  private getGameUser=(uid: string)=> {
-    return this.props.gameData.gameRoom.users.find(p => p.uid === uid);
+  private getGameUser = (uid: string) => {
+    return this.gameData.gameRoom.users.find(p => p.uid === uid);
   }
 
 
-  private getCurrentPlayingGameUser=()=> {
-    return this.props.gameData.gameRoom.users.find(p => p.userState === GameUserState.playing);
+  private getCurrentPlayingGameUser = () => {
+    return this.gameData.gameRoom.users.find(p => p.userState === GameUserState.playing);
   }
 
   pauseGame = () => {
-    this.props.gameData.socketHelper.emit('timer-pause',{});
+    this.gameData.socketHelper.emit('pauseTimer', {});
   }
 
-  startGame = () => {
-    this.props.gameData.socketHelper.emit('timer-start',{});
+  resumeGame = () => {
+    this.gameData.socketHelper.emit('resumeTimer', {});
   }
 
 
@@ -70,8 +64,8 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
     return (
       <div>
         <button onClick={this.pauseGame}>Pause</button>
-        <button onClick={this.startGame}>Start</button>
-        <p>Hi {this.state.currentGameUser?.name},Game round:{this.state.gameRound.currentRound},
+        <button onClick={this.resumeGame}>Resume</button>
+        <p>Hi {this.getGameUser(this.props.uid)?.name},Game round:{this.state.gameRound.currentRound},
           time left:{this.state.gameRoom.roundTime - this.state.gameRound.timing}s,
           current player:{this.getCurrentPlayingGameUser()?.name}</p>
         {this.state.currentGameUser?.uid === this.getCurrentPlayingGameUser()?.uid ?

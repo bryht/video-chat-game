@@ -2,48 +2,55 @@ var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http, { path: '/api' });
 
-var timers = [];
+var games = [];
 
-function getOrCreateTimer(key) {
-  var item = timers[key];
+function getOrCreateGame(gameId) {
+  var item = games[gameId];
   if (item) {
     return item;
   } else {
-    timers[key] = {};
-    timers[key].isPaused = false;
-    timers[key].onChanged = null;
-    timers[key].timer = setInterval(() => {
-      if (!timers[key].isPaused) {
-        if (timers[key].onChanged) {
-          timers[key].onChanged()
+    var game = {};
+    game.isPaused = false;
+    game.onTimerChanged = null;
+    game.startTimer = () => {
+      game.timer = setInterval(() => {
+        if (!game.isPaused) {
+          if (game.onTimerChanged) {
+            game.onTimerChanged()
+          }
         }
-      }
-    }, 1000);;
-    return timers[key];
+      }, 1000);
+    }
+    game.stopTimer = () => {
+      clearInterval(game.timer);
+    };
+    game.resumeTimer = () => {
+      game.isPaused = false;
+    };
+    game.pauseTimer = () => {
+      game.isPaused = true;
+    };
+    game.updateRoom = (room) => {
+      game.room = room;
+    };
+    game.updateUser = (users) => {
+      game.users = users;
+    };
+    game.updateRound = (round) => {
+      game.round = round;
+    }
+    game.updateLins = (round, user, line) => {
+
+    }
+    game.dispose = () => {
+      clearInterval(game.startTimer);
+      game = null;
+    }
+    games[gameId] = game;
+    return game;
   }
 }
 
-function pauseTimer(key) {
-  var item = timers[key];
-  if (item) {
-    item.isPaused = true;
-  }
-}
-
-function startTimer(key) {
-  var item = timers[key];
-  if (item) {
-    item.isPaused = false;
-  }
-}
-
-function disposeTimer(key) {
-  var item = timers[key];
-  if (item) {
-    clearInterval(item.timer);
-    item = null;
-  }
-}
 
 io.on('connection', (socket) => {
 
@@ -52,53 +59,65 @@ io.on('connection', (socket) => {
     console.log("user disconnected");
   });
 
-  socket.on('join', roomData => {
+  socket.on('join', gameData => {
 
-    socket.join(roomData.room);
+    var gameId = gameData.id;
+    var game = getOrCreateGame(gameId);
+    socket.join(gameId);
 
     socket.on("line", data => {
-      io.to(roomData.room).emit("line", data);
+      io.to(gameId).emit("line", data);
     });
 
     socket.on("canvas", data => {
-      io.to(roomData.room).emit("canvas", data);
+      io.to(gameId).emit("canvas", data);
     });
 
     socket.on("gameRoom", data => {
-      io.to(roomData.room).emit("gameRoom", data);
+      game.updateRoom(data);
+      io.to(gameId).emit("gameRoom", data);
     });
     socket.on("gameRound", data => {
-      io.to(roomData.room).emit("gameRound", data);
+      game.updateRound(data);
+      io.to(gameId).emit("gameRound", data);
     });
 
-    socket.on("timer-start", config => {
-      const { roundNumber, timeLimit } = config;
-      let currentRound = 1;
-      let currentRoundTiming = 0;
-      let total = roundNumber * timeLimit;
+    socket.on("startGame", () => {
+      const { round, roundTime } = game.room;
+      let { currentRound, timing } = { currentRound: 1, timing: 0 };
 
-      let timer = getOrCreateTimer(roomData.room);
-      if (!timer.onChanged) {
-        timer.onChanged = () => {
-          currentRoundTiming++;
-          if (currentRoundTiming > timeLimit) {
+      let total = round * roundTime;
+
+      if (!game.onTimerChanged) {
+        game.onTimerChanged = () => {
+          timing++;
+          if (timing > roundTime) {
             currentRound++;
-            currentRoundTiming -= timeLimit;
+            timing -= roundTime;
           }
-          var isFinished = (currentRound - 1) * timeLimit + currentRoundTiming >= total;
-          console.log({ currentRound, timing: currentRoundTiming, isFinished });
-          io.to(roomData.room).emit('gameRound', { currentRound, timing: currentRoundTiming, isFinished });
+          var isFinished = (currentRound - 1) * roundTime + timing >= total;
+          console.log({ currentRound, timing, isFinished });
+          io.to(gameId).emit('gameRound', { currentRound, timing, isFinished });
           if (isFinished) {
-            disposeTimer(roomData.room);
+            game.stopTimer();
           }
-        }
+        };
       }
-      socket.on('timer-pause', () => {
-        pauseTimer(roomData.room);
+
+      game.startTimer();
+
+      socket.on('pauseTimer', () => {
+        game.pauseTimer();
+        console.log(game);
       })
 
-      socket.on('timer-start', () => {
-        startTimer(roomData.room);
+      socket.on('resumeTimer', () => {
+        game.resumeTimer();
+        console.log(game);
+      })
+
+      socket.on('leaveRoom', () => {
+        game.dispose();
       })
 
     });

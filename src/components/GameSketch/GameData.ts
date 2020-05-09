@@ -13,11 +13,11 @@ export class GameData {
     firebaseHelper: FirebaseHelper;
     gameRoom: GameRoom;
     gameRound: GameRound;
-    constructor(roomId: string) {
-        this.socketHelper = new SocketHelper(roomId);
+    constructor(gameId: string) {
+        this.socketHelper = new SocketHelper(gameId);
         this.firebaseHelper = new FirebaseHelper();
-        this.gameRoom = new GameRoom(roomId);
-        this.gameRound = new GameRound(roomId);
+        this.gameRoom = new GameRoom(gameId);
+        this.gameRound = new GameRound(gameId);
     }
 
 
@@ -39,7 +39,7 @@ export class GameData {
     async saveGameRoundAsync() {
         await this.firebaseHelper.dbAddOrUpdateAsync(Consts.gameSketchRound, this.gameRound.id, this.gameRound);
     }
-
+    
     emitGameRoom() {
         this.socketHelper.emit<GameRoom>(Consts.gameRoom, this.gameRoom)
     }
@@ -48,13 +48,13 @@ export class GameData {
         this.socketHelper.emit<GameRound>(Consts.gameRound, this.gameRound)
     }
 
-    startTimer() {
+    startGame() {
 
         if (this.gameRoom.isTimerStarted) {
             return;
         }
 
-        this.socketHelper.startRoundTimer(this.gameRoom.round, this.gameRoom.roundTime);
+        this.socketHelper.startGame();
         this.gameRoom.users[0].userState = GameUserState.playing;
         this.gameRoom.isTimerStarted = true;
         this.emitGameRoom();
