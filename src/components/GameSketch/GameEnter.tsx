@@ -67,7 +67,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
       return <Loading></Loading>
     }
     if (this.state.gameRoom.roomState === RoomState.started) {
-      return <GamePlaying gameData={this.gameData} uid={this.props.currentUser.id}></GamePlaying>
+      return <GamePlaying  gameId={this.props.roomId} uid={this.props.currentUser.id}></GamePlaying>
     }
     return (
       <div>

@@ -30,6 +30,10 @@ export class SocketHelper {
         this.socketClient.emit('startGame');
     }
 
+    initialGame(){
+        this.socketClient.emit('initial');
+    }
+
     onRoundTimerChanged(onChange: (data: { currentRound: number, timing: number, isFinished: boolean }) => void) {
         this.socketClient.on('gameRound', onChange);
     }

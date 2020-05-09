@@ -1,3 +1,5 @@
+import { GameUser } from "./GameUser";
+
 export class GameRound {
     constructor(id: string) {
         this.id = id;
@@ -6,4 +8,7 @@ export class GameRound {
     currentRound: number = 0;
     timing: number = 0;
     isFinished: boolean = false;
+    playingUser: GameUser | null = null;
+    wordsForChoosing: Array<string> = [];
+    wordForGuess: string = '';
 }

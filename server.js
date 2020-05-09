@@ -82,6 +82,16 @@ io.on('connection', (socket) => {
       io.to(gameId).emit("gameRound", data);
     });
 
+    socket.on("initial", () => {
+      if (game.room) {
+        io.to(gameId).emit("gameRoom", game.room);
+      }
+      if (game.round) {
+        io.to(gameId).emit("gameRound", game.round);
+      }
+
+    });
+
     socket.on("startGame", () => {
       const { round, roundTime } = game.room;
       let { currentRound, timing } = { currentRound: 1, timing: 0 };

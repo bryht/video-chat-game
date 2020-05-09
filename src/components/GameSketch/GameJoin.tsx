@@ -6,6 +6,7 @@ import { GameUser } from './Models/GameUser';
 import { GameUserRole } from './Models/GameUserRole';
 import { GameUserState } from './Models/GameUserState';
 import { GameRoom } from './Models/GameRoom';
+import Log from 'utils/Log';
 
 export interface IGameJoinProps {
     roomId: string;
@@ -31,7 +32,7 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
     }
 
     onGameRoomChanged = (gameRoom: GameRoom) => {
-
+        Log.Info(gameRoom);
         this.setState({ gameRoom });
     }
     async  componentDidMount() {

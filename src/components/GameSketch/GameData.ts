@@ -22,22 +22,23 @@ export class GameData {
 
 
     async initialAsync() {
-        let _gameRoom = await this.firebaseHelper.dbGetByDocIdAsync<GameRoom>(Consts.gameSketchRoom, this.gameRoom.id);
-        if (_gameRoom) {
-            this.gameRoom = _gameRoom;
-        }
-        let _gameRound = await this.firebaseHelper.dbGetByDocIdAsync<GameRound>(Consts.gameSketchRound, this.gameRound.id);
-        if (_gameRound) {
-            this.gameRound = _gameRound;
-        }
+        // let _gameRoom = await this.firebaseHelper.dbGetByDocIdAsync<GameRoom>(Consts.gameSketchRoom, this.gameRoom.id);
+        // if (_gameRoom) {
+        //     this.gameRoom = _gameRoom;
+        // }
+        // let _gameRound = await this.firebaseHelper.dbGetByDocIdAsync<GameRound>(Consts.gameSketchRound, this.gameRound.id);
+        // if (_gameRound) {
+        //     this.gameRound = _gameRound;
+        // }
+        this.socketHelper.initialGame();
     }
 
     async saveGameRoomAsync() {
-        await this.firebaseHelper.dbAddOrUpdateAsync(Consts.gameSketchRoom, this.gameRoom.id, this.gameRoom);
+        // await this.firebaseHelper.dbAddOrUpdateAsync(Consts.gameSketchRoom, this.gameRoom.id, this.gameRoom);
     }
 
     async saveGameRoundAsync() {
-        await this.firebaseHelper.dbAddOrUpdateAsync(Consts.gameSketchRound, this.gameRound.id, this.gameRound);
+        // await this.firebaseHelper.dbAddOrUpdateAsync(Consts.gameSketchRound, this.gameRound.id, this.gameRound);
     }
     
     emitGameRoom() {
@@ -50,13 +51,9 @@ export class GameData {
 
     startGame() {
 
-        if (this.gameRoom.isTimerStarted) {
-            return;
-        }
 
         this.socketHelper.startGame();
         this.gameRoom.users[0].userState = GameUserState.playing;
-        this.gameRoom.isTimerStarted = true;
         this.emitGameRoom();
     }
 
@@ -106,7 +103,7 @@ export class GameData {
                 element.userState = GameUserState.playing;
             }
         }
-        this.gameRoom.users = users;
+        // this.gameRoom.users = users;
         this.emitGameRoom();
         // await this.saveGameRoomAsync();
     }
@@ -126,7 +123,6 @@ export class GameData {
     async startGameAsync() {
 
         this.gameRoom.roomState = RoomState.started;
-        this.gameRoom.isTimerStarted = false;
         this.gameRound.currentRound = 1;
         this.gameRound.isFinished = false;
         this.emitGameRoom();
