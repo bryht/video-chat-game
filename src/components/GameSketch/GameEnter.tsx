@@ -13,11 +13,12 @@ import Log from 'utils/Log';
 
 interface IGameEnterProps {
   currentUser: User;
-  roomId: string;
+  gameId: string;
 }
 
 interface IGameEnterStates {
   gameRoom: GameRoom;
+  gameUsers: Array<GameUser>;
 }
 
 export default class GameEnter extends React.Component<IGameEnterProps, IGameEnterStates> {
@@ -25,41 +26,43 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
   gameData: GameData;
   constructor(props: Readonly<IGameEnterProps>) {
     super(props);
-    this.gameData = new GameData(this.props.roomId);
+    this.gameData = new GameData(this.props.gameId);
     this.gameData.onGameRoomChanged(this.onGameRoomChanged);
+    this.gameData.onGameRoomUsersChanged(this.onGameRoomUsersChanged);
+    this.state = {
+      gameUsers: [],
+      gameRoom: new GameRoom(this.props.gameId)
+    }
   }
 
   async componentDidMount() {
+    this.gameData.initialAsync();
     Log.Info("initial data");
-    await this.gameData.initialAsync();
-    let _gameRoom = this.gameData.gameRoom;
-    if (!_gameRoom.users.find(p => p.uid === this.props.currentUser.id) && _gameRoom.users.length === 0) {
 
-      let gameUser = new GameUser(this.props.currentUser.id, this.props.currentUser.name || WordHelper.newNoun(), GameUserState.waiting, GameUserRole.owner);
-      await this.gameData.joinRoomAsync(gameUser)
-
-    }
-    this.setState({
-      gameRoom: _gameRoom
-    })
   }
   async componentWillUnmount() {
     Log.Info("dispose data");
-
     await this.gameData.disposeAsync();
   }
 
   onGameRoomChanged = (gameRoom: GameRoom) => {
-
     this.setState({ gameRoom });
   }
+  onGameRoomUsersChanged = (gameUsers: Array<GameUser>) => {
+    this.setState({ gameUsers });
 
-  startGame = async () => {
-    await this.gameData.startGameAsync();
+    if (this.state.gameUsers.length === 0) {
+      let gameUser = new GameUser(this.props.currentUser.id, this.props.currentUser.name || WordHelper.newNoun(), GameUserState.waiting, GameUserRole.owner);
+      this.gameData.joinRoomAsync(gameUser)
+    }
+  }
+
+  startGame = () => {
+    this.gameData.startGame();
   }
 
   isShowStart = () => {
-    return this.state.gameRoom.users.length > 1 && this.state.gameRoom.users.find(p => p.uid === this.props.currentUser.id)?.role === GameUserRole.owner;
+    return this.state.gameUsers.length > 1 && this.state.gameUsers.find(p => p.uid === this.props.currentUser.id)?.role === GameUserRole.owner;
   }
 
   public render() {
@@ -67,11 +70,11 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
       return <Loading></Loading>
     }
     if (this.state.gameRoom.roomState === RoomState.started) {
-      return <GamePlaying  gameId={this.props.roomId} uid={this.props.currentUser.id}></GamePlaying>
+      return <GamePlaying gameId={this.props.gameId} uid={this.props.currentUser.id}></GamePlaying>
     }
     return (
       <div>
-        <h1>{this.state.gameRoom.id}</h1>
+        <h1>{this.state.gameRoom.gameId}</h1>
         <div>
           {this.state.gameRoom.round} round
         </div>
@@ -80,14 +83,14 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
         </div>
 
         <ul>
-          {this.state.gameRoom.users.map(user =>
+          {this.state.gameUsers.map(user =>
             <li key={user.uid}>{user.name} is ready</li>)
           }
         </ul>
         {this.isShowStart() && <button onClick={() => this.startGame()}>Start</button>}
         <div>
           <div>Join through link:</div>
-          <a href={`/game-sketch/${this.state.gameRoom.id}/join`}>http://letshaveaparty.online/game-sketch/{this.state.gameRoom.id}/join</a>
+          <a href={`/game-sketch/${this.state.gameRoom.gameId}/join`}>http://letshaveaparty.online/game-sketch/{this.state.gameRoom.gameId}/join</a>
         </div>
         <ul>
 

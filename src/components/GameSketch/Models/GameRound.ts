@@ -1,10 +1,10 @@
 import { GameUser } from "./GameUser";
 
 export class GameRound {
-    constructor(id: string) {
-        this.id = id;
+    constructor(gameId: string) {
+        this.gameId = gameId;
     }
-    id: string;
+    gameId: string;
     currentRound: number = 0;
     timing: number = 0;
     isFinished: boolean = false;

@@ -10,14 +10,11 @@ export class Message {
 }
 export class SocketHelper {
     socketClient: SocketIOClient.Socket;
-    constructor(gameId: string) {
+    constructor(roomId: string) {
         this.socketClient = io({ path: '/api' });
-        this.joinGame(gameId);
+        this.socketClient.emit('join', { 'id': roomId });
     }
 
-    private joinGame(gameId: string) {
-        this.socketClient.emit('join', { 'id': gameId });
-    }
     emit<T>(event: string, data: T) {
         this.socketClient.emit(event, data);
     }
@@ -26,17 +23,17 @@ export class SocketHelper {
         this.socketClient.on(event, onChange);
     }
 
-    startGame() {
-        this.socketClient.emit('startGame');
-    }
+    // startGame() {
+    //     this.socketClient.emit('startGame');
+    // }
 
-    initialGame(){
-        this.socketClient.emit('initial');
-    }
+    // initialGame(){
+    //     this.socketClient.emit('initial');
+    // }
 
-    onRoundTimerChanged(onChange: (data: { currentRound: number, timing: number, isFinished: boolean }) => void) {
-        this.socketClient.on('gameRound', onChange);
-    }
+    // onRoundTimerChanged(onChange: (data: { currentRound: number, timing: number, isFinished: boolean }) => void) {
+    //     this.socketClient.on('gameRound', onChange);
+    // }
 
     dispose() {
         if (this.socketClient) {

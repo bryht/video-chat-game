@@ -33,8 +33,13 @@ function getOrCreateGame(gameId) {
     game.updateRoom = (room) => {
       game.room = room;
     };
-    game.updateUser = (users) => {
-      game.users = users;
+    game.updateUser = (user) => {
+      var index = game.users.findIndex(p => p.uid === user.uid);
+      if (index > -1) {
+        game.users[index] = user;
+      } else {
+        game.users.push(user);
+      }
     };
     game.updateRound = (round) => {
       game.round = round;
@@ -51,6 +56,28 @@ function getOrCreateGame(gameId) {
   }
 }
 
+function setNextPlayer(users) {
+
+  users.sort((a, b) => {
+    if (a.uid < b.uid) { return -1; }
+    if (a.uid > b.uid) { return 1; }
+    return 0;
+  });
+
+  let playingIndex = users.findIndex(p => p.userState === 1);
+  let nextPlayingIndex = playingIndex + 1 >= users.length ? 0 : playingIndex + 1;
+
+  for (let index = 0; index < users.length; index++) {
+    const element = users[index];
+    if (index === playingIndex) {
+      element.userState = 0;
+    }
+    if (index === nextPlayingIndex) {
+      element.userState = 1;
+    }
+  }
+  return users;
+}
 
 io.on('connection', (socket) => {
 
@@ -74,6 +101,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on("gameRoom", data => {
+      console.log(data);
       game.updateRoom(data);
       io.to(gameId).emit("gameRoom", data);
     });
@@ -81,14 +109,25 @@ io.on('connection', (socket) => {
       game.updateRound(data);
       io.to(gameId).emit("gameRound", data);
     });
+    socket.on("gameUserUpdate", data => {
+      game.updateUser(data);
+      io.to(gameId).emit("gameUsers", game.users);
+    });
 
-    socket.on("initial", () => {
-      if (game.room) {
-        io.to(gameId).emit("gameRoom", game.room);
+    socket.on("initialGame", (data) => {
+      if (!game.room) {
+        game.room = data.gameRoom;
       }
-      if (game.round) {
-        io.to(gameId).emit("gameRound", game.round);
+      if (!game.round) {
+        game.round = data.gameRound;
       }
+      if (!game.users) {
+        game.users = data.gameUsers;
+      }
+
+      io.to(gameId).emit("gameRoom", game.room);
+      io.to(gameId).emit("gameRound", game.round);
+      io.to(gameId).emit("gameUsers", game.users);
 
     });
 
@@ -103,6 +142,8 @@ io.on('connection', (socket) => {
           timing++;
           if (timing > roundTime) {
             currentRound++;
+            game.users = setNextPlayer(game.users);
+            io.to(gameId).emit('gameUsers', game.users);
             timing -= roundTime;
           }
           var isFinished = (currentRound - 1) * roundTime + timing >= total;

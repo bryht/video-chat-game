@@ -6,6 +6,7 @@ import CanvasWatcher from './CanvasWatcher';
 import { GameRound } from './Models/GameRound';
 import { GameUserState } from './Models/GameUserState';
 import { GameRoom } from './Models/GameRoom';
+import Consts from './Consts';
 
 interface IGamePlayingProps {
   // gameData: GameData;
@@ -14,9 +15,10 @@ interface IGamePlayingProps {
 }
 
 interface IGamePlayingStates {
-  currentGameUser?: GameUser;
+
   gameRound: GameRound;
   gameRoom: GameRoom;
+  gameUsers: Array<GameUser>;
 }
 
 export default class GamePlaying extends React.Component<IGamePlayingProps, IGamePlayingStates> {
@@ -25,37 +27,35 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
   constructor(props: Readonly<IGamePlayingProps>) {
     super(props);
     this.gameData = new GameData(this.props.gameId);
-    this.gameData.onGameRoundChanged(gameRound => {
-      this.setState({
-        gameRound
-      });
-    })
-    this.gameData.onGameRoomChanged(gameRoom => {
-      this.setState({
-        gameRoom
-      });
-    })
+    this.state = {
+      gameRoom: this.gameData.gameRoom,
+      gameRound: this.gameData.gameRound,
+      gameUsers: this.gameData.gameUsers
+    }
+    this.gameData.onGameRoundChanged(gameRound => this.setState({ gameRound }))
+    this.gameData.onGameRoomChanged(gameRoom => this.setState({ gameRoom }))
+    this.gameData.onGameRoomUsersChanged(gameUsers => this.setState({ gameUsers }))
 
   }
-  async componentDidMount() {
-    await this.gameData.initialAsync();
+  componentDidMount() {
+    this.gameData.initialAsync();
   }
 
   private getGameUser = (uid: string) => {
-    return this.gameData.gameRoom.users.find(p => p.uid === uid);
+    return this.state.gameUsers.find(p => p.uid === uid);
   }
 
 
   private getCurrentPlayingGameUser = () => {
-    return this.gameData.gameRoom.users.find(p => p.userState === GameUserState.playing);
+    return this.state.gameUsers.find(p => p.userState === GameUserState.playing);
   }
 
   pauseGame = () => {
-    this.gameData.socketHelper.emit('pauseTimer', {});
+    this.gameData.socketHelper.emit(Consts.pauseTimer, {});
   }
 
   resumeGame = () => {
-    this.gameData.socketHelper.emit('resumeTimer', {});
+    this.gameData.socketHelper.emit(Consts.resumeTimer, {});
   }
 
 
@@ -68,9 +68,9 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
         <p>Hi {this.getGameUser(this.props.uid)?.name},Game round:{this.state.gameRound.currentRound},
           time left:{this.state.gameRoom.roundTime - this.state.gameRound.timing}s,
           current player:{this.getCurrentPlayingGameUser()?.name}</p>
-        {this.state.currentGameUser?.uid === this.getCurrentPlayingGameUser()?.uid ?
-          <CanvasDraw roomId={this.state.gameRoom.id} uid={this.props.uid}></CanvasDraw> :
-          <CanvasWatcher roomId={this.state.gameRoom.id} uid={this.props.uid}></CanvasWatcher>
+        {this.props.uid === this.getCurrentPlayingGameUser()?.uid ?
+          <CanvasDraw roomId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasDraw> :
+          <CanvasWatcher roomId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasWatcher>
         }
       </div>
     );

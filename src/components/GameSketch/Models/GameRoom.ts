@@ -1,13 +1,11 @@
 import { RoomState } from "./RoomState";
-import { GameUser } from "./GameUser";
 
 export class GameRoom {
-    constructor(id: string) {
-        this.id = id;
+    constructor(gameId: string) {
+        this.gameId = gameId;
     }
-    id: string;
+    gameId: string;
     roomState: RoomState = RoomState.waiting;
     round: number = 3;
     roundTime: number = 6;
-    users: Array<GameUser> = [];
 }
