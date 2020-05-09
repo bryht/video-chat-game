@@ -105,10 +105,12 @@ io.on('connection', (socket) => {
       game.updateRoom(data);
       io.to(gameId).emit("gameRoom", data);
     });
+
     socket.on("gameRound", data => {
       game.updateRound(data);
       io.to(gameId).emit("gameRound", data);
     });
+
     socket.on("gameUserUpdate", data => {
       game.updateUser(data);
       io.to(gameId).emit("gameUsers", game.users);
@@ -133,8 +135,9 @@ io.on('connection', (socket) => {
 
     socket.on("startGame", () => {
       const { round, roundTime } = game.room;
+      game.room.roomState=1;
+      io.to(gameId).emit('gameRoom',game.room);
       let { currentRound, timing } = { currentRound: 1, timing: 0 };
-
       let total = round * roundTime;
 
       if (!game.onTimerChanged) {
@@ -151,27 +154,30 @@ io.on('connection', (socket) => {
           io.to(gameId).emit('gameRound', { currentRound, timing, isFinished });
           if (isFinished) {
             game.stopTimer();
+            game.room.roomState=0;//TODO: clean logic here
+            io.to(gameId).emit('gameRoom',game.room);
           }
         };
       }
 
       game.startTimer();
 
-      socket.on('pauseTimer', () => {
-        game.pauseTimer();
-        console.log(game);
-      })
-
-      socket.on('resumeTimer', () => {
-        game.resumeTimer();
-        console.log(game);
-      })
-
-      socket.on('leaveRoom', () => {
-        game.dispose();
-      })
 
     });
+
+    socket.on('pauseTimer', () => {
+      game.pauseTimer();
+      console.log(game);
+    })
+
+    socket.on('resumeTimer', () => {
+      game.resumeTimer();
+      console.log(game);
+    })
+
+    socket.on('leaveRoom', () => {
+      game.dispose();
+    })
 
 
   })

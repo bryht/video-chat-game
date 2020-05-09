@@ -56,8 +56,7 @@ export class GameData {
 
         this.gameUsers[0].userState = GameUserState.playing;
         this.socketHelper.emit(Consts.gameUserUpdate, this.gameUsers[0]);
-        this.gameRoom.roomState= RoomState.started;
-        this.socketHelper.emit(Consts.startGame, this.gameRoom);
+        this.socketHelper.emit(Consts.startGame,{});
 
     }
 
