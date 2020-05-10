@@ -1,49 +1,54 @@
 import * as React from 'react';
 import styles from './GameSketch.module.scss';
 import { GameData } from './GameData';
-import { WordHelper } from 'utils/WordHelper';
 import { GameUser } from './Models/GameUser';
 import { GameUserState } from './Models/GameUserState';
 
-interface IChoosingWordProps {
+interface ISelectWinnerProps {
     gameId: string;
     uid: string;
 }
 
-interface IChoosingWordStates {
-    wordsForChoosing: Array<string>;
+interface ISelectWinnerStates {
     gameUsers: Array<GameUser>;
+    gameUsersForSelect:Array<GameUser>;
 
 }
 
-export default class ChoosingWord extends React.Component<IChoosingWordProps, IChoosingWordStates> {
+export default class SelectWinner extends React.Component<ISelectWinnerProps, ISelectWinnerStates> {
 
 
     gameData: GameData;
-    constructor(props: Readonly<IChoosingWordProps>) {
+    constructor(props: Readonly<ISelectWinnerProps>) {
         super(props);
         this.state = {
-            wordsForChoosing: WordHelper.newNounArray(5),
-            gameUsers: []
+            gameUsers: [],
+            gameUsersForSelect:[]
         }
         this.gameData = new GameData(this.props.gameId)
-        this.gameData.onGameRoomUsersChanged(gameUsers => this.setState({ gameUsers }))
+        this.gameData.onGameRoomUsersChanged(gameUsers => {
+            this.setState({ 
+                gameUsers,
+                gameUsersForSelect:gameUsers.filter(p=>p.uid!==this.props.uid)
+            });
+        })
     }
 
     componentDidMount() {
         this.gameData.initial();
     }
 
-
-
     componentWillUnmount() {
         this.gameData.dispose();
     }
 
-    chooseWord = (word: string) => {
+    chooseWinner = (winnerGamerUser: GameUser) => {
+
+        winnerGamerUser.score++;
+        this.gameData.updateGameUser(winnerGamerUser);
+
         var currentGameUser = this.state.gameUsers.find(p => p.uid === this.props.uid);
         if (currentGameUser) {
-            currentGameUser.wordChosen = word;
             currentGameUser.userState = GameUserState.playing;
             this.gameData.updateGameUser(currentGameUser);
         }
@@ -54,8 +59,8 @@ export default class ChoosingWord extends React.Component<IChoosingWordProps, IC
 
         return (<div>
             <ul>
-                {this.state.wordsForChoosing.map(item => {
-                    return <li>{item} <br></br> <button onClick={() => this.chooseWord(item)}>choose</button> </li>;
+                {this.state.gameUsersForSelect.map(item => {
+                    return <li>{item.name} <br></br> <button onClick={() => this.chooseWinner(item)}>choose</button> </li>;
                 })}
             </ul>
         </div>)

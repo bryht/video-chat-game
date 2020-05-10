@@ -10,6 +10,7 @@ import Consts from './Consts';
 import Log from 'utils/Log';
 import Loading from 'components/Loading/Loading';
 import ChoosingWord from './ChoosingWord';
+import SelectWinner from './SelectWinner';
 
 interface IGamePlayingProps {
   // gameData: GameData;
@@ -51,7 +52,7 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
     this.setState({ gameUsers })
     Log.Info(gameUsers);
 
-    var choosingUser = this.state.gameUsers.find(p => p.userState === GameUserState.choosing);
+    var choosingUser = this.state.gameUsers.find(p => p.userState === GameUserState.choosing || GameUserState.selectWinner);
     if (choosingUser) {
       this.gameData.pauseGame();
     }
@@ -82,8 +83,18 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
         return <CanvasDraw roomId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasDraw>;
       case GameUserState.waiting:
         return <CanvasWatcher roomId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasWatcher>;
+      case GameUserState.selectWinner:
+        return <SelectWinner gameId={this.state.gameRoom.gameId} uid={this.props.uid} ></SelectWinner>
       default:
         return <Loading></Loading>
+    }
+  }
+
+  selectWinner = () => {
+    var currentGameUser = this.getCurrentGameUser();
+    if (currentGameUser) {
+      currentGameUser.userState = GameUserState.selectWinner;
+      this.gameData.updateGameUser(currentGameUser);
     }
   }
 
@@ -92,9 +103,7 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
 
     return (
       <div>
-        <ul>
-
-        </ul>
+        {this.getCurrentGameUser()?.userState === GameUserState.playing && <button onClick={this.selectWinner}>Next</button>}
         <p>Hi {this.getCurrentGameUser()?.name},Game round:{this.state.gameRound.currentRound},
           time left:{this.state.gameRoom.roundTime - this.state.gameRound.timing}s,
           current player:{this.getCurrentPlayingGameUser()?.name}</p>
