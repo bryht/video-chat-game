@@ -8,5 +8,5 @@ export class GameRoom {
     gameId: string;
     roomState: RoomState = RoomState.waiting;
     round: number = 3;
-    roundTime: number = 10;
+    roundTime: number = 60;
 }

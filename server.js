@@ -173,12 +173,10 @@ io.on('connection', (socket) => {
 
     socket.on('pauseTimer', () => {
       game.pauseTimer();
-      console.log(game);
     })
 
     socket.on('resumeTimer', () => {
       game.resumeTimer();
-      console.log(game);
     })
 
     socket.on('leaveRoom', () => {

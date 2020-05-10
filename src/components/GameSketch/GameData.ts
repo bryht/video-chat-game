@@ -28,9 +28,6 @@ export class GameData {
     }
 
     startGame() {
-
-        this.gameUsers[0].userState = GameUserState.waiting;
-        this.socketHelper.emit(Consts.gameUserUpdate, this.gameUsers[0]);
         this.socketHelper.emit(Consts.startGame, {});
     }
 

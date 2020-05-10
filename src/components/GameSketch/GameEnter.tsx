@@ -52,7 +52,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
     this.setState({ gameUsers });
 
     if (this.state.gameUsers.length === 0) {
-      let gameUser = new GameUser(this.props.currentUser.id, this.props.currentUser.name || WordHelper.newNoun(), GameUserState.waiting, GameUserRole.owner);
+      let gameUser = new GameUser(this.props.currentUser.id, this.props.currentUser.name || WordHelper.newNoun(), GameUserState.choosing, GameUserRole.owner);
       this.gameData.joinRoom(gameUser)
     }
   }

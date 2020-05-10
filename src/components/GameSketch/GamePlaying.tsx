@@ -6,7 +6,6 @@ import CanvasWatcher from './CanvasWatcher';
 import { GameRound } from './Models/GameRound';
 import { GameUserState } from './Models/GameUserState';
 import { GameRoom } from './Models/GameRoom';
-import Consts from './Consts';
 import Log from 'utils/Log';
 import Loading from 'components/Loading/Loading';
 import ChoosingWord from './ChoosingWord';
@@ -103,10 +102,10 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
 
     return (
       <div>
-        {this.getCurrentGameUser()?.userState === GameUserState.playing && <button onClick={this.selectWinner}>Next</button>}
+        {this.getCurrentGameUser()?.userState === GameUserState.playing && <button onClick={this.selectWinner}>Select Winner for word {this.getCurrentGameUser()?.wordChosen}</button>}
         <p>Hi {this.getCurrentGameUser()?.name},Game round:{this.state.gameRound.currentRound},
           time left:{this.state.gameRoom.roundTime - this.state.gameRound.timing}s,
-          current player:{this.getCurrentPlayingGameUser()?.name}</p>
+          current player:{this.getCurrentPlayingGameUser()?.name}, </p>
         {this.getCurrentUserScreen()}
       </div>
     );

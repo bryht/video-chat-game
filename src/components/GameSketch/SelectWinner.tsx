@@ -49,7 +49,7 @@ export default class SelectWinner extends React.Component<ISelectWinnerProps, IS
 
         var currentGameUser = this.state.gameUsers.find(p => p.uid === this.props.uid);
         if (currentGameUser) {
-            currentGameUser.userState = GameUserState.playing;
+            currentGameUser.userState = GameUserState.choosing;
             this.gameData.updateGameUser(currentGameUser);
         }
     }
