@@ -102,6 +102,10 @@ io.on('connection', (socket) => {
       io.to(gameId).emit("canvas", data);
     });
 
+    socket.on("canvasClean", () => {
+      io.to(gameId).emit("canvasClean", {});
+    });
+
     socket.on("gameRoom", data => {
       game.updateRoom(data);
       io.to(gameId).emit("gameRoom", data);
