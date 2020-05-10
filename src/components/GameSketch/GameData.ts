@@ -9,11 +9,11 @@ import Log from "utils/Log";
 
 export class GameData {
 
-    socketHelper: SocketHelper;
-    firebaseHelper: FirebaseHelper;
-    gameRoom: GameRoom;
-    gameRound: GameRound;
-    gameUsers: Array<GameUser>;
+    private socketHelper: SocketHelper;
+    private firebaseHelper: FirebaseHelper;
+    private gameRoom: GameRoom;
+    private gameRound: GameRound;
+    private gameUsers: Array<GameUser>;
     constructor(gameId: string) {
         this.socketHelper = new SocketHelper(gameId);
         this.firebaseHelper = new FirebaseHelper();
@@ -27,20 +27,19 @@ export class GameData {
         this.socketHelper.emit(Consts.initialGame, { gameRoom: this.gameRoom, gameRound: this.gameRound, gameUsers: this.gameUsers });
     }
 
-    emitGameRoom() {
-        this.socketHelper.emit<GameRoom>(Consts.gameRoom, this.gameRoom)
-    }
-
-    emitGameRound() {
-        this.socketHelper.emit<GameRound>(Consts.gameRound, this.gameRound)
-    }
-
     startGame() {
 
-        this.gameUsers[0].userState = GameUserState.playing;
+        this.gameUsers[0].userState = GameUserState.waiting;
         this.socketHelper.emit(Consts.gameUserUpdate, this.gameUsers[0]);
-        this.socketHelper.emit(Consts.startGame,{});
+        this.socketHelper.emit(Consts.startGame, {});
+    }
 
+    pauseGame() {
+        this.socketHelper.emit(Consts.pauseTimer, {});
+    }
+
+    resumeGame() {
+        this.socketHelper.emit(Consts.resumeTimer, {});
     }
 
     onGameRoundChanged(onChange: (gameRound: GameRound) => void) {
@@ -52,7 +51,6 @@ export class GameData {
 
     onGameRoomChanged(onChange: (gameRoom: GameRoom) => void) {
         this.socketHelper.onEventChanged<GameRoom>(Consts.gameRoom, data => {
-            Log.Info(data);
             this.gameRoom = data;
             onChange(data);
         });
@@ -66,6 +64,10 @@ export class GameData {
     }
 
     joinRoom(gameUser: GameUser) {
+        this.socketHelper.emit<GameUser>(Consts.gameUserUpdate, gameUser);
+    }
+
+    updateGameUser(gameUser:GameUser){
         this.socketHelper.emit<GameUser>(Consts.gameUserUpdate, gameUser);
     }
 

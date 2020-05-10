@@ -3,7 +3,6 @@ import styles from './GameSketch.module.scss';
 import { SocketHelper } from 'utils/SocketHelper';
 import { Line } from './Models/Line';
 import { Canvas } from './Models/Canvas';
-import Log from 'utils/Log';
 
 interface ICanvasWatcherProps {
     roomId: string;

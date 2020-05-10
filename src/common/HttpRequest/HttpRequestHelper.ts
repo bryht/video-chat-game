@@ -19,7 +19,7 @@ export default class HttpRequestHelper {
                 if (request.readyState === 4 && request.status === 200) {
                     return resolve(JSON.parse(request.response) as T);
                 } else {
-                    Log.Info(request.status + request.responseText);
+                    Log.Warning(request.status + request.responseText);
                 }
             };
             request.open(requestObj.method, "baseUrl" + requestObj.url);

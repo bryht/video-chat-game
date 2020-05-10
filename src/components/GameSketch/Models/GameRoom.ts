@@ -1,4 +1,5 @@
 import { RoomState } from "./RoomState";
+import { GameUser } from "./GameUser";
 
 export class GameRoom {
     constructor(gameId: string) {
@@ -7,5 +8,5 @@ export class GameRoom {
     gameId: string;
     roomState: RoomState = RoomState.waiting;
     round: number = 3;
-    roundTime: number = 6;
+    roundTime: number = 10;
 }

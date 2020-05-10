@@ -58,7 +58,7 @@ function getOrCreateGame(gameId) {
   }
 }
 
-function setNextPlayer(users) {
+function setNextPlayerState(users) {
 
   users.sort((a, b) => {
     if (a.uid < b.uid) { return -1; }
@@ -66,16 +66,16 @@ function setNextPlayer(users) {
     return 0;
   });
 
-  let playingIndex = users.findIndex(p => p.userState === 1);
+  let playingIndex = users.findIndex(p => p.userState !== 'waiting');
   let nextPlayingIndex = playingIndex + 1 >= users.length ? 0 : playingIndex + 1;
 
   for (let index = 0; index < users.length; index++) {
     const element = users[index];
     if (index === playingIndex) {
-      element.userState = 0;
+      element.userState = 'waiting';
     }
     if (index === nextPlayingIndex) {
-      element.userState = 1;
+      element.userState = 'choosing';
     }
   }
   return users;
@@ -146,14 +146,19 @@ io.on('connection', (socket) => {
 
         if (timing > roundTime) {
           currentRound++;
-          game.users = setNextPlayer(game.users);
+          //round change logic
+          game.users = setNextPlayerState(game.users);
           io.to(gameId).emit('gameUsers', game.users);
           timing -= roundTime;
         }
 
         var isFinished = (currentRound - 1) * roundTime + timing >= total;
-        io.to(gameId).emit('gameRound', { currentRound, timing, isFinished });
-        console.log({ currentRound, timing, isFinished });
+        game.round.currentRound = currentRound;
+        game.round.timing = timing;
+        game.round.isFinished = isFinished;
+        io.to(gameId).emit('gameRound', game.round);
+        
+        console.log(game.round);
 
         if (isFinished) {
           game.stopGame();

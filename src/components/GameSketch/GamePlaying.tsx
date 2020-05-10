@@ -7,6 +7,9 @@ import { GameRound } from './Models/GameRound';
 import { GameUserState } from './Models/GameUserState';
 import { GameRoom } from './Models/GameRoom';
 import Consts from './Consts';
+import Log from 'utils/Log';
+import Loading from 'components/Loading/Loading';
+import ChoosingWord from './ChoosingWord';
 
 interface IGamePlayingProps {
   // gameData: GameData;
@@ -15,7 +18,6 @@ interface IGamePlayingProps {
 }
 
 interface IGamePlayingStates {
-
   gameRound: GameRound;
   gameRoom: GameRoom;
   gameUsers: Array<GameUser>;
@@ -28,34 +30,61 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
     super(props);
     this.gameData = new GameData(this.props.gameId);
     this.state = {
-      gameRoom: this.gameData.gameRoom,
-      gameRound: this.gameData.gameRound,
-      gameUsers: this.gameData.gameUsers
+      gameRoom: new GameRoom(this.props.gameId),
+      gameRound: new GameRound(this.props.gameId),
+      gameUsers: [],
     }
-    this.gameData.onGameRoundChanged(gameRound => this.setState({ gameRound }))
+    this.gameData.onGameRoundChanged(this.onGameRoundChanged)
     this.gameData.onGameRoomChanged(gameRoom => this.setState({ gameRoom }))
-    this.gameData.onGameRoomUsersChanged(gameUsers => this.setState({ gameUsers }))
+    this.gameData.onGameRoomUsersChanged(this.onGameRoomUsersChanged)
 
   }
   componentDidMount() {
     this.gameData.initial();
   }
 
-  private getGameUser = (uid: string) => {
-    return this.state.gameUsers.find(p => p.uid === uid);
+  onGameRoundChanged = (gameRound: GameRound) => {
+    this.setState({ gameRound });
+  }
+  onGameRoomUsersChanged = (gameUsers: Array<GameUser>) => {
+
+    this.setState({ gameUsers })
+    Log.Info(gameUsers);
+
+    var choosingUser = this.state.gameUsers.find(p => p.userState === GameUserState.choosing);
+    if (choosingUser) {
+      this.gameData.pauseGame();
+    }
+
+    var playingUser = this.state.gameUsers.find(p => p.userState === GameUserState.playing);
+    if (playingUser) {
+      this.gameData.resumeGame();
+    }
+
+  }
+
+  private getCurrentGameUser = () => {
+    return this.state.gameUsers.find(p => p.uid === this.props.uid);
   }
 
 
   private getCurrentPlayingGameUser = () => {
-    return this.state.gameUsers.find(p => p.userState === GameUserState.playing);
+    return this.state.gameUsers.find(p => p.userState !== GameUserState.waiting);
   }
 
-  pauseGame = () => {
-    this.gameData.socketHelper.emit(Consts.pauseTimer, {});
-  }
 
-  resumeGame = () => {
-    this.gameData.socketHelper.emit(Consts.resumeTimer, {});
+  getCurrentUserScreen = () => {
+    var currentGameUser = this.getCurrentGameUser();
+    switch (currentGameUser?.userState) {
+      case GameUserState.choosing:
+        return <ChoosingWord gameId={this.state.gameRoom.gameId} uid={this.props.uid}></ChoosingWord>
+      case GameUserState.playing:
+        return <CanvasDraw roomId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasDraw>;
+      case GameUserState.waiting:
+        return <CanvasWatcher roomId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasWatcher>;
+      default:
+        return <Loading></Loading>
+    }
   }
 
 
@@ -63,15 +92,13 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
 
     return (
       <div>
-        <button onClick={this.pauseGame}>Pause</button>
-        <button onClick={this.resumeGame}>Resume</button>
-        <p>Hi {this.getGameUser(this.props.uid)?.name},Game round:{this.state.gameRound.currentRound},
+        <ul>
+
+        </ul>
+        <p>Hi {this.getCurrentGameUser()?.name},Game round:{this.state.gameRound.currentRound},
           time left:{this.state.gameRoom.roundTime - this.state.gameRound.timing}s,
           current player:{this.getCurrentPlayingGameUser()?.name}</p>
-        {this.props.uid === this.getCurrentPlayingGameUser()?.uid ?
-          <CanvasDraw roomId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasDraw> :
-          <CanvasWatcher roomId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasWatcher>
-        }
+        {this.getCurrentUserScreen()}
       </div>
     );
   }

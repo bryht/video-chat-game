@@ -6,7 +6,6 @@ import { GameUser } from './Models/GameUser';
 import { GameUserRole } from './Models/GameUserRole';
 import { GameUserState } from './Models/GameUserState';
 import { GameRoom } from './Models/GameRoom';
-import Log from 'utils/Log';
 
 export interface IGameJoinProps {
     roomId: string;
@@ -14,7 +13,6 @@ export interface IGameJoinProps {
 }
 
 export interface IGameJoinState {
-    gameRoom: GameRoom;
     gameUserName: string;
 
 }
@@ -24,21 +22,15 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
     constructor(props: IGameJoinProps) {
         super(props);
         this.gameData = new GameData(this.props.roomId);
-        this.gameData.onGameRoomChanged(this.onGameRoomChanged);
         this.state = {
-            gameRoom: this.gameData.gameRoom,
             gameUserName: ''
         }
     }
 
-    onGameRoomChanged = (gameRoom: GameRoom) => {
-        Log.Info(gameRoom);
-        this.setState({ gameRoom });
-    }
+
     componentDidMount() {
         this.gameData.initial();
         this.setState({
-            gameRoom: this.gameData.gameRoom,
             gameUserName: this.props.currentUser.name || WordHelper.newNoun()
         })
 

@@ -1,5 +1,5 @@
 export enum GameUserState {
-    waiting,
-    playing,
-    choosingWord
+    waiting = 'waiting',
+    playing = 'playing',
+    choosing = 'choosing'
 }
