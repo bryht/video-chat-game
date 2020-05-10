@@ -12,7 +12,7 @@ function getOrCreateGame(gameId) {
     var game = {};
     game.isPaused = false;
     game.onTimerChanged = null;
-    game.startTimer = () => {
+    game.startGame = () => {
       game.timer = setInterval(() => {
         if (!game.isPaused) {
           if (game.onTimerChanged) {
@@ -21,8 +21,10 @@ function getOrCreateGame(gameId) {
         }
       }, 1000);
     }
-    game.stopTimer = () => {
+    game.stopGame = () => {
       clearInterval(game.timer);
+      game.room.roomState = 0;
+      delete game.onTimerChanged;
     };
     game.resumeTimer = () => {
       game.isPaused = false;
@@ -101,7 +103,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on("gameRoom", data => {
-      console.log(data);
       game.updateRoom(data);
       io.to(gameId).emit("gameRoom", data);
     });
@@ -135,32 +136,32 @@ io.on('connection', (socket) => {
 
     socket.on("startGame", () => {
       const { round, roundTime } = game.room;
-      game.room.roomState=1;
-      io.to(gameId).emit('gameRoom',game.room);
+      game.room.roomState = 1;
+      io.to(gameId).emit('gameRoom', game.room);
       let { currentRound, timing } = { currentRound: 1, timing: 0 };
       let total = round * roundTime;
 
-      if (!game.onTimerChanged) {
-        game.onTimerChanged = () => {
-          timing++;
-          if (timing > roundTime) {
-            currentRound++;
-            game.users = setNextPlayer(game.users);
-            io.to(gameId).emit('gameUsers', game.users);
-            timing -= roundTime;
-          }
-          var isFinished = (currentRound - 1) * roundTime + timing >= total;
-          console.log({ currentRound, timing, isFinished });
-          io.to(gameId).emit('gameRound', { currentRound, timing, isFinished });
-          if (isFinished) {
-            game.stopTimer();
-            game.room.roomState=0;//TODO: clean logic here
-            io.to(gameId).emit('gameRoom',game.room);
-          }
-        };
-      }
+      game.onTimerChanged = () => {
+        timing++;
 
-      game.startTimer();
+        if (timing > roundTime) {
+          currentRound++;
+          game.users = setNextPlayer(game.users);
+          io.to(gameId).emit('gameUsers', game.users);
+          timing -= roundTime;
+        }
+
+        var isFinished = (currentRound - 1) * roundTime + timing >= total;
+        io.to(gameId).emit('gameRound', { currentRound, timing, isFinished });
+        console.log({ currentRound, timing, isFinished });
+
+        if (isFinished) {
+          game.stopGame();
+          io.to(gameId).emit('gameRoom', game.room);
+        }
+      };
+
+      game.startGame();
 
 
     });

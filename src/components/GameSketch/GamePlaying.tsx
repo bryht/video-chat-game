@@ -38,7 +38,7 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
 
   }
   componentDidMount() {
-    this.gameData.initialAsync();
+    this.gameData.initial();
   }
 
   private getGameUser = (uid: string) => {

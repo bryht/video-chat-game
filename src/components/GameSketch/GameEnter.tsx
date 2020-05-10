@@ -35,14 +35,14 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
     }
   }
 
-  async componentDidMount() {
-    this.gameData.initialAsync();
+  componentDidMount() {
+    this.gameData.initial();
     Log.Info("initial data");
 
   }
-  async componentWillUnmount() {
+  componentWillUnmount() {
     Log.Info("dispose data");
-    await this.gameData.disposeAsync();
+    this.gameData.dispose();
   }
 
   onGameRoomChanged = (gameRoom: GameRoom) => {
@@ -53,7 +53,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
 
     if (this.state.gameUsers.length === 0) {
       let gameUser = new GameUser(this.props.currentUser.id, this.props.currentUser.name || WordHelper.newNoun(), GameUserState.waiting, GameUserRole.owner);
-      this.gameData.joinRoomAsync(gameUser)
+      this.gameData.joinRoom(gameUser)
     }
   }
 

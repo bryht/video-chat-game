@@ -35,8 +35,8 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
         Log.Info(gameRoom);
         this.setState({ gameRoom });
     }
-    async  componentDidMount() {
-        await this.gameData.initialAsync();
+    componentDidMount() {
+        this.gameData.initial();
         this.setState({
             gameRoom: this.gameData.gameRoom,
             gameUserName: this.props.currentUser.name || WordHelper.newNoun()
@@ -50,9 +50,9 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
         })
     }
 
-    joinGame = async () => {
+    joinGame = () => {
         var _gameUser = new GameUser(this.props.currentUser.id, this.state.gameUserName, GameUserState.waiting, GameUserRole.player);
-        await this.gameData.joinRoomAsync(_gameUser);
+        this.gameData.joinRoom(_gameUser);
 
         window.location.pathname = window.location.pathname.replace('join', '');//TODO: switch to a callback
     }
