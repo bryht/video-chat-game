@@ -10,10 +10,51 @@ function getOrCreateGame(gameId) {
     return item;
   } else {
     var game = {};
-    game.isPaused = false;
+    game.isPaused = true;
     game.onTimerChanged = null;
     game.startGame = () => {
+
+      //initial game
+      const { round, roundTime } = game.room;
+      game.room.roomState = 1;
+      io.to(gameId).emit('gameRoom', game.room);
+      let { currentRound, timing } = { currentRound: 1, timing: 0 };
+      let total = round * roundTime;
+      for (let index = 0; index < game.users.length; index++) {
+        game.users[index].userState = 'waiting';
+      }
+      game.users[0].userState = 'choosing';
+
+      //set game round logic
+      game.onTimerChanged = () => {
+        timing++;
+
+        if (timing > roundTime) {
+          currentRound++;
+          //round change logic
+          game.users = setNextPlayerState(game.users);
+          io.to(gameId).emit('gameUsers', game.users);
+          io.to(gameId).emit("canvasClean", {});
+          timing -= roundTime;
+        }
+
+        var isFinished = (currentRound - 1) * roundTime + timing >= total;
+        game.round.currentRound = currentRound;
+        game.round.timing = timing;
+        game.round.isFinished = isFinished;
+        io.to(gameId).emit('gameRound', game.round);
+
+        console.log(game.round);
+
+        if (isFinished) {
+          game.stopGame();
+          io.to(gameId).emit('gameRoom', game.room);
+        }
+      };
+
+      //set game timer
       game.timer = setInterval(() => {
+        console.log(game.isPaused);
         if (!game.isPaused) {
           if (game.onTimerChanged) {
             game.onTimerChanged()
@@ -24,6 +65,7 @@ function getOrCreateGame(gameId) {
     game.stopGame = () => {
       clearInterval(game.timer);
       game.room.roomState = 0;
+      game.isPaused = true;
       delete game.onTimerChanged;
     };
     game.resumeTimer = () => {
@@ -139,40 +181,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on("startGame", () => {
-      const { round, roundTime } = game.room;
-      game.room.roomState = 1;
-      io.to(gameId).emit('gameRoom', game.room);
-      let { currentRound, timing } = { currentRound: 1, timing: 0 };
-      let total = round * roundTime;
-
-      game.onTimerChanged = () => {
-        timing++;
-
-        if (timing > roundTime) {
-          currentRound++;
-          //round change logic
-          game.users = setNextPlayerState(game.users);
-          io.to(gameId).emit('gameUsers', game.users);
-          timing -= roundTime;
-        }
-
-        var isFinished = (currentRound - 1) * roundTime + timing >= total;
-        game.round.currentRound = currentRound;
-        game.round.timing = timing;
-        game.round.isFinished = isFinished;
-        io.to(gameId).emit('gameRound', game.round);
-        
-        console.log(game.round);
-
-        if (isFinished) {
-          game.stopGame();
-          io.to(gameId).emit('gameRoom', game.room);
-        }
-      };
-
       game.startGame();
-
-
     });
 
     socket.on('pauseTimer', () => {
@@ -181,6 +190,7 @@ io.on('connection', (socket) => {
 
     socket.on('resumeTimer', () => {
       game.resumeTimer();
+      io.to(gameId).emit("canvasClean", {});
     })
 
     socket.on('leaveRoom', () => {

@@ -2,10 +2,10 @@ import * as React from 'react';
 import styles from './GameSketch.module.scss';
 import { SocketHelper } from 'utils/SocketHelper';
 import { Line } from './Models/Line';
-import { Canvas } from './Models/Canvas';
+import { CanvasMessage } from './Models/CanvasMessage';
 
 interface ICanvasWatcherProps {
-    roomId: string;
+    gameId: string;
     uid: string;
 }
 
@@ -19,18 +19,24 @@ interface ICanvasWatcherStates {
     canvasHeight: number;
     scaleWidth: number;
     scaleHeight: number;
+    color: string;
 }
 
 export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, ICanvasWatcherStates> {
-    canvasRef: React.RefObject<HTMLCanvasElement>;
 
     socketHelper: SocketHelper;
+    canvasRef: React.RefObject<HTMLCanvasElement>;
+    canvas: HTMLCanvasElement | null;
+    canvasContext2d: CanvasRenderingContext2D | null;
     constructor(props: Readonly<ICanvasWatcherProps>) {
         super(props);
-        this.socketHelper = new SocketHelper(this.props.roomId);
-        this.socketHelper.onEventChanged('line',this.draw.bind(this));
-        this.socketHelper.onEventChanged('canvas',this.resizeCanvas.bind(this));
+        this.socketHelper = new SocketHelper(this.props.gameId);
+        this.socketHelper.onEventChanged('line', this.draw.bind(this));
+        this.socketHelper.onEventChanged('canvas', this.canvasChanged.bind(this));
+        this.socketHelper.onEventChanged('canvasClean',this.clean.bind(this));
         this.canvasRef = React.createRef<HTMLCanvasElement>();
+        this.canvas = null;
+        this.canvasContext2d = null;
         this.state = {
             prevX: 0,
             prevY: 0,
@@ -39,31 +45,25 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
             canvasWidth: 0,
             canvasHeight: 0,
             scaleWidth: 0,
-            scaleHeight: 0
+            scaleHeight: 0,
+            color: '#FF0000'
         };
     }
 
     componentDidMount() {
-        let canvas = this.canvasRef.current;
-        if (canvas) {
-            const bounding = canvas.getBoundingClientRect();
-            this.setState({
-                canvasWidth: bounding.width,
-                canvasHeight: bounding.height,
-                canvasLeft: bounding.left,
-                canvasTop: bounding.top,
-            })
-        }
+        this.canvas = this.canvasRef.current;
+        this.canvasContext2d = this.canvas?.getContext("2d") ?? null;
+        this.resizeCanvas();
     }
-   
-    draw(line: Line) {
+
+    draw = (line: Line) => {
         let canvas = this.canvasRef.current;
         let context2d = canvas?.getContext("2d");
         if (canvas && context2d) {
 
             context2d.lineCap = "round";
             context2d.lineWidth = 2;
-            context2d.strokeStyle = "#FF0000";
+            context2d.strokeStyle = this.state.color;
             context2d.beginPath();
             context2d.moveTo(line.x0 / this.state.scaleWidth - this.state.canvasLeft, line.y0 / this.state.scaleHeight - this.state.canvasTop);
             context2d.lineTo(line.x1 / this.state.scaleWidth - this.state.canvasLeft, line.y1 / this.state.scaleHeight - this.state.canvasTop);
@@ -72,13 +72,29 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
         }
     }
 
-    resizeCanvas(data: Canvas) {
+    private resizeCanvas() {
+        if (this.canvas) {
+            const bounding = this.canvas.getBoundingClientRect();
+            this.setState({
+                canvasWidth: bounding.width,
+                canvasHeight: bounding.height,
+                canvasLeft: bounding.left,
+                canvasTop: bounding.top,
+            });
+        }
+    }
+
+    canvasChanged(data: CanvasMessage) {
 
         this.setState({
             scaleHeight: data.height / this.state.canvasHeight,
-            scaleWidth: data.width / this.state.canvasWidth
-        })
+            scaleWidth: data.width / this.state.canvasWidth,
+            color: data.color
+        });
+    }
 
+    clean = () => {
+        this.canvasContext2d?.clearRect(0, 0, this.state.canvasWidth, this.state.canvasHeight);
     }
 
     componentWillUnmount() {

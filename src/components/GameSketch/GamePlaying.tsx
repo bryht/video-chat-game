@@ -56,10 +56,10 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
       this.gameData.pauseGame();
     }
 
-    var playingUser = this.state.gameUsers.find(p => p.userState === GameUserState.playing);
-    if (playingUser) {
-      this.gameData.resumeGame();
-    }
+    // var playingUser = this.state.gameUsers.find(p => p.userState === GameUserState.playing);
+    // if (playingUser) {
+    //   this.gameData.resumeGame();
+    // }
 
   }
 
@@ -79,9 +79,9 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
       case GameUserState.choosing:
         return <ChoosingWord gameId={this.state.gameRoom.gameId} uid={this.props.uid}></ChoosingWord>
       case GameUserState.playing:
-        return <CanvasDraw roomId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasDraw>;
+        return <CanvasDraw gameId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasDraw>;
       case GameUserState.waiting:
-        return <CanvasWatcher roomId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasWatcher>;
+        return <CanvasWatcher gameId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasWatcher>;
       case GameUserState.selectWinner:
         return <SelectWinner gameId={this.state.gameRoom.gameId} uid={this.props.uid} ></SelectWinner>
       default:

@@ -23,18 +23,6 @@ export class SocketHelper {
         this.socketClient.on(event, onChange);
     }
 
-    // startGame() {
-    //     this.socketClient.emit('startGame');
-    // }
-
-    // initialGame(){
-    //     this.socketClient.emit('initial');
-    // }
-
-    // onRoundTimerChanged(onChange: (data: { currentRound: number, timing: number, isFinished: boolean }) => void) {
-    //     this.socketClient.on('gameRound', onChange);
-    // }
-
     dispose() {
         if (this.socketClient) {
             this.socketClient.close();

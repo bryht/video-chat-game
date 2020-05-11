@@ -1,4 +1,4 @@
-import { Canvas } from "./Models/Canvas"
+import { Canvas } from "./Models/CanvasMessage"
 
 it("type test", () => {
 
