@@ -7,5 +7,5 @@ export class GameRoom {
     gameId: string;
     roomState: RoomState = RoomState.waiting;
     round: number = 3;
-    roundTime: number = 5;
+    roundTime: number = 120;
 }
