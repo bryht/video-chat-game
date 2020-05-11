@@ -46,7 +46,6 @@ export default class ChoosingWord extends React.Component<IChoosingWordProps, IC
             currentGameUser.wordChosen = word;
             currentGameUser.userState = GameUserState.playing;
             this.gameData.updateGameUser(currentGameUser);
-            this.gameData.resumeGame();
         }
     }
 

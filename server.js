@@ -10,7 +10,7 @@ function getOrCreateGame(gameId) {
     return item;
   } else {
     var game = {};
-    game.isPaused = true;
+    
     game.onTimerChanged = null;
     game.startGame = () => {
 
@@ -54,26 +54,18 @@ function getOrCreateGame(gameId) {
 
       //set game timer
       game.timer = setInterval(() => {
-        console.log(game.isPaused);
-        if (!game.isPaused) {
-          if (game.onTimerChanged) {
+        var user = game.users.find(p => p.userState === 'choosing');
+        if (!user) {//if no user are choosing then continue the clock
             game.onTimerChanged()
-          }
         }
       }, 1000);
     }
     game.stopGame = () => {
       clearInterval(game.timer);
       game.room.roomState = 0;
-      game.isPaused = true;
       delete game.onTimerChanged;
     };
-    game.resumeTimer = () => {
-      game.isPaused = false;
-    };
-    game.pauseTimer = () => {
-      game.isPaused = true;
-    };
+    
     game.updateRoom = (room) => {
       game.room = room;
     };

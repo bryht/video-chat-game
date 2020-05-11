@@ -3,9 +3,7 @@ import FirebaseHelper from "utils/FirebaseHelper";
 import { GameRoom } from "./Models/GameRoom";
 import { SocketHelper } from "utils/SocketHelper";
 import Consts from "./Consts";
-import { GameUserState } from "./Models/GameUserState";
 import { GameRound } from "./Models/GameRound";
-import Log from "utils/Log";
 
 export class GameData {
 
@@ -31,13 +29,6 @@ export class GameData {
         this.socketHelper.emit(Consts.startGame, {});
     }
 
-    pauseGame() {
-        this.socketHelper.emit(Consts.pauseTimer, {});
-    }
-
-    resumeGame() {
-        this.socketHelper.emit(Consts.resumeTimer, {});
-    }
 
     onGameRoundChanged(onChange: (gameRound: GameRound) => void) {
         this.socketHelper.onEventChanged<GameRound>(Consts.gameRound, async data => {

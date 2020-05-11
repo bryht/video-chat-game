@@ -50,17 +50,6 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
 
     this.setState({ gameUsers })
     Log.Info(gameUsers);
-
-    var choosingUser = this.state.gameUsers.find(p => p.userState === GameUserState.choosing || GameUserState.selectWinner);
-    if (choosingUser) {
-      this.gameData.pauseGame();
-    }
-
-    // var playingUser = this.state.gameUsers.find(p => p.userState === GameUserState.playing);
-    // if (playingUser) {
-    //   this.gameData.resumeGame();
-    // }
-
   }
 
   private getCurrentGameUser = () => {
