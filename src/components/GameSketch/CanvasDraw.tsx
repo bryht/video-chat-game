@@ -1,8 +1,8 @@
 import * as React from 'react';
 import styles from './GameSketch.module.scss';
-import { SocketHelper } from 'utils/SocketHelper';
 import { Line } from './Models/Line';
 import { CanvasMessage } from './Models/CanvasMessage';
+import { GameData } from './GameData';
 
 interface ICanvasDrawProps {
     gameId: string;
@@ -13,11 +13,11 @@ interface ICanvasDrawStates {
     isPenDown: boolean;
     prevX: number,
     prevY: number,
-    color: string
+    color: string,
 }
 
 export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanvasDrawStates> {
-    socketHelper: SocketHelper;
+    gameData: GameData;
     canvasRef: React.RefObject<HTMLCanvasElement>;
     canvasLeft: number;
     canvasTop: number;
@@ -27,7 +27,12 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
     canvasContext2d: CanvasRenderingContext2D | null;
     constructor(props: Readonly<ICanvasDrawProps>) {
         super(props);
-        this.socketHelper = new SocketHelper(this.props.gameId);
+        this.gameData = new GameData(this.props.gameId);
+        this.gameData.onGameLines(lines => {
+            lines.forEach(element => {
+                this.draw(element);
+            });
+        })
         this.canvasRef = React.createRef<HTMLCanvasElement>();
         this.canvas = null;
         this.canvasContext2d = null;
@@ -44,6 +49,7 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
     }
 
     componentDidMount() {
+        this.gameData.initial();
         this.canvas = this.canvasRef.current;
         this.canvasContext2d = this.canvas?.getContext("2d") ?? null;
         this.resizeCanvas();
@@ -58,7 +64,7 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
             this.canvasHeight = bounding.height;
             this.canvas.width = this.canvasWidth;
             this.canvas.height = this.canvasHeight;
-            this.socketHelper.emit("canvas", new CanvasMessage(this.canvasWidth, this.canvasHeight,this.state.color));
+            this.gameData.updateCanvas(new CanvasMessage(this.canvasWidth, this.canvasHeight, this.state.color));
         }
     }
 
@@ -80,11 +86,10 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
 
 
     componentWillUnmount() {
-        this.socketHelper.dispose();
+        this.gameData.dispose();
     }
 
     handleDisplayMouseMove = (e: { clientX: any; clientY: any; }) => {
-
 
         var line = new Line(this.state.prevX, this.state.prevY, e.clientX, e.clientY);
         if (line.distance() < 5) {
@@ -93,7 +98,7 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
         if (this.state.isPenDown) {
 
             this.draw(line);
-            this.socketHelper.emit("line", line);
+            this.gameData.drawLine(line);
         }
         this.setState({
             prevX: e.clientX,
@@ -114,7 +119,7 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
 
     clean = () => {
         this.canvasContext2d?.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-        this.socketHelper.emit("canvasClean",{});
+        this.gameData.cleanCanvas();
     }
 
     public render() {

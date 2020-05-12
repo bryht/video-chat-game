@@ -10,8 +10,9 @@ function getOrCreateGame(gameId) {
     return item;
   } else {
     var game = {};
-    
+
     game.onTimerChanged = null;
+    game.lines = [];
     game.startGame = () => {
 
       //initial game
@@ -34,7 +35,7 @@ function getOrCreateGame(gameId) {
           //round change logic
           game.users = setNextPlayerState(game.users);
           io.to(gameId).emit('gameUsers', game.users);
-          io.to(gameId).emit("canvasClean", {});
+          game.cleanCanvas();
           timing -= roundTime;
         }
 
@@ -54,9 +55,9 @@ function getOrCreateGame(gameId) {
 
       //set game timer
       game.timer = setInterval(() => {
-        var user = game.users.find(p => p.userState === 'choosing');
+        var user = game.users.find(p => p.userState === 'choosing' || p.userState === 'selectWinner');
         if (!user) {//if no user are choosing then continue the clock
-            game.onTimerChanged()
+          game.onTimerChanged()
         }
       }, 1000);
     }
@@ -65,11 +66,14 @@ function getOrCreateGame(gameId) {
       game.room.roomState = 0;
       delete game.onTimerChanged;
     };
-    
+
     game.updateRoom = (room) => {
       game.room = room;
     };
     game.updateUser = (user) => {
+      if (user.userState === 'choosing' || user.userState === 'selectWinner') {
+        game.cleanCanvas();
+      }
       var index = game.users.findIndex(p => p.uid === user.uid);
       if (index > -1) {
         game.users[index] = user;
@@ -80,8 +84,9 @@ function getOrCreateGame(gameId) {
     game.updateRound = (round) => {
       game.round = round;
     }
-    game.updateLins = (round, user, line) => {
-
+    game.cleanCanvas = () => {
+      io.to(gameId).emit("canvasClean", {});
+      game.lines = [];
     }
     game.dispose = () => {
       clearInterval(game.startTimer);
@@ -130,6 +135,7 @@ io.on('connection', (socket) => {
 
     socket.on("line", data => {
       io.to(gameId).emit("line", data);
+      game.lines.push(data);
     });
 
     socket.on("canvas", data => {
@@ -137,7 +143,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on("canvasClean", () => {
-      io.to(gameId).emit("canvasClean", {});
+      game.cleanCanvas();
     });
 
     socket.on("gameRoom", data => {
@@ -169,21 +175,21 @@ io.on('connection', (socket) => {
       io.to(gameId).emit("gameRoom", game.room);
       io.to(gameId).emit("gameRound", game.round);
       io.to(gameId).emit("gameUsers", game.users);
-
+      io.to(gameId).emit("gameLines", game.lines);
     });
 
     socket.on("startGame", () => {
       game.startGame();
     });
 
-    socket.on('pauseTimer', () => {
-      game.pauseTimer();
-    })
+    // socket.on('pauseTimer', () => {
+    //   game.pauseTimer();
+    // })
 
-    socket.on('resumeTimer', () => {
-      game.resumeTimer();
-      io.to(gameId).emit("canvasClean", {});
-    })
+    // socket.on('resumeTimer', () => {
+    //   game.resumeTimer();
+    //   game.cleanCanvas();
+    // })
 
     socket.on('leaveRoom', () => {
       game.dispose();

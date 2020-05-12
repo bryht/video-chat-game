@@ -4,6 +4,8 @@ import { GameRoom } from "./Models/GameRoom";
 import { SocketHelper } from "utils/SocketHelper";
 import Consts from "./Consts";
 import { GameRound } from "./Models/GameRound";
+import { CanvasMessage } from "./Models/CanvasMessage";
+import { Line } from "./Models/Line";
 
 export class GameData {
 
@@ -55,8 +57,36 @@ export class GameData {
         this.socketHelper.emit<GameUser>(Consts.gameUserUpdate, gameUser);
     }
 
-    updateGameUser(gameUser:GameUser){
+    updateGameUser(gameUser: GameUser) {
         this.socketHelper.emit<GameUser>(Consts.gameUserUpdate, gameUser);
+    }
+
+    updateCanvas(canvas: CanvasMessage) {
+        this.socketHelper.emit("canvas", canvas);
+    }
+
+    onCanvasUpdate(onChange: (canvas: CanvasMessage) => void) {
+        this.socketHelper.onEventChanged<CanvasMessage>('canvas', data => onChange(data));
+    }
+
+    cleanCanvas() {
+        this.socketHelper.emit("canvasClean", {});
+    }
+
+    onCanvasClean(onChange: () => void) {
+        this.socketHelper.onEventChanged('canvasClean', onChange);
+    }
+
+    drawLine(line: Line) {
+        this.socketHelper.emit("line", line);
+    }
+
+    onLineDraw(onChange: (data: Line) => void) {
+        this.socketHelper.onEventChanged<Line>('line', line => onChange(line));
+    }
+
+    onGameLines(onChange:(data:Array<Line>)=>void){
+        this.socketHelper.onEventChanged<Array<Line>>('gameLines', lines=>onChange(lines));
     }
 
     dispose() {

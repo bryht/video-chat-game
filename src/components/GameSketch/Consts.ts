@@ -7,8 +7,6 @@ export default class Consts {
     static gameUserUpdate: string = 'gameUserUpdate'
     static startGame: string = 'startGame'
     static initialGame: string = 'initialGame'
-    static pauseTimer: string = 'pauseTimer'
-    static resumeTimer: string = 'resumeTimer'
     static leaveRoom: string = 'leaveRoom'
 
 }
