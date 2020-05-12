@@ -1,8 +1,9 @@
 import * as React from 'react';
 import styles from './GameSketch.module.scss';
-import { SocketHelper } from 'utils/SocketHelper';
 import { Line } from './Models/Line';
 import { CanvasMessage } from './Models/CanvasMessage';
+import { GameData } from './GameData';
+import Log from 'utils/Log';
 
 interface ICanvasWatcherProps {
     gameId: string;
@@ -24,16 +25,16 @@ interface ICanvasWatcherStates {
 
 export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, ICanvasWatcherStates> {
 
-    socketHelper: SocketHelper;
+    gameData: GameData;
     canvasRef: React.RefObject<HTMLCanvasElement>;
     canvas: HTMLCanvasElement | null;
     canvasContext2d: CanvasRenderingContext2D | null;
     constructor(props: Readonly<ICanvasWatcherProps>) {
         super(props);
-        this.socketHelper = new SocketHelper(this.props.gameId);
-        this.socketHelper.onEventChanged('line', this.draw.bind(this));
-        this.socketHelper.onEventChanged('canvas', this.canvasChanged.bind(this));
-        this.socketHelper.onEventChanged('canvasClean',this.clean.bind(this));
+        this.gameData = new GameData(this.props.gameId);
+        this.gameData.onLineDraw(this.draw.bind(this));
+        this.gameData.onCanvasUpdate(this.canvasChanged.bind(this));
+        this.gameData.onCanvasClean(this.clean.bind(this));
         this.canvasRef = React.createRef<HTMLCanvasElement>();
         this.canvas = null;
         this.canvasContext2d = null;
@@ -46,7 +47,7 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
             canvasHeight: 0,
             scaleWidth: 0,
             scaleHeight: 0,
-            color: '#FF0000'
+            color: '#FF0000',
         };
     }
 
@@ -54,21 +55,19 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
         this.canvas = this.canvasRef.current;
         this.canvasContext2d = this.canvas?.getContext("2d") ?? null;
         this.resizeCanvas();
+        this.gameData.initial();
     }
 
     draw = (line: Line) => {
-        let canvas = this.canvasRef.current;
-        let context2d = canvas?.getContext("2d");
-        if (canvas && context2d) {
-
-            context2d.lineCap = "round";
-            context2d.lineWidth = 2;
-            context2d.strokeStyle = this.state.color;
-            context2d.beginPath();
-            context2d.moveTo(line.x0 / this.state.scaleWidth - this.state.canvasLeft, line.y0 / this.state.scaleHeight - this.state.canvasTop);
-            context2d.lineTo(line.x1 / this.state.scaleWidth - this.state.canvasLeft, line.y1 / this.state.scaleHeight - this.state.canvasTop);
-            context2d.stroke();
-            context2d.closePath();
+        if (this.canvasContext2d) {
+            this.canvasContext2d.lineCap = "round";
+            this.canvasContext2d.lineWidth = 2;
+            this.canvasContext2d.strokeStyle = this.state.color;
+            this.canvasContext2d.beginPath();
+            this.canvasContext2d.moveTo(line.x0 / this.state.scaleWidth - this.state.canvasLeft, line.y0 / this.state.scaleHeight - this.state.canvasTop);
+            this.canvasContext2d.lineTo(line.x1 / this.state.scaleWidth - this.state.canvasLeft, line.y1 / this.state.scaleHeight - this.state.canvasTop);
+            this.canvasContext2d.stroke();
+            this.canvasContext2d.closePath();
         }
     }
 
@@ -98,7 +97,7 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
     }
 
     componentWillUnmount() {
-        this.socketHelper.dispose();
+        this.gameData.dispose();
     }
 
 
