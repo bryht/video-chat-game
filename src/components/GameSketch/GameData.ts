@@ -11,9 +11,9 @@ export class GameData {
 
     private socketHelper: SocketHelper;
     private firebaseHelper: FirebaseHelper;
-    private gameRoom: GameRoom;
-    private gameRound: GameRound;
-    private gameUsers: Array<GameUser>;
+    public gameRoom: GameRoom;
+    public gameRound: GameRound;
+    public gameUsers: Array<GameUser>;
     constructor(gameId: string) {
         this.socketHelper = new SocketHelper(gameId);
         this.firebaseHelper = new FirebaseHelper();
@@ -55,6 +55,11 @@ export class GameData {
 
     joinRoom(gameUser: GameUser) {
         this.socketHelper.emit<GameUser>(Consts.gameUserUpdate, gameUser);
+    }
+
+    updateRoomOwner(uid:string){
+        this.gameRoom.gameOwnerUid=uid;
+        this.socketHelper.emit<GameRoom>(Consts.gameRoom, this.gameRoom);
     }
 
     updateGameUser(gameUser: GameUser) {

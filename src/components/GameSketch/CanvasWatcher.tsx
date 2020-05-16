@@ -3,11 +3,13 @@ import styles from './GameSketch.module.scss';
 import { Line } from './Models/Line';
 import { CanvasMessage } from './Models/CanvasMessage';
 import { GameData } from './GameData';
-import Log from 'utils/Log';
+import { GameRound } from './Models/GameRound';
+import { GameUser } from './Models/GameUser';
+import { GameUserState } from './Models/GameUserState';
+import { GameRoom } from './Models/GameRoom';
 
 interface ICanvasWatcherProps {
     gameId: string;
-    uid: string;
 }
 
 interface ICanvasWatcherStates {
@@ -21,6 +23,9 @@ interface ICanvasWatcherStates {
     scaleWidth: number;
     scaleHeight: number;
     color: string;
+    gameRoom: GameRoom;
+    gameRound: GameRound;
+    gameUsers: Array<GameUser>;
 }
 
 export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, ICanvasWatcherStates> {
@@ -35,6 +40,9 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
         this.gameData.onLineDraw(this.draw.bind(this));
         this.gameData.onCanvasUpdate(this.canvasChanged.bind(this));
         this.gameData.onCanvasClean(this.clean.bind(this));
+        this.gameData.onGameRoomChanged(gameRoom => { this.setState({ gameRoom }) });
+        this.gameData.onGameRoundChanged(gameRound => { this.setState({ gameRound }) });
+        this.gameData.onGameRoomUsersChanged(gameUsers => { this.setState({ gameUsers }) });
         this.canvasRef = React.createRef<HTMLCanvasElement>();
         this.canvas = null;
         this.canvasContext2d = null;
@@ -48,6 +56,9 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
             scaleWidth: 0,
             scaleHeight: 0,
             color: '#FF0000',
+            gameRoom: this.gameData.gameRoom,
+            gameRound: this.gameData.gameRound,
+            gameUsers: this.gameData.gameUsers
         };
     }
 
@@ -100,11 +111,20 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
         this.gameData.dispose();
     }
 
+    private getCurrentPlayingGameUser = () => {
+        return this.state.gameUsers.find(p => p.userState !== GameUserState.waiting);
+    }
 
     public render() {
 
-        return (<div className={styles.watch}>
-            <canvas height={this.state.canvasHeight} width={this.state.canvasWidth} ref={this.canvasRef}></canvas>
-        </div>)
+        return (
+            <div className={styles.watch}>
+                <div className={styles.info}>
+                    <p>Game round:{this.state.gameRound.currentRound},
+          time left:{this.state.gameRoom.roundTime - this.state.gameRound.timing}s,
+          current player:{this.getCurrentPlayingGameUser()?.name}, </p>
+                </div>
+                <canvas height={this.state.canvasHeight} width={this.state.canvasWidth} ref={this.canvasRef}></canvas>
+            </div>)
     }
 }

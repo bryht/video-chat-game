@@ -3,6 +3,8 @@ import styles from './GameSketch.module.scss';
 import { Line } from './Models/Line';
 import { CanvasMessage } from './Models/CanvasMessage';
 import { GameData } from './GameData';
+import { GameUserState } from './Models/GameUserState';
+import { GameUser } from './Models/GameUser';
 
 interface ICanvasDrawProps {
     gameId: string;
@@ -10,6 +12,7 @@ interface ICanvasDrawProps {
 }
 
 interface ICanvasDrawStates {
+    gameUsers: Array<GameUser>;
     isPenDown: boolean;
     prevX: number,
     prevY: number,
@@ -32,7 +35,8 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
             lines.forEach(element => {
                 this.draw(element);
             });
-        })
+        });
+        this.gameData.onGameRoomUsersChanged(gameUsers=>this.setState({gameUsers}));
         this.canvasRef = React.createRef<HTMLCanvasElement>();
         this.canvas = null;
         this.canvasContext2d = null;
@@ -44,7 +48,8 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
             isPenDown: false,
             prevX: 0,
             prevY: 0,
-            color: "#FF0000"
+            color: "#FF0000",
+            gameUsers:this.gameData.gameUsers
         };
     }
 
@@ -125,15 +130,29 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
         this.gameData.cleanCanvas();
     }
 
+    private getCurrentGameUser = () => {
+        return this.state.gameUsers.find(p => p.uid === this.props.uid);
+      }
+    
+     
+      selectWinner = () => {
+        var currentGameUser = this.getCurrentGameUser();
+        if (currentGameUser) {
+          currentGameUser.userState = GameUserState.selectWinner;
+          this.gameData.updateGameUser(currentGameUser);
+        }
+      }
+
     public render() {
 
         return <div className={styles.main}>
-            <div>
+            <div className={styles.control}>
+            <button onClick={this.selectWinner}>Select Winner for word {this.getCurrentGameUser()?.wordChosen}</button>
                 <button onClick={this.clean} >Clean</button>
             </div>
             <canvas ref={this.canvasRef}
                 onMouseDown={e => this.handleDisplayMouseDown(e.clientX, e.clientY)}
-                onMouseMove={e => this.handleDisplayMouseMove(e.clientX, e.clientY)}
+                onMouseMove={e => {this.handleDisplayMouseMove(e.clientX, e.clientY);e.preventDefault();}}
                 onMouseUp={this.handleDisplayMouseUp}
                 onTouchStart={e => this.handleDisplayMouseDown(e.touches[0].clientX, e.touches[0].clientY)}
                 onTouchMove={e => this.handleDisplayMouseMove(e.touches[0].clientX, e.touches[0].clientY)}

@@ -10,6 +10,7 @@ import { User } from 'common/Models/User';
 import Loading from 'components/Loading/Loading';
 import GamePlaying from './GamePlaying';
 import Log from 'utils/Log';
+import CanvasWatcher from './CanvasWatcher';
 
 interface IGameEnterProps {
   currentUser: User;
@@ -31,7 +32,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
     this.gameData.onGameRoomUsersChanged(this.onGameRoomUsersChanged);
     this.state = {
       gameUsers: [],
-      gameRoom: new GameRoom(this.props.gameId)
+      gameRoom: this.gameData.gameRoom
     }
   }
 
@@ -47,31 +48,28 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
 
   onGameRoomChanged = (gameRoom: GameRoom) => {
     this.setState({ gameRoom });
+    if (!gameRoom.gameOwnerUid) {
+      this.gameData.updateRoomOwner(this.props.currentUser.id);
+    }
   }
   onGameRoomUsersChanged = (gameUsers: Array<GameUser>) => {
     this.setState({ gameUsers });
-
-    if (this.state.gameUsers.length === 0) {
-      let gameUser = new GameUser(this.props.currentUser.id, this.props.currentUser.name || WordHelper.newNoun(), GameUserState.choosing, GameUserRole.owner);
-      this.gameData.joinRoom(gameUser)
-    }
   }
 
   startGame = () => {
     this.gameData.startGame();
   }
 
+  isGameOwner = () => {
+    return this.state.gameRoom.gameOwnerUid === this.props.currentUser.id;
+  }
   isShowStart = () => {
-    return this.state.gameUsers.length > 1 && this.state.gameUsers.find(p => p.uid === this.props.currentUser.id)?.role === GameUserRole.owner;
+    return this.isGameOwner() && this.state.gameUsers.length > 1;
   }
 
-  public render() {
-    if (!this.state?.gameRoom) {
-      return <Loading></Loading>
-    }
-    if (this.state.gameRoom.roomState === RoomState.started) {
-      return <GamePlaying gameId={this.props.gameId} uid={this.props.currentUser.id}></GamePlaying>
-    }
+
+  waringForJoin = () => {
+
     return (
       <div>
         <h1>{this.state.gameRoom.gameId}</h1>
@@ -81,7 +79,6 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
         <div>
           {this.state.gameRoom.roundTime} seconde per round
         </div>
-
         <ul>
           {this.state.gameUsers.map(user =>
             <li key={user.uid}>{user.name} is ready</li>)
@@ -97,5 +94,18 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
         </ul>
       </div>
     );
+
+  }
+
+  public render() {
+
+    switch (this.state.gameRoom.roomState) {
+      case RoomState.playing:
+        return this.isGameOwner() ? <CanvasWatcher gameId={this.props.gameId} /> : <GamePlaying gameId={this.props.gameId} uid={this.props.currentUser.id}></GamePlaying>
+      case RoomState.waiting:
+        return this.waringForJoin();
+      default:
+        return <Loading></Loading>
+    }
   }
 }

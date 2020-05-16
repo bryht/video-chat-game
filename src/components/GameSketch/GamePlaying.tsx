@@ -29,37 +29,25 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
   constructor(props: Readonly<IGamePlayingProps>) {
     super(props);
     this.gameData = new GameData(this.props.gameId);
+    this.gameData.onGameRoomChanged(gameRoom => { this.setState({ gameRoom }) });
+    this.gameData.onGameRoundChanged(gameRound => { this.setState({ gameRound }) });
+    this.gameData.onGameRoomUsersChanged(gameUsers => { this.setState({ gameUsers }) });
     this.state = {
-      gameRoom: new GameRoom(this.props.gameId),
-      gameRound: new GameRound(this.props.gameId),
-      gameUsers: [],
+      gameRoom: this.gameData.gameRoom,
+      gameRound: this.gameData.gameRound,
+      gameUsers: this.gameData.gameUsers,
     }
-    this.gameData.onGameRoundChanged(this.onGameRoundChanged)
-    this.gameData.onGameRoomChanged(gameRoom => this.setState({ gameRoom }))
-    this.gameData.onGameRoomUsersChanged(this.onGameRoomUsersChanged)
-
   }
   componentDidMount() {
     this.gameData.initial();
   }
 
-  onGameRoundChanged = (gameRound: GameRound) => {
-    this.setState({ gameRound });
-  }
-  onGameRoomUsersChanged = (gameUsers: Array<GameUser>) => {
-
-    this.setState({ gameUsers })
-    Log.Info(gameUsers);
-  }
 
   private getCurrentGameUser = () => {
     return this.state.gameUsers.find(p => p.uid === this.props.uid);
   }
 
 
-  private getCurrentPlayingGameUser = () => {
-    return this.state.gameUsers.find(p => p.userState !== GameUserState.waiting);
-  }
 
 
   getCurrentUserScreen = () => {
@@ -70,19 +58,11 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
       case GameUserState.playing:
         return <CanvasDraw gameId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasDraw>;
       case GameUserState.waiting:
-        return <CanvasWatcher gameId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasWatcher>;
+        return <CanvasWatcher gameId={this.state.gameRoom.gameId}></CanvasWatcher>;
       case GameUserState.selectWinner:
         return <SelectWinner gameId={this.state.gameRoom.gameId} uid={this.props.uid} ></SelectWinner>
       default:
         return <Loading></Loading>
-    }
-  }
-
-  selectWinner = () => {
-    var currentGameUser = this.getCurrentGameUser();
-    if (currentGameUser) {
-      currentGameUser.userState = GameUserState.selectWinner;
-      this.gameData.updateGameUser(currentGameUser);
     }
   }
 
@@ -91,10 +71,6 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
 
     return (
       <div>
-        {this.getCurrentGameUser()?.userState === GameUserState.playing && <button onClick={this.selectWinner}>Select Winner for word {this.getCurrentGameUser()?.wordChosen}</button>}
-        <p>Hi {this.getCurrentGameUser()?.name},Game round:{this.state.gameRound.currentRound},
-          time left:{this.state.gameRoom.roundTime - this.state.gameRound.timing}s,
-          current player:{this.getCurrentPlayingGameUser()?.name}, </p>
         {this.getCurrentUserScreen()}
       </div>
     );
