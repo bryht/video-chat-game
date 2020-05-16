@@ -129,7 +129,6 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
                 <button onClick={this.clean} >Clean</button>
             </div>
             <canvas ref={this.canvasRef}
-
                 onMouseMove={this.handleDisplayMouseMove}
                 onMouseDown={this.handleDisplayMouseDown}
                 onMouseUp={this.handleDisplayMouseUp}>

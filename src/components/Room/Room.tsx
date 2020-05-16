@@ -4,7 +4,7 @@ import RoomItem from 'components/RoomItem/RoomItem';
 import { IRoomItem } from 'components/Models/IRoomItem';
 import { RoomGameItem } from 'components/Models/RoomGameItem';
 import { RoomVideoItem } from 'components/Models/RoomVideoItem';
-import { FaVideo, FaVideoSlash, FaVolumeUp, FaVolumeMute, FaStop } from 'react-icons/fa';
+import { FaVideo, FaVideoSlash, FaVolumeUp, FaVolumeMute, FaStop, FaArrowUp, FaGamepad } from 'react-icons/fa';
 
 
 export interface IRoomProps {
@@ -27,7 +27,7 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
         super(props);
 
         this.state = {
-            isFullScreen: true,
+            isFullScreen: false,
             isVideoOn: true,
             isAudioOn: true,
             roomItems: []
@@ -86,6 +86,9 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
                         </div>
                         <div className={styles.stop} onClick={() => { }}>
                             <FaStop></FaStop>
+                        </div>
+                        <div className={styles.game} onClick={() => { }}>
+                            <FaGamepad/>
                         </div>
                     </div>
                 </div>
