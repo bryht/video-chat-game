@@ -89,9 +89,9 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
         this.gameData.dispose();
     }
 
-    handleDisplayMouseMove = (e: { clientX: any; clientY: any; }) => {
+    handleDisplayMouseMove = (clientX: number, clientY: number) => {
 
-        var line = new Line(this.state.prevX, this.state.prevY, e.clientX, e.clientY);
+        var line = new Line(this.state.prevX, this.state.prevY, clientX, clientY);
         if (line.distance() < 5) {
             return;
         }
@@ -99,18 +99,21 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
 
             this.draw(line);
             this.gameData.drawLine(line);
+            this.setState({
+                prevX: clientX,
+                prevY: clientY,
+            });
         }
-        this.setState({
-            prevX: e.clientX,
-            prevY: e.clientY,
-        });
 
     }
 
 
 
-    handleDisplayMouseDown = (e: { clientX: any; clientY: any; }) => {
-
+    handleDisplayMouseDown = (clientX: number, clientY: number) => {
+        this.setState({
+            prevX: clientX,
+            prevY: clientY,
+        });
         this.setState({ isPenDown: true });
     }
     handleDisplayMouseUp = () => {
@@ -129,10 +132,12 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
                 <button onClick={this.clean} >Clean</button>
             </div>
             <canvas ref={this.canvasRef}
-
-                onMouseMove={this.handleDisplayMouseMove}
-                onMouseDown={this.handleDisplayMouseDown}
-                onMouseUp={this.handleDisplayMouseUp}>
+                onMouseDown={e => this.handleDisplayMouseDown(e.clientX, e.clientY)}
+                onMouseMove={e => this.handleDisplayMouseMove(e.clientX, e.clientY)}
+                onMouseUp={this.handleDisplayMouseUp}
+                onTouchStart={e => this.handleDisplayMouseDown(e.touches[0].clientX, e.touches[0].clientY)}
+                onTouchMove={e => this.handleDisplayMouseMove(e.touches[0].clientX, e.touches[0].clientY)}
+                onTouchEnd={this.handleDisplayMouseUp}>
             </canvas>
         </div>
     }
