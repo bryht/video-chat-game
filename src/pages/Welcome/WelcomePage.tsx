@@ -14,11 +14,11 @@ export default class WelcomePage extends React.Component<IWelcomePageProps> {
                     <img src={welcome} alt="" />
                 </div>
                 <div className={styles.button}>
-                    <a href="/enter">Start video</a>
+                    <a href="/enter">Create Party</a>
                 </div>
-                <div className={styles.button}>
+                {/* <div className={styles.button}>
                     <a href={`/game-sketch/${WordHelper.newAdjectiveNoun()}`}>Start game(demo)</a>
-                </div>
+                </div> */}
             </div>
         );
     }
