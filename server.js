@@ -10,7 +10,7 @@ function getOrCreateGame(gameId) {
     return item;
   } else {
     var game = {};
-
+    game.beginTime = Date.now();
     game.onTimerChanged = null;
     game.lines = [];
     game.startGame = () => {
@@ -59,6 +59,9 @@ function getOrCreateGame(gameId) {
         if (!user) {//if no user are choosing then continue the clock
           game.onTimerChanged()
         }
+        if (Date.now() - game.beginTime > 1000 * 60 * 60 * 6) {//if game run over 6 hours, stop it.
+          game.stopGame();
+        }
       }, 1000);
     }
     game.stopGame = () => {
@@ -90,7 +93,7 @@ function getOrCreateGame(gameId) {
     }
     game.dispose = () => {
       clearInterval(game.startTimer);
-      game = null;
+      games[gameId] = null;
     }
     games[gameId] = game;
     return game;
