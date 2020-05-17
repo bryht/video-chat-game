@@ -60,6 +60,11 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
   isGameOwner = () => {
     return this.state.gameRoom.gameOwnerUid === this.props.currentUser.id;
   }
+
+  isWatcher = () => {
+    return !this.state.gameUsers.find(p => p.uid === this.props.currentUser.id);
+  }
+
   isShowStart = () => {
     return this.isGameOwner() && this.state.gameUsers.length > 1;
   }
@@ -69,23 +74,23 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
 
     return (
       <div>
-        <h1>{this.state.gameRoom.gameId}</h1>
-        <div>
-          <input type="number" value={this.state.gameRoom.round} onChange={e=>{this.gameData.updateRoomRound(Number.parseInt(e.target.value))}}/>round
-        </div>
-        <div>
-          <input type="number" value={this.state.gameRoom.roundTime} onChange={e=>{this.gameData.updateRoomRoundTime(Number.parseInt(e.target.value))}}/> seconde per round
-        </div>
+        <h1>Game Sketch</h1>
+        <section>
+          <input type="number" value={this.state.gameRoom.round} onChange={e => { this.gameData.updateRoomRound(Number.parseInt(e.target.value)) }} />round
+        </section>
+        <section>
+          <input type="number" value={this.state.gameRoom.roundTime} onChange={e => { this.gameData.updateRoomRoundTime(Number.parseInt(e.target.value)) }} /> seconde per round
+        </section>
         <ul>
           {this.state.gameUsers.map(user =>
             <li key={user.uid}>{user.name} is ready</li>)
           }
         </ul>
         {this.isShowStart() && <button onClick={() => this.startGame()}>Start</button>}
-        <div>
-          <div>Join through link:</div>
-          <a href={`/game-sketch/${this.state.gameRoom.gameId}/join`}>http://letshaveaparty.online/game-sketch/{this.state.gameRoom.gameId}/join</a>
-        </div>
+        <section>
+          <div>Invite users join through link:</div>
+          <h3>https://letshaveaparty.online/game/{this.state.gameRoom.gameId}/join</h3>
+        </section>
       </div>
     );
 
@@ -95,7 +100,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
 
     switch (this.state.gameRoom.roomState) {
       case RoomState.playing:
-        return this.isGameOwner() ? <CanvasWatcher gameId={this.props.gameId} /> : <GamePlaying gameId={this.props.gameId} uid={this.props.currentUser.id}></GamePlaying>
+        return  this.isWatcher() ? <CanvasWatcher gameId={this.props.gameId} /> : <GamePlaying gameId={this.props.gameId} uid={this.props.currentUser.id}></GamePlaying>
       case RoomState.waiting:
         return this.waringForJoin();
       default:

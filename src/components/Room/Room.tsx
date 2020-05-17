@@ -1,15 +1,19 @@
 import * as React from 'react';
 import styles from './Room.module.scss';
-import { RoomItem } from 'components/Models/RoomItem';
+import { RoomItem } from 'components/Room/Models/RoomItem';
 import { FaVideo, FaVideoSlash, FaVolumeUp, FaVolumeMute, FaStop, FaGamepad } from 'react-icons/fa';
 import GameEnter from 'components/GameSketch/GameEnter';
 import { User } from 'common/Models/User';
 import VideoClient, { VideoStream } from 'utils/VideoClient';
 import VideoPlayer from 'components/Video/VideoPlayer';
+import { RoomData } from 'common/Database/RoomData';
+import { RoomItemType } from './Models/RoomItemType';
+import { RoomModel } from 'common/Models/RoomModel';
+import { RoomGameSketch } from 'common/Models/RoomGameSketch';
 
 
 export interface IRoomProps {
-    roomName: string;
+    roomId: string;
     roomPassword: string | null;
     currentUser: User;
     leaveRoom: () => void;
@@ -19,33 +23,35 @@ export interface IRoomStates {
     roomItems: Array<RoomItem>;
     isVideoOn: boolean;
     isAudioOn: boolean;
-
 }
 class Room extends React.Component<IRoomProps, IRoomStates> {
 
-    client: VideoClient;
+    videoClient: VideoClient;
+    roomData: RoomData;
     constructor(props: Readonly<IRoomProps>) {
         super(props);
-        this.client = new VideoClient(process.env.REACT_APP_APP_ID ?? '');
-        this.client.onStreamListChanged = list => {
-            this.createVideos(list);
+        this.videoClient = new VideoClient(process.env.REACT_APP_APP_ID ?? '');
+        this.videoClient.onStreamListChanged = list => {
+            this.onCreateVideos(list);
         };
-
+        this.roomData = new RoomData(this.props.roomId);
+        this.roomData.onRoomChange(this.onRoomChanged);
         this.state = {
             isFullScreen: false,
             isVideoOn: true,
             isAudioOn: true,
-            roomItems: []
+            roomItems: [],
         }
     }
 
 
     async componentDidMount() {
-        await this.client.create(this.props.roomName, this.props.currentUser.id);
+        await this.videoClient.create(this.props.roomId, this.props.currentUser.id);
+        await this.roomData.createOrJoinRoom(this.props.currentUser);
     }
 
     componentWillUnmount() {
-        this.client.dispose();
+        this.videoClient.dispose();
     }
 
     roomItemToCenter = (id: string) => {
@@ -58,60 +64,73 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
 
     leaveRoom = () => {
         this.props.leaveRoom();
+        this.roomData.leaveRoom(this.props.currentUser.id);
     }
 
     switchAudio = () => {
-        var local=this.state.roomItems.find(p=>p.isLocalVideo);
+        var local = this.state.roomItems.find(p => p.roomItemType === RoomItemType.LocalVideo);
         if (local) {
             const { isAudioOn } = this.state;
 
             if (isAudioOn) {
-              local.localVideoStream?.stream.muteAudio();
-              this.setState({ isAudioOn: false });
+                local.localVideoStream?.stream.muteAudio();
+                this.setState({ isAudioOn: false });
             } else {
-              local.localVideoStream?.stream.unmuteAudio();
-              this.setState({ isAudioOn: true });
+                local.localVideoStream?.stream.unmuteAudio();
+                this.setState({ isAudioOn: true });
             }
         }
     }
 
     switchVideo = () => {
-        var local=this.state.roomItems.find(p=>p.isLocalVideo);
+        var local = this.state.roomItems.find(p => p.roomItemType === RoomItemType.LocalVideo);
         if (local) {
             const { isVideoOn } = this.state;
 
             if (isVideoOn) {
-              local.localVideoStream?.stream.muteVideo();
-              this.setState({ isVideoOn: false });
+                local.localVideoStream?.stream.muteVideo();
+                this.setState({ isVideoOn: false });
             } else {
-              local.localVideoStream?.stream.unmuteVideo();
-              this.setState({ isVideoOn: true });
+                local.localVideoStream?.stream.unmuteVideo();
+                this.setState({ isVideoOn: true });
             }
         }
     }
 
-    createVideos = (videoStreamList: Array<VideoStream>) => {
-        videoStreamList.map((stream, index) => {
+    onCreateVideos = (videoStreamList: Array<VideoStream>) => {
+        var videoRoomItems = videoStreamList.map((stream, index) => {
             var item = new RoomItem();
             item.id = stream.id;
             item.order = Date.now() + index;
-            item.isLocalVideo = stream.isLocal;
+            item.roomItemType = stream.isLocal ? RoomItemType.LocalVideo : RoomItemType.RemoteVideo;
             item.localVideoStream = stream.isLocal ? stream : undefined;
             item.content = (<VideoPlayer key={"video" + item.id} videoStream={stream}></VideoPlayer>);
-            if (!this.state.roomItems.find(p => p.id === item.id)) {
-                this.setState({ roomItems: [...this.state.roomItems, item] });
-            }
             return item;
         });
+        var gameRoomItems = this.state.roomItems.filter(p => p.roomItemType === RoomItemType.SketchGame);
+        this.setState({ roomItems: [...videoRoomItems, ...gameRoomItems] });
     }
-    createGame = () => {
-        var item = new RoomItem();
-        item.id = this.props.roomName;
-        item.order = Date.now();;
-        item.content = (<GameEnter gameId={item.id} currentUser={this.props.currentUser}></GameEnter>);
-        if (!this.state.roomItems.find(p => p.id === item.id)) {
-            this.setState({ roomItems: [...this.state.roomItems, item] });
+    createGame = async () => {
+        
+        this.createGameItem();
+
+        //sync to other users
+        await this.roomData.addRoomGame({gameId:this.props.roomId});
+    }
+
+    onRoomChanged = (room: RoomModel) => {
+        if (room && room.roomGameSketch && !this.state.roomItems.find(p => p.roomItemType === RoomItemType.SketchGame)) {
+            this.createGameItem();
         }
+    }
+    
+    createGameItem(){
+        var item = new RoomItem();
+        item.id = this.props.roomId;
+        item.order = Date.now();;
+        item.roomItemType = RoomItemType.SketchGame;
+        item.content = (<GameEnter gameId={item.id} currentUser={this.props.currentUser}></GameEnter>);
+        this.setState({ roomItems: [...this.state.roomItems, item] });
     }
 
     switchFullScreen = () => {
@@ -124,9 +143,8 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
     }
 
     public render() {
-        console.log(this.getMaxOrderItem());
-        console.log(this.state.roomItems.filter(p => p.id !== this.getMaxOrderItem().id));
-        const { isFullScreen, isAudioOn, isVideoOn } = this.state;
+
+        const { isFullScreen, isAudioOn, isVideoOn, roomItems } = this.state;
         return (
             <div className={styles.main}>
                 <div className={styles.left}>
@@ -143,7 +161,7 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
                         <div className={styles.stop} onClick={() => this.leaveRoom()}>
                             <FaStop></FaStop>
                         </div>
-                        {!this.state.roomItems.find(p => p.id === this.props.roomName) &&
+                        {!roomItems.find(p => p.roomItemType === RoomItemType.SketchGame) &&
                             <div className={styles.game} onClick={() => this.createGame()}>
                                 <FaGamepad />
                             </div>

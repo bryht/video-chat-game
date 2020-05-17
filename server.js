@@ -185,15 +185,6 @@ io.on('connection', (socket) => {
       game.startGame();
     });
 
-    // socket.on('pauseTimer', () => {
-    //   game.pauseTimer();
-    // })
-
-    // socket.on('resumeTimer', () => {
-    //   game.resumeTimer();
-    //   game.cleanCanvas();
-    // })
-
     socket.on('leaveRoom', () => {
       game.dispose();
     })

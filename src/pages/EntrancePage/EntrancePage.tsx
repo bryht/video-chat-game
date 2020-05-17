@@ -10,7 +10,7 @@ export interface IEntrancePageProps extends IAuthProps<any> {
 }
 
 interface IEntrancePageStates {
-    room: string;
+    roomId: string;
 }
 
 class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStates> {
@@ -19,13 +19,11 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
         super(props);
         this.firebaseHelper=new FirebaseHelper();
         this.state = {
-            room: WordHelper.newNoun(),
+            roomId: WordHelper.newNoun(),
         }
     }
     roomChanged = async (room: string) => {
-        this.setState({ room });
-        //TODO:move to right place
-        await this.firebaseHelper.dbAddOrUpdateAsync('room', room, { uid: this.props.currentUser?.id, name: room });
+        this.setState({ roomId: room });
     }
 
     public render() {
@@ -40,10 +38,10 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
                     <div>
                         <span>Room:</span>
                     </div>
-                    <input type="text" value={this.state.room} onChange={e => { this.roomChanged(e.target.value) }} />
+                    <input type="text" value={this.state.roomId} onChange={e => { this.roomChanged(e.target.value) }} />
                 </div>
                 <div className={styles.button}>
-                    <a href={`/room/${this.state.room}`}>Go Room</a>
+                    <a href={`/room/${this.state.roomId}`}>Go Room</a>
                 </div>
                 <div className={styles.button}>
                     <a href="/welcome" >Back</a>
