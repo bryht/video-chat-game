@@ -68,11 +68,6 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
 
 
   public render() {
-
-    return (
-      <div>
-        {this.getCurrentUserScreen()}
-      </div>
-    );
+    return  this.getCurrentUserScreen();
   }
 }

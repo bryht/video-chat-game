@@ -86,9 +86,6 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
           <div>Join through link:</div>
           <a href={`/game-sketch/${this.state.gameRoom.gameId}/join`}>http://letshaveaparty.online/game-sketch/{this.state.gameRoom.gameId}/join</a>
         </div>
-        <ul>
-
-        </ul>
       </div>
     );
 

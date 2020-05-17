@@ -86,8 +86,8 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
         if (this.canvas) {
             const bounding = this.canvas.getBoundingClientRect();
             this.setState({
-                canvasWidth: bounding.width,
-                canvasHeight: bounding.height,
+                canvasWidth: this.canvas.offsetWidth,
+                canvasHeight: this.canvas.offsetHeight,
                 canvasLeft: bounding.left,
                 canvasTop: bounding.top,
             });

@@ -3,24 +3,17 @@
     width: 100vw;
     height: 100vh;
     display: flex;
-
-    * {
-        display: flex;
-    }
-
     position: relative;
 }
 
 .left {
-    flex-direction: column;
+    display: flex;
     flex: 1;
+    flex-direction: column;
     
     .center {
+        display: flex;
         flex: 1;
-        section {
-            flex: 1;
-        }
-        
         position: relative;
         
         .toggleFullScreen {
@@ -31,10 +24,10 @@
             margin: 6px;
             color: gray;
         }
-
     }
     
     .bottom {
+        display: flex;
         margin-top: auto;
         align-self: center;
         align-items: center;
@@ -43,6 +36,7 @@
         background-color: transparent;
         
         div {
+            display: flex;
             width: 80px;
             height: 80px;
             margin: 0px 20px;

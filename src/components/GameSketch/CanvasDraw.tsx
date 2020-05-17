@@ -5,6 +5,7 @@ import { CanvasMessage } from './Models/CanvasMessage';
 import { GameData } from './GameData';
 import { GameUserState } from './Models/GameUserState';
 import { GameUser } from './Models/GameUser';
+import Log from 'utils/Log';
 
 interface ICanvasDrawProps {
     gameId: string;
@@ -17,15 +18,16 @@ interface ICanvasDrawStates {
     prevX: number,
     prevY: number,
     color: string,
+    canvasLeft: number;
+    canvasTop: number;
+    canvasWidth: number;
+    canvasHeight: number;
 }
 
 export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanvasDrawStates> {
     gameData: GameData;
     canvasRef: React.RefObject<HTMLCanvasElement>;
-    canvasLeft: number;
-    canvasTop: number;
-    canvasWidth: number;
-    canvasHeight: number;
+
     canvas: HTMLCanvasElement | null;
     canvasContext2d: CanvasRenderingContext2D | null;
     constructor(props: Readonly<ICanvasDrawProps>) {
@@ -36,20 +38,21 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
                 this.draw(element);
             });
         });
-        this.gameData.onGameRoomUsersChanged(gameUsers=>this.setState({gameUsers}));
+        this.gameData.onGameRoomUsersChanged(gameUsers => this.setState({ gameUsers }));
         this.canvasRef = React.createRef<HTMLCanvasElement>();
         this.canvas = null;
         this.canvasContext2d = null;
-        this.canvasLeft = 0;
-        this.canvasTop = 0;
-        this.canvasWidth = 0;
-        this.canvasHeight = 0;
+
         this.state = {
             isPenDown: false,
             prevX: 0,
             prevY: 0,
             color: "#FF0000",
-            gameUsers:this.gameData.gameUsers
+            gameUsers: this.gameData.gameUsers,
+            canvasLeft: 0,
+            canvasTop: 0,
+            canvasWidth: 0,
+            canvasHeight: 0
         };
     }
 
@@ -63,13 +66,13 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
     resizeCanvas = () => {
         if (this.canvas) {
             const bounding = this.canvas.getBoundingClientRect();
-            this.canvasLeft = bounding.left;
-            this.canvasTop = bounding.top;
-            this.canvasWidth = bounding.width;
-            this.canvasHeight = bounding.height;
-            this.canvas.width = this.canvasWidth;
-            this.canvas.height = this.canvasHeight;
-            this.gameData.updateCanvas(new CanvasMessage(this.canvasWidth, this.canvasHeight, this.state.color));
+            this.setState({
+                canvasWidth: bounding.width,
+                canvasHeight: bounding.height,
+                canvasLeft: bounding.left,
+                canvasTop: bounding.top,
+            });
+            this.gameData.updateCanvas(new CanvasMessage(bounding.width, bounding.height, this.state.color));
         }
     }
 
@@ -81,8 +84,8 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
             this.canvasContext2d.lineWidth = 2;
             this.canvasContext2d.strokeStyle = this.state.color;
             this.canvasContext2d.beginPath();
-            this.canvasContext2d.moveTo(line.x0 - this.canvasLeft, line.y0 - this.canvasTop);
-            this.canvasContext2d.lineTo(line.x1 - this.canvasLeft, line.y1 - this.canvasTop);
+            this.canvasContext2d.moveTo(line.x0 - this.state.canvasLeft, line.y0 - this.state.canvasTop);
+            this.canvasContext2d.lineTo(line.x1 - this.state.canvasLeft, line.y1 - this.state.canvasTop);
             this.canvasContext2d.stroke();
             this.canvasContext2d.closePath();
         }
@@ -126,38 +129,39 @@ export default class CanvasDraw extends React.Component<ICanvasDrawProps, ICanva
     }
 
     clean = () => {
-        this.canvasContext2d?.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+        this.canvasContext2d?.clearRect(0, 0, this.state.canvasWidth, this.state.canvasHeight);
         this.gameData.cleanCanvas();
     }
 
     private getCurrentGameUser = () => {
         return this.state.gameUsers.find(p => p.uid === this.props.uid);
-      }
-    
-     
-      selectWinner = () => {
+    }
+
+
+    selectWinner = () => {
         var currentGameUser = this.getCurrentGameUser();
         if (currentGameUser) {
-          currentGameUser.userState = GameUserState.selectWinner;
-          this.gameData.updateGameUser(currentGameUser);
+            currentGameUser.userState = GameUserState.selectWinner;
+            this.gameData.updateGameUser(currentGameUser);
         }
-      }
+    }
 
     public render() {
 
-        return <div className={styles.main}>
+        return (
+        <div className={styles.draw}>
             <div className={styles.control}>
-            <button onClick={this.selectWinner}>Select Winner for word {this.getCurrentGameUser()?.wordChosen}</button>
+                <button onClick={this.selectWinner}>Select Winner for word {this.getCurrentGameUser()?.wordChosen}</button>
                 <button onClick={this.clean} >Clean</button>
             </div>
-            <canvas ref={this.canvasRef}
+            <canvas ref={this.canvasRef} width={this.state.canvasWidth} height={this.state.canvasHeight}
                 onMouseDown={e => this.handleDisplayMouseDown(e.clientX, e.clientY)}
-                onMouseMove={e => {this.handleDisplayMouseMove(e.clientX, e.clientY);e.preventDefault();}}
+                onMouseMove={e => { this.handleDisplayMouseMove(e.clientX, e.clientY); e.preventDefault(); }}
                 onMouseUp={this.handleDisplayMouseUp}
                 onTouchStart={e => this.handleDisplayMouseDown(e.touches[0].clientX, e.touches[0].clientY)}
                 onTouchMove={e => this.handleDisplayMouseMove(e.touches[0].clientX, e.touches[0].clientY)}
                 onTouchEnd={this.handleDisplayMouseUp}>
             </canvas>
-        </div>
+        </div>)
     }
 }
