@@ -111,20 +111,26 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
         this.setState({ roomItems: [...videoRoomItems, ...gameRoomItems] });
     }
     createGame = async () => {
-        var game = new RoomGameSketch();
-        game.gameId = this.props.roomId;
-        await this.roomData.addRoomGame(game);
+        
+        this.createGameItem();
+
+        //sync to other users
+        await this.roomData.addRoomGame({gameId:this.props.roomId});
     }
 
     onRoomChanged = (room: RoomModel) => {
         if (room && room.roomGameSketch && !this.state.roomItems.find(p => p.roomItemType === RoomItemType.SketchGame)) {
-            var item = new RoomItem();
-            item.id = room.roomGameSketch.gameId;
-            item.order = Date.now();;
-            item.roomItemType = RoomItemType.SketchGame;
-            item.content = (<GameEnter gameId={item.id} currentUser={this.props.currentUser}></GameEnter>);
-            this.setState({ roomItems: [...this.state.roomItems, item] });
+            this.createGameItem();
         }
+    }
+    
+    createGameItem(){
+        var item = new RoomItem();
+        item.id = this.props.roomId;
+        item.order = Date.now();;
+        item.roomItemType = RoomItemType.SketchGame;
+        item.content = (<GameEnter gameId={item.id} currentUser={this.props.currentUser}></GameEnter>);
+        this.setState({ roomItems: [...this.state.roomItems, item] });
     }
 
     switchFullScreen = () => {
