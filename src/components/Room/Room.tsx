@@ -48,8 +48,12 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
         this.client.dispose();
     }
 
-    switchRoomItem = () => {
-
+    roomItemToCenter = (id: string) => {
+        var item = this.state.roomItems.find(p => p.id === id);
+        if (item) {
+            item.order = Date.now();
+            this.setState({ roomItems: [...this.state.roomItems] });
+        }
     }
 
     leaveRoom = () => {
@@ -57,11 +61,33 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
     }
 
     switchAudio = () => {
+        var local=this.state.roomItems.find(p=>p.isLocalVideo);
+        if (local) {
+            const { isAudioOn } = this.state;
 
+            if (isAudioOn) {
+              local.localVideoStream?.stream.muteAudio();
+              this.setState({ isAudioOn: false });
+            } else {
+              local.localVideoStream?.stream.unmuteAudio();
+              this.setState({ isAudioOn: true });
+            }
+        }
     }
 
     switchVideo = () => {
+        var local=this.state.roomItems.find(p=>p.isLocalVideo);
+        if (local) {
+            const { isVideoOn } = this.state;
 
+            if (isVideoOn) {
+              local.localVideoStream?.stream.muteVideo();
+              this.setState({ isVideoOn: false });
+            } else {
+              local.localVideoStream?.stream.unmuteVideo();
+              this.setState({ isVideoOn: true });
+            }
+        }
     }
 
     createVideos = (videoStreamList: Array<VideoStream>) => {
@@ -69,7 +95,9 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
             var item = new RoomItem();
             item.id = stream.id;
             item.order = Date.now() + index;
-            item.content = (<VideoPlayer key={item.id} videoStream={stream}></VideoPlayer>);
+            item.isLocalVideo = stream.isLocal;
+            item.localVideoStream = stream.isLocal ? stream : undefined;
+            item.content = (<VideoPlayer key={"video" + item.id} videoStream={stream}></VideoPlayer>);
             if (!this.state.roomItems.find(p => p.id === item.id)) {
                 this.setState({ roomItems: [...this.state.roomItems, item] });
             }
@@ -115,14 +143,16 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
                         <div className={styles.stop} onClick={() => this.leaveRoom()}>
                             <FaStop></FaStop>
                         </div>
-                        <div className={styles.game} onClick={() => this.createGame()}>
-                            <FaGamepad />
-                        </div>
+                        {!this.state.roomItems.find(p => p.id === this.props.roomName) &&
+                            <div className={styles.game} onClick={() => this.createGame()}>
+                                <FaGamepad />
+                            </div>
+                        }
                     </div>
                 </div>
                 <div className={`${styles.right} ${isFullScreen ? styles.fullScreen : ''}`}>
                     {this.state.roomItems.filter(p => p.id !== this.getMaxOrderItem().id).map(item => {
-                        return (<div key={item.id} id={item.id}>{item.content}</div>)
+                        return (<div onClick={() => this.roomItemToCenter(item.id)} key={item.id} id={item.id}>{item.content}</div>)
                     })}
                 </div>
             </div >
