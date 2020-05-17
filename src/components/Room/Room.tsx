@@ -8,10 +8,12 @@ import VideoClient, { VideoStream } from 'utils/VideoClient';
 import VideoPlayer from 'components/Video/VideoPlayer';
 import { RoomData } from 'common/Database/RoomData';
 import { RoomItemType } from './Models/RoomItemType';
+import { RoomModel } from 'common/Models/RoomModel';
+import { RoomGameSketch } from 'common/Models/RoomGameSketch';
 
 
 export interface IRoomProps {
-    roomName: string;
+    roomId: string;
     roomPassword: string | null;
     currentUser: User;
     leaveRoom: () => void;
@@ -21,7 +23,6 @@ export interface IRoomStates {
     roomItems: Array<RoomItem>;
     isVideoOn: boolean;
     isAudioOn: boolean;
-
 }
 class Room extends React.Component<IRoomProps, IRoomStates> {
 
@@ -31,21 +32,22 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
         super(props);
         this.videoClient = new VideoClient(process.env.REACT_APP_APP_ID ?? '');
         this.videoClient.onStreamListChanged = list => {
-            this.createVideos(list);
+            this.onCreateVideos(list);
         };
-        this.roomData = new RoomData(this.props.roomName)
-
+        this.roomData = new RoomData(this.props.roomId);
+        this.roomData.onRoomChange(this.onRoomChanged);
         this.state = {
             isFullScreen: false,
             isVideoOn: true,
             isAudioOn: true,
-            roomItems: []
+            roomItems: [],
         }
     }
 
 
     async componentDidMount() {
-        await this.videoClient.create(this.props.roomName, this.props.currentUser.id);
+        await this.videoClient.create(this.props.roomId, this.props.currentUser.id);
+        await this.roomData.createOrJoinRoom(this.props.currentUser);
     }
 
     componentWillUnmount() {
@@ -62,6 +64,7 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
 
     leaveRoom = () => {
         this.props.leaveRoom();
+        this.roomData.leaveRoom(this.props.currentUser.id);
     }
 
     switchAudio = () => {
@@ -94,7 +97,7 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
         }
     }
 
-    createVideos = (videoStreamList: Array<VideoStream>) => {
+    onCreateVideos = (videoStreamList: Array<VideoStream>) => {
         var videoRoomItems = videoStreamList.map((stream, index) => {
             var item = new RoomItem();
             item.id = stream.id;
@@ -107,13 +110,19 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
         var gameRoomItems = this.state.roomItems.filter(p => p.roomItemType === RoomItemType.SketchGame);
         this.setState({ roomItems: [...videoRoomItems, ...gameRoomItems] });
     }
-    createGame = () => {
-        var item = new RoomItem();
-        item.id = this.props.roomName;
-        item.order = Date.now();;
-        item.roomItemType = RoomItemType.SketchGame;
-        item.content = (<GameEnter gameId={item.id} currentUser={this.props.currentUser}></GameEnter>);
-        if (!this.state.roomItems.find(p => p.id === item.id)) {
+    createGame = async () => {
+        var game = new RoomGameSketch();
+        game.gameId = this.props.roomId;
+        await this.roomData.addRoomGame(game);
+    }
+
+    onRoomChanged = (room: RoomModel) => {
+        if (room && room.roomGameSketch && !this.state.roomItems.find(p => p.roomItemType === RoomItemType.SketchGame)) {
+            var item = new RoomItem();
+            item.id = room.roomGameSketch.gameId;
+            item.order = Date.now();;
+            item.roomItemType = RoomItemType.SketchGame;
+            item.content = (<GameEnter gameId={item.id} currentUser={this.props.currentUser}></GameEnter>);
             this.setState({ roomItems: [...this.state.roomItems, item] });
         }
     }
@@ -146,7 +155,7 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
                         <div className={styles.stop} onClick={() => this.leaveRoom()}>
                             <FaStop></FaStop>
                         </div>
-                        {!roomItems.find(p => p.id === this.props.roomName) &&
+                        {!roomItems.find(p => p.roomItemType === RoomItemType.SketchGame) &&
                             <div className={styles.game} onClick={() => this.createGame()}>
                                 <FaGamepad />
                             </div>

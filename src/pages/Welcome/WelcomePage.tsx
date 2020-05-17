@@ -17,7 +17,7 @@ export default class WelcomePage extends React.Component<IWelcomePageProps> {
                     <a href="/enter">Create Party</a>
                 </div>
                 {/* <div className={styles.button}>
-                    <a href={`/game-sketch/${WordHelper.newAdjectiveNoun()}`}>Start game(demo)</a>
+                    <a href={`/game/${WordHelper.newAdjectiveNoun()}`}>Start game(demo)</a>
                 </div> */}
             </div>
         );
