@@ -6,6 +6,8 @@ import GameEnter from 'components/GameSketch/GameEnter';
 import { User } from 'common/Models/User';
 import VideoClient, { VideoStream } from 'utils/VideoClient';
 import VideoPlayer from 'components/Video/VideoPlayer';
+import { RoomData } from 'common/Database/RoomData';
+import { RoomItemType } from './Models/RoomItemType';
 
 
 export interface IRoomProps {
@@ -23,13 +25,15 @@ export interface IRoomStates {
 }
 class Room extends React.Component<IRoomProps, IRoomStates> {
 
-    client: VideoClient;
+    videoClient: VideoClient;
+    roomData: RoomData;
     constructor(props: Readonly<IRoomProps>) {
         super(props);
-        this.client = new VideoClient(process.env.REACT_APP_APP_ID ?? '');
-        this.client.onStreamListChanged = list => {
+        this.videoClient = new VideoClient(process.env.REACT_APP_APP_ID ?? '');
+        this.videoClient.onStreamListChanged = list => {
             this.createVideos(list);
         };
+        this.roomData = new RoomData(this.props.roomName)
 
         this.state = {
             isFullScreen: false,
@@ -41,11 +45,11 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
 
 
     async componentDidMount() {
-        await this.client.create(this.props.roomName, this.props.currentUser.id);
+        await this.videoClient.create(this.props.roomName, this.props.currentUser.id);
     }
 
     componentWillUnmount() {
-        this.client.dispose();
+        this.videoClient.dispose();
     }
 
     roomItemToCenter = (id: string) => {
@@ -61,53 +65,53 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
     }
 
     switchAudio = () => {
-        var local=this.state.roomItems.find(p=>p.isLocalVideo);
+        var local = this.state.roomItems.find(p => p.roomItemType === RoomItemType.LocalVideo);
         if (local) {
             const { isAudioOn } = this.state;
 
             if (isAudioOn) {
-              local.localVideoStream?.stream.muteAudio();
-              this.setState({ isAudioOn: false });
+                local.localVideoStream?.stream.muteAudio();
+                this.setState({ isAudioOn: false });
             } else {
-              local.localVideoStream?.stream.unmuteAudio();
-              this.setState({ isAudioOn: true });
+                local.localVideoStream?.stream.unmuteAudio();
+                this.setState({ isAudioOn: true });
             }
         }
     }
 
     switchVideo = () => {
-        var local=this.state.roomItems.find(p=>p.isLocalVideo);
+        var local = this.state.roomItems.find(p => p.roomItemType === RoomItemType.LocalVideo);
         if (local) {
             const { isVideoOn } = this.state;
 
             if (isVideoOn) {
-              local.localVideoStream?.stream.muteVideo();
-              this.setState({ isVideoOn: false });
+                local.localVideoStream?.stream.muteVideo();
+                this.setState({ isVideoOn: false });
             } else {
-              local.localVideoStream?.stream.unmuteVideo();
-              this.setState({ isVideoOn: true });
+                local.localVideoStream?.stream.unmuteVideo();
+                this.setState({ isVideoOn: true });
             }
         }
     }
 
     createVideos = (videoStreamList: Array<VideoStream>) => {
-        videoStreamList.map((stream, index) => {
+        var videoRoomItems = videoStreamList.map((stream, index) => {
             var item = new RoomItem();
             item.id = stream.id;
             item.order = Date.now() + index;
-            item.isLocalVideo = stream.isLocal;
+            item.roomItemType = stream.isLocal ? RoomItemType.LocalVideo : RoomItemType.RemoteVideo;
             item.localVideoStream = stream.isLocal ? stream : undefined;
             item.content = (<VideoPlayer key={"video" + item.id} videoStream={stream}></VideoPlayer>);
-            if (!this.state.roomItems.find(p => p.id === item.id)) {
-                this.setState({ roomItems: [...this.state.roomItems, item] });
-            }
             return item;
         });
+        var gameRoomItems = this.state.roomItems.filter(p => p.roomItemType === RoomItemType.SketchGame);
+        this.setState({ roomItems: [...videoRoomItems, ...gameRoomItems] });
     }
     createGame = () => {
         var item = new RoomItem();
         item.id = this.props.roomName;
         item.order = Date.now();;
+        item.roomItemType = RoomItemType.SketchGame;
         item.content = (<GameEnter gameId={item.id} currentUser={this.props.currentUser}></GameEnter>);
         if (!this.state.roomItems.find(p => p.id === item.id)) {
             this.setState({ roomItems: [...this.state.roomItems, item] });
