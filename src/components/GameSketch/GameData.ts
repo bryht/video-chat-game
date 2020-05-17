@@ -57,8 +57,19 @@ export class GameData {
         this.socketHelper.emit<GameUser>(Consts.gameUserUpdate, gameUser);
     }
 
-    updateRoomOwner(uid:string){
-        this.gameRoom.gameOwnerUid=uid;
+    updateRoomOwner(uid: string) {
+        this.gameRoom.gameOwnerUid = uid;
+        this.socketHelper.emit<GameRoom>(Consts.gameRoom, this.gameRoom);
+    }
+
+
+    updateRoomRound(round: number) {
+        this.gameRoom.round = round;
+        this.socketHelper.emit<GameRoom>(Consts.gameRoom, this.gameRoom);
+    }
+
+    updateRoomRoundTime(roundTime: number) {
+        this.gameRoom.roundTime = roundTime;
         this.socketHelper.emit<GameRoom>(Consts.gameRoom, this.gameRoom);
     }
 
@@ -90,8 +101,8 @@ export class GameData {
         this.socketHelper.onEventChanged<Line>('line', line => onChange(line));
     }
 
-    onGameLines(onChange:(data:Array<Line>)=>void){
-        this.socketHelper.onEventChanged<Array<Line>>('gameLines', lines=>onChange(lines));
+    onGameLines(onChange: (data: Array<Line>) => void) {
+        this.socketHelper.onEventChanged<Array<Line>>('gameLines', lines => onChange(lines));
     }
 
     dispose() {

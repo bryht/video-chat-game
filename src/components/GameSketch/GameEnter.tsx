@@ -71,10 +71,10 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
       <div>
         <h1>{this.state.gameRoom.gameId}</h1>
         <div>
-          {this.state.gameRoom.round} round
+          <input type="number" value={this.state.gameRoom.round} onChange={e=>{this.gameData.updateRoomRound(Number.parseInt(e.target.value))}}/>round
         </div>
         <div>
-          {this.state.gameRoom.roundTime} seconde per round
+          <input type="number" value={this.state.gameRoom.roundTime} onChange={e=>{this.gameData.updateRoomRoundTime(Number.parseInt(e.target.value))}}/> seconde per round
         </div>
         <ul>
           {this.state.gameUsers.map(user =>
