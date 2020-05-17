@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './Room.module.scss';
-import { RoomItem } from 'components/Models/RoomItem';
+import { RoomItem } from 'components/Room/Models/RoomItem';
 import { FaVideo, FaVideoSlash, FaVolumeUp, FaVolumeMute, FaStop, FaGamepad } from 'react-icons/fa';
 import GameEnter from 'components/GameSketch/GameEnter';
 import { User } from 'common/Models/User';
@@ -124,9 +124,8 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
     }
 
     public render() {
-        console.log(this.getMaxOrderItem());
-        console.log(this.state.roomItems.filter(p => p.id !== this.getMaxOrderItem().id));
-        const { isFullScreen, isAudioOn, isVideoOn } = this.state;
+
+        const { isFullScreen, isAudioOn, isVideoOn, roomItems } = this.state;
         return (
             <div className={styles.main}>
                 <div className={styles.left}>
@@ -143,7 +142,7 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
                         <div className={styles.stop} onClick={() => this.leaveRoom()}>
                             <FaStop></FaStop>
                         </div>
-                        {!this.state.roomItems.find(p => p.id === this.props.roomName) &&
+                        {!roomItems.find(p => p.id === this.props.roomName) &&
                             <div className={styles.game} onClick={() => this.createGame()}>
                                 <FaGamepad />
                             </div>
