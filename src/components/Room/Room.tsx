@@ -1,13 +1,11 @@
 import * as React from 'react';
 import styles from './Room.module.scss';
-import { IRoomItem } from 'components/Models/IRoomItem';
-import { RoomGameItem } from 'components/Models/RoomGameItem';
-import { RoomVideoItem } from 'components/Models/RoomVideoItem';
+import { RoomItem } from 'components/Models/RoomItem';
 import { FaVideo, FaVideoSlash, FaVolumeUp, FaVolumeMute, FaStop, FaGamepad } from 'react-icons/fa';
 import GameEnter from 'components/GameSketch/GameEnter';
 import { User } from 'common/Models/User';
-import { WordHelper } from 'utils/WordHelper';
-import Log from 'utils/Log';
+import VideoClient, { VideoStream } from 'utils/VideoClient';
+import VideoPlayer from 'components/Video/VideoPlayer';
 
 
 export interface IRoomProps {
@@ -18,16 +16,20 @@ export interface IRoomProps {
 }
 export interface IRoomStates {
     isFullScreen: boolean;
-    roomItems: Array<IRoomItem>;
+    roomItems: Array<RoomItem>;
     isVideoOn: boolean;
     isAudioOn: boolean;
 
 }
 class Room extends React.Component<IRoomProps, IRoomStates> {
 
-
+    client: VideoClient;
     constructor(props: Readonly<IRoomProps>) {
         super(props);
+        this.client = new VideoClient(process.env.REACT_APP_APP_ID ?? '');
+        this.client.onStreamListChanged = list => {
+            this.createVideos(list);
+        };
 
         this.state = {
             isFullScreen: false,
@@ -39,14 +41,11 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
 
 
     async componentDidMount() {
-        this.setState({
-            roomItems: [new RoomGameItem(), new RoomVideoItem()]
-        })
+        await this.client.create(this.props.roomName, this.props.currentUser.id);
     }
 
-
     componentWillUnmount() {
-
+        this.client.dispose();
     }
 
     switchRoomItem = () => {
@@ -65,14 +64,26 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
 
     }
 
+    createVideos = (videoStreamList: Array<VideoStream>) => {
+        videoStreamList.map((stream, index) => {
+            var item = new RoomItem();
+            item.id = stream.id;
+            item.order = Date.now() + index;
+            item.content = (<VideoPlayer key={item.id} videoStream={stream}></VideoPlayer>);
+            if (!this.state.roomItems.find(p => p.id === item.id)) {
+                this.setState({ roomItems: [...this.state.roomItems, item] });
+            }
+            return item;
+        });
+    }
     createGame = () => {
-        var item = new RoomGameItem();
+        var item = new RoomItem();
         item.id = this.props.roomName;
-        item.order =  1;
+        item.order = Date.now();;
         item.content = (<GameEnter gameId={item.id} currentUser={this.props.currentUser}></GameEnter>);
-        this.state.roomItems.push(item);
-        this.setState({ roomItems: this.state.roomItems});
-        Log.Info(this.state.roomItems);
+        if (!this.state.roomItems.find(p => p.id === item.id)) {
+            this.setState({ roomItems: [...this.state.roomItems, item] });
+        }
     }
 
     switchFullScreen = () => {
@@ -80,10 +91,13 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
     }
 
     private getMaxOrderItem = () => {
-        return this.state.roomItems.reduce((a, b) => a.order > b.order ? a : b, { order: 0, content: '' });
+        var item = this.state.roomItems.reduce((a, b) => a.order > b.order ? a : b, { order: 0, content: '', id: '' });
+        return item;
     }
 
     public render() {
+        console.log(this.getMaxOrderItem());
+        console.log(this.state.roomItems.filter(p => p.id !== this.getMaxOrderItem().id));
         const { isFullScreen, isAudioOn, isVideoOn } = this.state;
         return (
             <div className={styles.main}>
@@ -107,8 +121,8 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
                     </div>
                 </div>
                 <div className={`${styles.right} ${isFullScreen ? styles.fullScreen : ''}`}>
-                    {this.state.roomItems.filter(p => p.order !== this.getMaxOrderItem().order).map(item => {
-                        return (<div key={item.id}>{item.content}</div>)
+                    {this.state.roomItems.filter(p => p.id !== this.getMaxOrderItem().id).map(item => {
+                        return (<div key={item.id} id={item.id}>{item.content}</div>)
                     })}
                 </div>
             </div >

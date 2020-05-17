@@ -15,7 +15,10 @@
         display: flex;
         flex: 1;
         position: relative;
-        
+        section{
+            display: flex;
+            flex: 1;
+        }
         .toggleFullScreen {
             position: absolute;
             right: 0;
@@ -92,13 +95,14 @@
         padding: 2px;
 
         section {
+            display: flex;
             flex: 1;
-            margin: 0px;
-            div{
-                margin: 0px;
-                border-width: 0px;
-                padding: 0;
-            }
+            // margin: 0px;
+            // div{
+            //     margin: 0px;
+            //     border-width: 0px;
+            //     padding: 0;
+            // }
         }
     }
 }
