@@ -9,7 +9,6 @@ import VideoPlayer from 'components/Video/VideoPlayer';
 import { RoomData } from 'common/Database/RoomData';
 import { RoomItemType } from './Models/RoomItemType';
 import { RoomModel } from 'common/Models/RoomModel';
-import { RoomGameSketch } from 'common/Models/RoomGameSketch';
 
 
 export interface IRoomProps {

@@ -58,7 +58,7 @@ export default class GamePlaying extends React.Component<IGamePlayingProps, IGam
       case GameUserState.playing:
         return <CanvasDraw gameId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasDraw>;
       case GameUserState.waiting:
-        return <CanvasWatcher gameId={this.state.gameRoom.gameId}></CanvasWatcher>;
+        return <CanvasWatcher gameId={this.state.gameRoom.gameId} uid={this.props.uid}></CanvasWatcher>;//TODO:have a separated watcher
       case GameUserState.selectWinner:
         return <SelectWinner gameId={this.state.gameRoom.gameId} uid={this.props.uid} ></SelectWinner>
       default:

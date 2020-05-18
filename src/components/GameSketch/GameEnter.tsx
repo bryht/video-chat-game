@@ -109,7 +109,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
 
     switch (this.state.gameRoom.roomState) {
       case RoomState.playing:
-        return this.isWatcher() ? <CanvasWatcher gameId={this.props.gameId} /> : <GamePlaying gameId={this.props.gameId} uid={this.props.currentUser.id}></GamePlaying>
+        return this.isWatcher() ? <CanvasWatcher gameId={this.props.gameId} uid={this.props.currentUser.id} /> : <GamePlaying gameId={this.props.gameId} uid={this.props.currentUser.id}></GamePlaying>
       case RoomState.waiting:
         return this.waringForJoin();
       default:

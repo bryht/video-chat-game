@@ -10,6 +10,7 @@ import { GameRoom } from './Models/GameRoom';
 
 interface ICanvasWatcherProps {
     gameId: string;
+    uid: string;
 }
 
 interface ICanvasWatcherStates {
@@ -115,6 +116,10 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
         return this.state.gameUsers.find(p => p.userState !== GameUserState.waiting);
     }
 
+    closeGame=()=>{
+        this.gameData.stopGame();
+    }
+
     public render() {
 
         return (
@@ -122,7 +127,7 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
                 <div className={styles.info}>
                     <p>Game round:{this.state.gameRound.currentRound},
           time left:{this.state.gameRoom.roundTime - this.state.gameRound.timing}s,
-          current player:{this.getCurrentPlayingGameUser()?.name}, </p>
+          current player:{this.getCurrentPlayingGameUser()?.name}, {this.gameData.gameRoom.gameOwnerUid === this.props.uid && <button onClick={this.closeGame}>Stop</button>}</p>
                 </div>
                 <canvas height={this.state.canvasHeight} width={this.state.canvasWidth} ref={this.canvasRef}></canvas>
             </div>)

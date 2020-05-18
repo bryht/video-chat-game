@@ -49,7 +49,7 @@ function getOrCreateGame(gameId) {
 
         if (isFinished) {
           game.stopGame();
-          io.to(gameId).emit('gameRoom', game.room);
+         
         }
       };
 
@@ -68,6 +68,7 @@ function getOrCreateGame(gameId) {
       clearInterval(game.timer);
       game.room.roomState = 0;
       delete game.onTimerChanged;
+      io.to(gameId).emit('gameRoom', game.room);
     };
 
     game.updateRoom = (room) => {
