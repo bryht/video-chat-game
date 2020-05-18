@@ -111,26 +111,30 @@ class Room extends React.Component<IRoomProps, IRoomStates> {
         this.setState({ roomItems: [...videoRoomItems, ...gameRoomItems] });
     }
     createGame = async () => {
-        
-        this.createGameItem();
 
         //sync to other users
-        await this.roomData.addRoomGame({gameId:this.props.roomId});
+        await this.roomData.updateRoomGame({ gameId: this.props.roomId });
+    }
+
+    closeGame = async () => {
+        await this.roomData.updateRoomGame(undefined);
     }
 
     onRoomChanged = (room: RoomModel) => {
         if (room && room.roomGameSketch && !this.state.roomItems.find(p => p.roomItemType === RoomItemType.SketchGame)) {
-            this.createGameItem();
+            var item = new RoomItem();
+            item.id = this.props.roomId;
+            item.order = Date.now();;
+            item.roomItemType = RoomItemType.SketchGame;
+            item.content = (<GameEnter gameId={item.id} currentUser={this.props.currentUser} closeGame={() => this.closeGame()}></GameEnter>);
+            this.setState({ roomItems: [...this.state.roomItems, item] });
         }
-    }
-    
-    createGameItem(){
-        var item = new RoomItem();
-        item.id = this.props.roomId;
-        item.order = Date.now();;
-        item.roomItemType = RoomItemType.SketchGame;
-        item.content = (<GameEnter gameId={item.id} currentUser={this.props.currentUser}></GameEnter>);
-        this.setState({ roomItems: [...this.state.roomItems, item] });
+
+        if (room && !room.roomGameSketch) {
+
+            var roomItems = this.state.roomItems.filter(p => p.roomItemType !== RoomItemType.SketchGame);
+            this.setState({ roomItems });
+        }
     }
 
     switchFullScreen = () => {

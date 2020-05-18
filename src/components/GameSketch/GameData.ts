@@ -31,6 +31,14 @@ export class GameData {
         this.socketHelper.emit(Consts.startGame, {});
     }
 
+    closeGame(){
+        this.socketHelper.emit(Consts.closeGame,{});
+    }
+
+    stopGame(){
+        this.socketHelper.emit(Consts.stopGame,{});
+    }
+
 
     onGameRoundChanged(onChange: (gameRound: GameRound) => void) {
         this.socketHelper.onEventChanged<GameRound>(Consts.gameRound, async data => {

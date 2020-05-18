@@ -184,11 +184,12 @@ io.on('connection', (socket) => {
     socket.on("startGame", () => {
       game.startGame();
     });
-
-    socket.on('leaveRoom', () => {
+    socket.on('stopGame', () => {
+      game.stopGame();
+    })
+    socket.on('closeGame', () => {
       game.dispose();
     })
-
 
   })
 

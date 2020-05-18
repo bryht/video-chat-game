@@ -39,7 +39,7 @@ export class RoomData {
         }
     }
 
-    async addRoomGame(roomGameSketch: RoomGameSketch) {
+    async updateRoomGame(roomGameSketch?: RoomGameSketch) {
         var room = await this.firebaseHelper.dbGetByDocIdAsync<RoomModel>('room', this.roomId);
         if (room) {
             room.roomGameSketch = roomGameSketch;

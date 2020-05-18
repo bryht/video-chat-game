@@ -12,6 +12,7 @@ import CanvasWatcher from './CanvasWatcher';
 interface IGameEnterProps {
   currentUser: User;
   gameId: string;
+  closeGame: () => void;
 }
 
 interface IGameEnterStates {
@@ -57,6 +58,11 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
     this.gameData.startGame();
   }
 
+  closeGame = () => {
+    this.gameData.closeGame();
+    this.props.closeGame();
+  }
+
   isGameOwner = () => {
     return this.state.gameRoom.gameOwnerUid === this.props.currentUser.id;
   }
@@ -87,10 +93,13 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
           }
         </ul>
         {this.isShowStart() && <button onClick={() => this.startGame()}>Start</button>}
+        <br />
+        {this.isGameOwner() && <button onClick={() => this.closeGame()}> Close Game </button>}
         <section>
           <div>Invite users join through link:</div>
           <h3>https://letshaveaparty.online/game/{this.state.gameRoom.gameId}/join</h3>
         </section>
+
       </div>
     );
 
@@ -100,7 +109,7 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
 
     switch (this.state.gameRoom.roomState) {
       case RoomState.playing:
-        return  this.isWatcher() ? <CanvasWatcher gameId={this.props.gameId} /> : <GamePlaying gameId={this.props.gameId} uid={this.props.currentUser.id}></GamePlaying>
+        return this.isWatcher() ? <CanvasWatcher gameId={this.props.gameId} /> : <GamePlaying gameId={this.props.gameId} uid={this.props.currentUser.id}></GamePlaying>
       case RoomState.waiting:
         return this.waringForJoin();
       default:

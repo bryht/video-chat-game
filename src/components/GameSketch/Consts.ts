@@ -7,6 +7,7 @@ export default class Consts {
     static gameUserUpdate: string = 'gameUserUpdate'
     static startGame: string = 'startGame'
     static initialGame: string = 'initialGame'
-    static leaveRoom: string = 'leaveRoom'
+    static stopGame: string = 'stopGame'
+    static closeGame: string = 'closeGame'
 
 }
