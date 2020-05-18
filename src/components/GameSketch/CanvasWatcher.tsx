@@ -116,7 +116,7 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
         return this.state.gameUsers.find(p => p.userState !== GameUserState.waiting);
     }
 
-    closeGame=()=>{
+    closeGame = () => {
         this.gameData.stopGame();
     }
 
@@ -125,9 +125,15 @@ export default class CanvasWatcher extends React.Component<ICanvasWatcherProps, 
         return (
             <div className={styles.watch}>
                 <div className={styles.info}>
-                    <p>Game round:{this.state.gameRound.currentRound},
-          time left:{this.state.gameRoom.roundTime - this.state.gameRound.timing}s,
-          current player:{this.getCurrentPlayingGameUser()?.name}, {this.gameData.gameRoom.gameOwnerUid === this.props.uid && <button onClick={this.closeGame}>Stop</button>}</p>
+                    <p>Game round:{this.state.gameRound.currentRound}</p>
+                    <p>time left:{this.state.gameRoom.roundTime - this.state.gameRound.timing}s</p>
+                    <p>current player:{this.getCurrentPlayingGameUser()?.name}</p>
+                    {this.gameData.gameRoom.gameOwnerUid === this.props.uid && <>
+                        <button onClick={this.closeGame}>Stop</button>
+                        {this.state.gameUsers.map(item=>{
+                            return (<p>{item.name}:{item.score}</p>)
+                        })}
+                    </>}
                 </div>
                 <canvas height={this.state.canvasHeight} width={this.state.canvasWidth} ref={this.canvasRef}></canvas>
             </div>)

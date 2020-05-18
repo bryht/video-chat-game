@@ -11,7 +11,7 @@ interface ISelectWinnerProps {
 
 interface ISelectWinnerStates {
     gameUsers: Array<GameUser>;
-    gameUsersForSelect:Array<GameUser>;
+    gameUsersForSelect: Array<GameUser>;
 
 }
 
@@ -23,13 +23,13 @@ export default class SelectWinner extends React.Component<ISelectWinnerProps, IS
         super(props);
         this.state = {
             gameUsers: [],
-            gameUsersForSelect:[]
+            gameUsersForSelect: []
         }
         this.gameData = new GameData(this.props.gameId)
         this.gameData.onGameRoomUsersChanged(gameUsers => {
-            this.setState({ 
+            this.setState({
                 gameUsers,
-                gameUsersForSelect:gameUsers.filter(p=>p.uid!==this.props.uid)
+                gameUsersForSelect: gameUsers.filter(p => p.uid !== this.props.uid)
             });
         })
     }
@@ -50,6 +50,7 @@ export default class SelectWinner extends React.Component<ISelectWinnerProps, IS
         var currentGameUser = this.state.gameUsers.find(p => p.uid === this.props.uid);
         if (currentGameUser) {
             currentGameUser.userState = GameUserState.choosing;
+            currentGameUser.score++;
             this.gameData.updateGameUser(currentGameUser);
         }
     }

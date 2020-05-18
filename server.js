@@ -67,6 +67,9 @@ function getOrCreateGame(gameId) {
     game.stopGame = () => {
       clearInterval(game.timer);
       game.room.roomState = 0;
+      game.users.forEach(user => {
+        user.score=0;
+      });
       delete game.onTimerChanged;
       io.to(gameId).emit('gameRoom', game.room);
     };
