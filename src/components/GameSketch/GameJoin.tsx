@@ -5,6 +5,7 @@ import { User } from 'common/Models/User';
 import { GameUser } from './Models/GameUser';
 import { GameUserRole } from './Models/GameUserRole';
 import { GameUserState } from './Models/GameUserState';
+import styles from './GameSketch.module.scss';
 
 export interface IGameJoinProps {
     roomId: string;
@@ -50,7 +51,7 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
 
     public render() {
         return (
-            <div>
+            <div className={styles.join}>
                 <div>Please input your name:</div>
                 <input type="text" value={this.state.gameUserName} onChange={e => this.onNameChanged(e.target.value)} />
                 <button onClick={this.joinGame}>Join</button>

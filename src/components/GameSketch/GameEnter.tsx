@@ -8,6 +8,7 @@ import Loading from 'components/Loading/Loading';
 import GamePlaying from './GamePlaying';
 import Log from 'utils/Log';
 import CanvasWatcher from './CanvasWatcher';
+import styles from './GameSketch.module.scss';
 
 interface IGameEnterProps {
   currentUser: User;
@@ -79,14 +80,10 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
   waringForJoin = () => {
 
     return (
-      <div>
+      <div className={styles.enter}>
         <h1>Game Sketch</h1>
-        <section>
-          <input type="number" value={this.state.gameRoom.round} onChange={e => { this.gameData.updateRoomRound(Number.parseInt(e.target.value)) }} />round
-        </section>
-        <section>
-          <input type="number" value={this.state.gameRoom.roundTime} onChange={e => { this.gameData.updateRoomRoundTime(Number.parseInt(e.target.value)) }} /> seconde per round
-        </section>
+        <input type="number" value={this.state.gameRoom.round} onChange={e => { this.gameData.updateRoomRound(Number.parseInt(e.target.value)) }} /> rounds
+        <input type="number" value={this.state.gameRoom.roundTime} onChange={e => { this.gameData.updateRoomRoundTime(Number.parseInt(e.target.value)) }} /> seconds per round
         <ul>
           {this.state.gameUsers.map(user =>
             <li key={user.uid}>{user.name} is ready</li>)
@@ -95,11 +92,8 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
         {this.isShowStart() && <button onClick={() => this.startGame()}>Start</button>}
         <br />
         {this.isGameOwner() && <button onClick={() => this.closeGame()}> Close Game </button>}
-        <section>
-          <div>Invite users join through link:</div>
-          <h3>https://letshaveaparty.online/game/{this.state.gameRoom.gameId}/join</h3>
-        </section>
-
+        <h5>Invite users to join through the link:</h5>
+        <h5>https://letshaveaparty.online/game/{this.state.gameRoom.gameId}/join</h5>
       </div>
     );
 

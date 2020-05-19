@@ -52,10 +52,10 @@ export default class ChoosingWord extends React.Component<IChoosingWordProps, IC
 
     public render() {
 
-        return (<div>
+        return (<div className={styles.choose}>
             <ul>
                 {this.state.wordsForChoosing.map(item => {
-                    return <li>{item} <br></br> <button onClick={() => this.chooseWord(item)}>choose</button> </li>;
+                    return <li>{item} <br></br> <button onClick={() => this.chooseWord(item)}>choose</button><hr/> </li>;
                 })}
             </ul>
         </div>)

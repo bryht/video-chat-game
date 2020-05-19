@@ -58,10 +58,10 @@ export default class SelectWinner extends React.Component<ISelectWinnerProps, IS
 
     public render() {
 
-        return (<div>
+        return (<div className={styles.choose}>
             <ul>
                 {this.state.gameUsersForSelect.map(item => {
-                    return <li>{item.name} <br></br> <button onClick={() => this.chooseWinner(item)}>choose</button> </li>;
+                    return <li>{item.name} <br></br> <button onClick={() => this.chooseWinner(item)}>choose</button><hr/> </li>;
                 })}
             </ul>
         </div>)
