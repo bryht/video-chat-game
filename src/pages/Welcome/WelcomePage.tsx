@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './WelcomePage.module.scss';
-import welcome from 'assets/welcome.png';
+import welcome from 'assets/welcome.svg';
 export interface IWelcomePageProps {
 }
 
