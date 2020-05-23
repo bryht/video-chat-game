@@ -41,7 +41,10 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
                     <input type="text" value={this.state.roomId} onChange={e => { this.roomChanged(e.target.value) }} />
                 </div>
                 <div className={styles.button}>
-                    <a href={`/room/${this.state.roomId}`}>Go Room</a>
+                    <a href={`/room/${this.state.roomId}`}>Go Video & Game</a>
+                </div>
+                <div className={styles.button}>
+                    <a href={`/game/${this.state.roomId}`}>Go Game</a>
                 </div>
                 <div className={styles.button}>
                     <a href="/welcome" >Back</a>

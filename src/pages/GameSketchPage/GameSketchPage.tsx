@@ -20,11 +20,13 @@ class GameSketchPage extends React.Component<IGameSketchPageProps, IGameSketchPa
         }
     }
 
-
+    leaveRoom = () => {
+        this.props.history.push("/enter");
+    }
     public render() {
         return (
             <div className={styles.main}>
-                <GameEnter currentUser={this.props.currentUser} gameId={this.props.match.params.roomId} closeGame={() => { }}></GameEnter>
+                <GameEnter currentUser={this.props.currentUser} gameId={this.props.match.params.roomId} closeGame={() => { this.leaveRoom()}}></GameEnter>
             </div>
         );
     }
