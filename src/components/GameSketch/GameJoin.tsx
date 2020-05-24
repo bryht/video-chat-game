@@ -1,15 +1,14 @@
 import * as React from 'react';
 import { GameData } from './GameData';
 import { WordHelper } from 'utils/WordHelper';
-import { User } from 'common/Models/User';
 import { GameUser } from './Models/GameUser';
 import { GameUserRole } from './Models/GameUserRole';
 import { GameUserState } from './Models/GameUserState';
 import styles from './GameSketch.module.scss';
+import Guid from 'utils/Guid';
 
 export interface IGameJoinProps {
     roomId: string;
-    currentUser: User;
 }
 
 export interface IGameJoinState {
@@ -31,7 +30,7 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
     componentDidMount() {
         this.gameData.initial();
         this.setState({
-            gameUserName: this.props.currentUser.name || WordHelper.newNoun()
+            gameUserName: 'user-'+WordHelper.newNoun()
         })
 
     }
@@ -43,7 +42,7 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
     }
 
     joinGame = () => {
-        var _gameUser = new GameUser(this.props.currentUser.id, this.state.gameUserName, GameUserState.waiting, GameUserRole.player);
+        var _gameUser = new GameUser(Guid.newGuid(), this.state.gameUserName, GameUserState.waiting, GameUserRole.player);
         this.gameData.joinRoom(_gameUser);
 
         window.location.pathname = window.location.pathname.replace('join', '');//TODO: switch to a callback
