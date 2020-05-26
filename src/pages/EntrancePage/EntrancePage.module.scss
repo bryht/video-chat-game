@@ -24,12 +24,14 @@
         padding-bottom: 30px;
         .close {
             position: absolute;
-            top: -40px;
-            right: -40px;
-            font-size: 10px;
+            width: 40px;
+            height: 40px;
+            top: -20px;
+            right: -20px;
             svg{
                 font-size: 40px;
                 color: darkred;
+                margin: 0px;
             }
         }
         .roomName {
@@ -69,6 +71,7 @@
             font-family: "Muli", sans-serif;
             text-decoration: none;
             margin-top: 20px;
+            box-shadow:  inset 1px 1px 1px lightgray, inset -1px -1px 1px gray;
         }
 
         a.button:hover,
