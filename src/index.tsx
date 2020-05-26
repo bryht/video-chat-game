@@ -32,7 +32,7 @@ ReactDOM.render(
         <Route path="/room/:id">
           <RoomPage />
         </Route>
-        <Route path="/enter">
+        <Route path="/enter/:path">
           <EntrancePage />
         </Route>
         <Route path="/game/:roomId/join">

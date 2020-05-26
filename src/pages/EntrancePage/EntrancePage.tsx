@@ -6,7 +6,7 @@ import { withAuth } from 'common/Connect/Connections';
 import { WordHelper } from 'utils/WordHelper';
 import FirebaseHelper from 'utils/FirebaseHelper';
 
-export interface IEntrancePageProps extends IAuthProps<any> {
+export interface IEntrancePageProps extends IAuthProps<{ path: string }> {
 }
 
 interface IEntrancePageStates {
@@ -14,10 +14,10 @@ interface IEntrancePageStates {
 }
 
 class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStates> {
-    firebaseHelper:FirebaseHelper;
+    firebaseHelper: FirebaseHelper;
     constructor(props: Readonly<IEntrancePageProps>) {
         super(props);
-        this.firebaseHelper=new FirebaseHelper();
+        this.firebaseHelper = new FirebaseHelper();
         this.state = {
             roomId: WordHelper.newNoun(),
         }
@@ -27,9 +27,8 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
     }
 
     public render() {
-
         const { name } = this.props.currentUser;
-
+        const { path } = this.props.match.params;
         return (
             <div className={styles.main}>
                 <h1>Hi,{name ? `${name},` : ''} Welcome! Please enter your room to start.</h1>
@@ -40,12 +39,23 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
                     </div>
                     <input type="text" value={this.state.roomId} onChange={e => { this.roomChanged(e.target.value) }} />
                 </div>
-                <div className={styles.button}>
-                    <a href={`/room/${this.state.roomId}`}>Go Video & Game</a>
-                </div>
-                <div className={styles.button}>
-                    <a href={`/game/${this.state.roomId}`}>Go Game</a>
-                </div>
+                {path === 'create-party' &&
+                    <div className={styles.button}>
+                        <a href={`/room/${this.state.roomId}`}>Create</a>
+                    </div>
+                }
+                {path === 'join-party' &&
+                    <div className={styles.button}>
+                        <a href={`/room/${this.state.roomId}`}>Join</a>
+                    </div>
+                }
+                {path === 'create-game' &&
+                    <div className={styles.button}>
+                        <a href={`/game/${this.state.roomId}`}>Create</a>
+                    </div>
+                }
+
+
                 <div className={styles.button}>
                     <a href="/welcome" >Back</a>
                 </div>
