@@ -1,5 +1,4 @@
 @import 'common';
-@import '~bootstrap/scss/alert';
 
 .main {
     display: flex;
@@ -7,13 +6,5 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-
-    .title {
-        text-align: center;
-        margin-top: -10vh;
-        width: 70vw;
-        @extend .alert,
-        .alert-warning;
-        @include cross-background-red;
-    }
+    @include background-yellow;
 }

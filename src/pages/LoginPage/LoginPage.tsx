@@ -19,9 +19,15 @@ class LoginPage extends React.Component<ILoginPageProps, { isPending: boolean }>
             signInSuccessUrl: this.props.match.params.redirect.split('_').join('/') || '/enter',
             signInOptions: [
                 firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-                firebase.auth.EmailAuthProvider.PROVIDER_ID,
-                firebase.auth.PhoneAuthProvider.PROVIDER_ID,
-                firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
+                {
+                    provider:firebase.auth.EmailAuthProvider.PROVIDER_ID,
+                    requireDisplayName:false
+                },
+                firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID,
+                {
+                    provider: firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+                    defaultCountry: 'NL',
+                }
             ],
         };
 
@@ -36,8 +42,7 @@ class LoginPage extends React.Component<ILoginPageProps, { isPending: boolean }>
 
         return (
             <div className={styles.main}>
-                {this.state.isPending ? <Loading></Loading> :
-                    <h1 className={styles.title}>Please sign-in:</h1>}
+                {this.state.isPending && <Loading></Loading>}
                 <StyledFirebaseAuth uiCallback={this.uiCallback} uiConfig={this.uiconfig} firebaseAuth={firebase.auth()} />
             </div>
         );
