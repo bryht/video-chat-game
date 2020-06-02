@@ -9,6 +9,7 @@ import GamePlaying from './GamePlaying';
 import Log from 'utils/Log';
 import CanvasWatcher from './CanvasWatcher';
 import styles from './GameSketch.module.scss';
+import mobile from 'assets/mobile.svg';
 
 interface IGameEnterProps {
   currentUser: User;
@@ -81,19 +82,24 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
 
     return (
       <div className={styles.enter}>
-        <h1>Game Sketch</h1>
-        <input type="number" value={this.state.gameRoom.round} onChange={e => { this.gameData.updateRoomRound(Number.parseInt(e.target.value)) }} /> rounds
+        <div>
+          <h1>Game Sketch</h1>
+          <input type="number" value={this.state.gameRoom.round} onChange={e => { this.gameData.updateRoomRound(Number.parseInt(e.target.value)) }} /> rounds
         <input type="number" value={this.state.gameRoom.roundTime} onChange={e => { this.gameData.updateRoomRoundTime(Number.parseInt(e.target.value)) }} /> seconds per round
         <ul>
-          {this.state.gameUsers.map(user =>
-            <li key={user.uid}>{user.name} is ready</li>)
-          }
-        </ul>
-        {this.isShowStart() && <button onClick={() => this.startGame()}>Start</button>}
-        <br />
-        {this.isGameOwner() && <button onClick={() => this.closeGame()}> Close Game </button>}
-        <h5>Invite users to join through the link:</h5>
-        <h5>https://letshaveaparty.online/game/{this.state.gameRoom.gameId}/join</h5>
+            {this.state.gameUsers.map(user =>
+              <li key={user.uid}>{user.name} is ready</li>)
+            }
+          </ul>
+          {this.isShowStart() && <button onClick={() => this.startGame()}>Start</button>}
+          {this.isGameOwner() && <button onClick={() => this.closeGame()}> Close Game </button>}
+        </div>
+        <div>
+          <h5>Please join the game through the link using your phone:</h5>
+          <h5>https://letshaveaparty.online/game/{this.state.gameRoom.gameId}/join</h5>
+          <img src={mobile} alt="" height={300}></img>
+          <a href="https://web.whatsapp.com/" target={"blank"} >Share to WhatsApp</a>
+        </div>
       </div>
     );
 
