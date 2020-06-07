@@ -9,7 +9,8 @@ import GamePlaying from './GamePlaying';
 import Log from 'utils/Log';
 import CanvasWatcher from './CanvasWatcher';
 import styles from './GameSketch.module.scss';
-import mobile from 'assets/mobile.svg';
+import { IoMdCloseCircle } from 'react-icons/io';
+import { FaGamepad } from 'react-icons/fa';
 
 interface IGameEnterProps {
   currentUser: User;
@@ -23,7 +24,6 @@ interface IGameEnterStates {
 }
 
 export default class GameEnter extends React.Component<IGameEnterProps, IGameEnterStates> {
-
   gameData: GameData;
   constructor(props: Readonly<IGameEnterProps>) {
     super(props);
@@ -78,33 +78,6 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
   }
 
 
-  waringForJoin = () => {
-
-    return (
-      <div className={styles.enter}>
-        <div>
-          <h1>Game Sketch</h1>
-          <input type="number" value={this.state.gameRoom.round} onChange={e => { this.gameData.updateRoomRound(Number.parseInt(e.target.value)) }} /> rounds
-        <input type="number" value={this.state.gameRoom.roundTime} onChange={e => { this.gameData.updateRoomRoundTime(Number.parseInt(e.target.value)) }} /> seconds per round
-        <ul>
-            {this.state.gameUsers.map(user =>
-              <li key={user.uid}>{user.name} is ready</li>)
-            }
-          </ul>
-          {this.isShowStart() && <button onClick={() => this.startGame()}>Start</button>}
-          {this.isGameOwner() && <button onClick={() => this.closeGame()}> Close Game </button>}
-        </div>
-        <div>
-          <h5>Please join the game through the link using your phone:</h5>
-          <h5>https://letshaveaparty.online/game/{this.state.gameRoom.gameId}/join</h5>
-          <img src={mobile} alt="" height={300}></img>
-          <a href="https://web.whatsapp.com/" target={"blank"} >Share to WhatsApp</a>
-        </div>
-      </div>
-    );
-
-  }
-
   public render() {
 
     switch (this.state.gameRoom.roomState) {
@@ -116,4 +89,42 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
         return <Loading></Loading>
     }
   }
+
+  waringForJoin = () => {
+
+    return (
+      <div className={styles.enter}>
+        <h1>Game Sketch</h1>
+        <div className={styles.content}>
+          <div className={styles.left}>
+
+            <div className={styles.card}>
+              <button className={styles.close} onClick={() => this.closeGame()} ><IoMdCloseCircle></IoMdCloseCircle></button>
+              <FaGamepad></FaGamepad>
+
+              <input type="number" value={this.state.gameRoom.round} onChange={e => { this.gameData.updateRoomRound(Number.parseInt(e.target.value)) }} />
+              <p>rounds</p>
+              <input type="number" value={this.state.gameRoom.roundTime} onChange={e => { this.gameData.updateRoomRoundTime(Number.parseInt(e.target.value)) }} />
+              <p>seconds per round</p>
+              <ul>
+                {this.state.gameUsers.map(user =>
+                  <li key={user.uid}>{user.name} is ready</li>)
+                }
+              </ul>
+              {this.isShowStart() && <button className={styles.control} onClick={() => this.startGame()}>Start</button>}
+            </div>
+
+          </div>
+          <div className={styles.right}>
+            <div>Please join the game through the link using your phone:</div>
+            <div>https://letshaveaparty.online/game/{this.state.gameRoom.gameId}/join</div>
+            <div>
+              <a href="https://web.whatsapp.com/" target={"blank"} >Share to WhatsApp</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
+  };
 }
