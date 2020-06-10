@@ -11,7 +11,6 @@ import CanvasWatcher from './CanvasWatcher';
 import styles from './GameSketch.module.scss';
 import { IoMdCloseCircle } from 'react-icons/io';
 import { FaGamepad } from 'react-icons/fa';
-import { GameUserState } from './Models/GameUserState';
 
 interface IGameEnterProps {
   currentUser: User;
