@@ -6,9 +6,12 @@ import { GameUserRole } from './Models/GameUserRole';
 import { GameUserState } from './Models/GameUserState';
 import styles from './GameSketch.module.scss';
 import Guid from 'utils/Guid';
+import { User } from 'common/Models/User';
 
 export interface IGameJoinProps {
     roomId: string;
+    currentUser: User;
+
 }
 
 export interface IGameJoinState {
@@ -42,7 +45,7 @@ export default class GameJoin extends React.Component<IGameJoinProps, IGameJoinS
     }
 
     joinGame = () => {
-        var _gameUser = new GameUser(Guid.newGuid(), this.state.gameUserName, GameUserState.waiting, GameUserRole.player);
+        var _gameUser = new GameUser(this.props.currentUser.id, this.state.gameUserName, GameUserState.waiting, GameUserRole.player);
         this.gameData.joinRoom(_gameUser);
 
         window.location.pathname = window.location.pathname.replace('join', '');//TODO: switch to a callback

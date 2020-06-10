@@ -1,8 +1,9 @@
 import * as React from 'react';
 import GameJoin from 'components/GameSketch/GameJoin';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { withAuth } from 'common/Connect/Connections';
+import { IAuthProps } from 'common/Authentication/IAuthProps';
 
-interface IGameSketchJoinPageProps extends RouteComponentProps<{ roomId: string }> {
+interface IGameSketchJoinPageProps extends IAuthProps<{ roomId: string }> {
 }
 
 export interface IGameSketchJoinPageState {
@@ -20,9 +21,9 @@ class GameSketchJoinPage extends React.Component<IGameSketchJoinPageProps, IGame
     
     public render() {
         return (
-            <GameJoin roomId={this.props.match.params.roomId}></GameJoin>
+            <GameJoin currentUser={this.props.currentUser}  roomId={this.props.match.params.roomId}></GameJoin>
         );
     }
 }
 
-export default withRouter(GameSketchJoinPage);
+export default withAuth(GameSketchJoinPage);

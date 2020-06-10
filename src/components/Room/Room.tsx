@@ -6,7 +6,7 @@ import GameEnter from 'components/GameSketch/GameEnter';
 import { User } from 'common/Models/User';
 import VideoClient, { VideoStream } from 'utils/VideoClient';
 import VideoPlayer from 'components/Video/VideoPlayer';
-import { RoomData } from 'common/Database/RoomData';
+import { RoomData } from 'common/Repository/RoomData';
 import { RoomItemType } from './Models/RoomItemType';
 import { RoomModel } from 'common/Models/RoomModel';
 

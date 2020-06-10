@@ -11,6 +11,7 @@ import CanvasWatcher from './CanvasWatcher';
 import styles from './GameSketch.module.scss';
 import { IoMdCloseCircle } from 'react-icons/io';
 import { FaGamepad } from 'react-icons/fa';
+import { GameUserState } from './Models/GameUserState';
 
 interface IGameEnterProps {
   currentUser: User;
@@ -38,11 +39,9 @@ export default class GameEnter extends React.Component<IGameEnterProps, IGameEnt
 
   componentDidMount() {
     this.gameData.initial();
-    Log.Info("initial data");
 
   }
   componentWillUnmount() {
-    Log.Info("dispose data");
     this.gameData.dispose();
   }
 
