@@ -29,7 +29,6 @@ class EntrancePage extends React.Component<IEntrancePageProps, IEntrancePageStat
     }
 
     public render() {
-        const { name } = this.props.currentUser;
         const { path } = this.props.match.params;
         return (
             <div className={styles.main}>

@@ -6,7 +6,6 @@ import { RoomState } from './Models/RoomState';
 import { User } from 'common/Models/User';
 import Loading from 'components/Loading/Loading';
 import GamePlaying from './GamePlaying';
-import Log from 'utils/Log';
 import CanvasWatcher from './CanvasWatcher';
 import styles from './GameSketch.module.scss';
 import { IoMdCloseCircle } from 'react-icons/io';

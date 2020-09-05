@@ -5,7 +5,6 @@ import { CanvasMessage } from './Models/CanvasMessage';
 import { GameData } from './GameData';
 import { GameUserState } from './Models/GameUserState';
 import { GameUser } from './Models/GameUser';
-import Log from 'utils/Log';
 
 interface ICanvasDrawProps {
     gameId: string;

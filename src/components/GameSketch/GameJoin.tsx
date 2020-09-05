@@ -5,7 +5,6 @@ import { GameUser } from './Models/GameUser';
 import { GameUserRole } from './Models/GameUserRole';
 import { GameUserState } from './Models/GameUserState';
 import styles from './GameSketch.module.scss';
-import Guid from 'utils/Guid';
 import { User } from 'common/Models/User';
 
 export interface IGameJoinProps {
